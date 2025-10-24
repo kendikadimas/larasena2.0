@@ -1,247 +1,183 @@
-// Pages/User/Motif.jsx
-import UserLayout from '@/layouts/User/Layout';
-import { Search, Grid3X3, List, MapPin, Clock, Filter } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { router } from '@inertiajs/react';
+import UserLayout from '@/layouts/User/Layout'; 
+import { Search } from 'lucide-react'; 
+import { useState, useEffect, useCallback } from 'react';
+import { router, Link } from '@inertiajs/react'; 
 
-export default function Motif({ motifs: initialMotifs = [], filters = {} }) {
+
+
+export default function Motif({ motifs: motifsProp = {}, filters = {} }) {
+  
+  const motifsData = motifsProp?.data || [];
+  const paginationLinks = motifsProp?.links || [];
+  const totalMotifs = motifsProp?.total || 0;
+
+
   const [selectedCategory, setSelectedCategory] = useState(filters.category || 'Semua');
   const [searchQuery, setSearchQuery] = useState(filters.search || '');
-  const [viewMode, setViewMode] = useState('grid');
-  const [motifs, setMotifs] = useState(initialMotifs);
 
   const filterCategories = ['Semua', 'Tradisional', 'Modern', 'Kontemporer', 'Nusantara'];
 
-  // Function to handle filter changes
-  const handleFilterChange = (category = selectedCategory, search = searchQuery) => {
+ 
+  const handleFilterChange = useCallback(() => {
     const params = new URLSearchParams();
-    
-    if (category !== 'Semua') {
-      params.append('category', category);
-    }
-    
-    if (search.trim()) {
-      params.append('search', search.trim());
-    }
+   
+    if (selectedCategory !== 'Semua') params.append('category', selectedCategory);
+    if (searchQuery.trim()) params.append('search', searchQuery.trim());
 
-    const queryString = params.toString();
-    const url = queryString ? `/motif?${queryString}` : '/motif';
-    
+   
+    params.delete('page');
+
+    const url = params.toString() ? `/motif?${params.toString()}` : '/motif';
+
     router.get(url, {}, {
-      preserveState: true,
-      preserveScroll: true,
-      onSuccess: (page) => {
-        setMotifs(page.props.motifs);
-      }
+      preserveState: true, 
+      preserveScroll: true, 
+      replace: true, 
     });
-  };
+  }, [selectedCategory, searchQuery]); 
 
-  // Handle category change
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
-    handleFilterChange(category, searchQuery);
   };
 
-  // Handle search with debounce
+ 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (searchQuery !== filters.search) {
-        handleFilterChange(selectedCategory, searchQuery);
-      }
-    }, 500);
+    const initialCategory = filters.category || 'Semua';
+    if (selectedCategory !== initialCategory) {
+       handleFilterChange();
+    }
+  }, [selectedCategory]);
 
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
+
+
+
+  useEffect(() => {
+    const initialSearch = filters.search || '';
+    const timeout = setTimeout(() => {
+      if (searchQuery !== initialSearch) {
+        handleFilterChange();
+      }
+    }, 500); 
+
+    return () => clearTimeout(timeout); 
+
+  }, [searchQuery, filters.search]); 
+
 
   return (
     <UserLayout title="Motif Batik">
+      {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-2">
-          <h1 className="text-3xl font-bold" style={{ color: '#BA682A' }}>
-            Galeri Motif Batik
-          </h1>
-          <div className="text-sm text-gray-500">
-            {motifs.length} motif tersedia
-          </div>
+        <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+          <h1 className="text-2xl font-bold text-[#BA682A]">Galeri Motif Batik</h1>
+     
+          <div className="text-sm text-gray-500">{totalMotifs} motif tersedia</div>
         </div>
         <p className="text-gray-600 text-lg">
           Jelajahi keindahan dan filosofi di balik setiap motif batik nusantara
         </p>
       </div>
 
-      {/* Enhanced Filter Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          {/* Category Filters */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 mb-8">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+         
           <div className="flex flex-wrap gap-2">
             {filterCategories.map((category) => (
               <button
                 key={category}
                 onClick={() => handleCategoryChange(category)}
-                className={`px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 transform hover:scale-105 ${
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 transform ${
                   selectedCategory === category
-                    ? 'text-white shadow-lg scale-105'
+                    ? 'text-white bg-[#BA682A] shadow-md scale-105'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }`}
-                style={{
-                  backgroundColor: selectedCategory === category ? '#BA682A' : undefined,
-                }}
               >
                 {category}
               </button>
             ))}
           </div>
-          
-          {/* Search and View Controls */}
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input 
-                type="text" 
-                placeholder="Cari motif batik..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#BA682A] focus:border-transparent min-w-[250px] transition-all"
-              />
-            </div>
-            
-            <div className="flex bg-gray-100 rounded-xl p-1">
-              <button 
-                onClick={() => setViewMode('grid')}
-                className={`p-2.5 rounded-lg transition-all ${
-                  viewMode === 'grid' 
-                    ? 'bg-white shadow-sm text-[#BA682A]' 
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <Grid3X3 className="w-4 h-4" />
-              </button>
-              <button 
-                onClick={() => setViewMode('list')}
-                className={`p-2.5 rounded-lg transition-all ${
-                  viewMode === 'list' 
-                    ? 'bg-white shadow-sm text-[#BA682A]' 
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                <List className="w-4 h-4" />
-              </button>
-            </div>
+
+       
+          <div className="relative w-full lg:max-w-sm">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Cari motif..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-4 py-2 w-full border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#BA682A] focus:border-transparent transition"
+            />
           </div>
         </div>
       </div>
 
-      {/* Professional Motif Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {motifs.map((motif) => (
-          <div
-            key={motif.id}
-            className="group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2"
-          >
-            {/* Main Image Container */}
-            <div className="relative aspect-square overflow-hidden">
-              <img
-                src={motif.image}
-                alt={motif.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              
-              {/* Category Badge - Always Visible */}
-              <div className="absolute top-4 left-4 z-10">
-                <span 
-                  className="px-3 py-1.5 rounded-full text-xs font-semibold text-white backdrop-blur-md shadow-lg"
-                  style={{ backgroundColor: 'rgba(186, 104, 42, 0.9)' }}
-                >
-                  {motif.category}
-                </span>
-              </div>
-
-              {/* Time Badge - Always Visible */}
-              {/* <div className="absolute top-4 right-4 z-10">
-                <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/90 text-gray-700 backdrop-blur-md shadow-lg flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {motif.timeAgo}
-                </span>
-              </div> */}
-
-              {/* Color Palette - Always Visible
-              <div className="absolute bottom-4 left-4 z-10 flex gap-1">
-                {motif.colors.map((color, index) => (
-                  <div
-                    key={index}
-                    className="w-3 h-3 rounded-full border-2 border-white shadow-lg"
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
-              </div> */}
-
-              {/* Hover Overlay with Content */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-6">
-                
-                {/* Title and Description - Only on Hover */}
-                <div className="transform translate-y-6 group-hover:translate-y-0 transition-transform duration-500">
-                  <h3 className="text-white font-bold text-lg mb-2 drop-shadow-lg">
-                    {motif.title}
-                  </h3>
-                  <p className="text-white/90 text-sm leading-relaxed mb-3 drop-shadow">
-                    {motif.description}
-                  </p>
-                  
-                  {/* Location */}
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg backdrop-blur-md"
-                      style={{ backgroundColor: 'rgba(186, 104, 42, 0.8)' }}
-                    >
-                      <MapPin className="w-4 h-4 text-white" />
-                      <span className="text-white font-medium text-sm">{motif.location}</span>
-                    </div>
-                  </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
+        {motifsData.length > 0 ? (
+          motifsData.map((motif) => (
+            <div
+              key={motif.id}
+              className="group bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
+            >
+              <div className="relative aspect-square overflow-hidden">
+                <img
+                  src={motif.image_url}
+                  alt={motif.name}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  onError={(e) => e.target.src = 'https://placehold.co/600x600/eee/ccc?text=Image+Error'}
+                />
+                <div className="absolute top-3 left-3">
+                  <span className="px-3 py-1.5 rounded-full text-xs font-semibold text-white bg-[#BA682A]/90">
+                    {motif.category}
+                  </span>
                 </div>
               </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-800 truncate">
+                  {motif.name}
+                </h3>
+                {motif.description && (
+                   <p className="text-sm text-gray-600 line-clamp-2">{motif.description}</p>
+                )}
+              </div>
             </div>
+          ))
+        ) : (
+          <div className="col-span-full text-center py-12">
+             <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500">Tidak ada motif ditemukan.</p>
+            <p className="text-gray-400 text-sm">Coba ubah filter atau kata kunci pencarian Anda.</p>
           </div>
-        ))}
+        )}
       </div>
 
-      {/* Enhanced Load More Section */}
-      {motifs.length > 0 && (
-        <div className="text-center mt-12">
-          <button 
-            className="inline-flex items-center gap-3 px-8 py-4 text-white font-semibold rounded-2xl hover:shadow-xl hover:-translate-y-1 transition-all duration-300 transform"
-            style={{ backgroundColor: '#BA682A' }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#9d5a24';
-              e.target.style.transform = 'translateY(-4px) scale(1.02)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#BA682A';
-              e.target.style.transform = 'translateY(0) scale(1)';
-            }}
-          >
-            <Filter className="w-5 h-5" />
-            Jelajahi Lebih Banyak Motif
-          </button>
-          <p className="text-gray-500 text-sm mt-3">
-            Temukan ribuan motif batik lainnya dari seluruh nusantara
-          </p>
-        </div>
-      )}
-
-      {/* Empty State */}
-      {motifs.length === 0 && (
-        <div className="text-center py-16">
-          <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Search className="w-8 h-8 text-gray-400" />
-          </div>
-          <h3 className="text-xl font-semibold text-gray-600 mb-2">
-            Motif tidak ditemukan
-          </h3>
-          <p className="text-gray-500">
-            Coba ubah kata kunci pencarian atau filter kategori
-          </p>
+      
+      {paginationLinks && paginationLinks.length > 3 && (
+        <div className="flex justify-center mt-10 flex-wrap gap-2">
+          {paginationLinks.map((link, index) =>
+            link.url ? (
+              <Link
+                key={index}
+                href={link.url}
+                preserveState
+                preserveScroll
+                className={`px-4 py-2 rounded-lg border text-sm transition ${
+                  link.active
+                    ? 'bg-[#BA682A] text-white border-[#BA682A] shadow-md'
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+                }`}
+                dangerouslySetInnerHTML={{ __html: link.label }}
+              />
+            ) : (
+              <span
+                key={index}
+                className="px-4 py-2 rounded-lg border text-sm text-gray-400 bg-gray-50 cursor-not-allowed"
+                dangerouslySetInnerHTML={{ __html: link.label }}
+              />
+            )
+          )}
         </div>
       )}
     </UserLayout>
   );
 }
+

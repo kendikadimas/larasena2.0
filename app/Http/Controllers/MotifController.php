@@ -27,9 +27,7 @@ class MotifController extends Controller
             $motifsData = $motifs->map(function ($motif) {
                 $imagePath = $motif->file_path;
                 
-                // File ada di public/images/motifs/
-                // Path di database: /images/motifs/1.svg
-                // Langsung pakai path dari database, jangan tambah /storage
+            
                 
                 if (str_starts_with($imagePath, 'http')) {
                     $imageUrl = $imagePath;
@@ -88,7 +86,7 @@ class MotifController extends Controller
             ->whereNull('user_id')
             ->paginate(20);
 
-        return Inertia::render('Admin/Motifs/Index', [
+        return Inertia::render('User/Motif', [
             'motifs' => $motifs
         ]);
     }

@@ -93,7 +93,7 @@ class AdminMotifController extends Controller
         ]);
 
         if ($request->hasFile('file')) {
-            // Delete old file
+            
             if ($motif->file_path && Storage::disk('public')->exists($motif->file_path)) {
                 Storage::disk('public')->delete($motif->file_path);
             }

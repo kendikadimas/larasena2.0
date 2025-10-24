@@ -178,7 +178,7 @@ export default function AdminMotifs({ motifs, categories, stats, filters }) {
                     </button>
                 </div>
 
-                {/* Stats Cards */}
+                
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
                         <p className="text-sm text-gray-600">Total Motifs</p>
@@ -198,7 +198,7 @@ export default function AdminMotifs({ motifs, categories, stats, filters }) {
                     </div>
                 </div>
 
-                {/* Filters */}
+                
                 <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-100 mb-6">
                     <div className="flex flex-col lg:flex-row gap-4">
                         <form onSubmit={handleSearch} className="flex-1 relative">
@@ -237,7 +237,7 @@ export default function AdminMotifs({ motifs, categories, stats, filters }) {
                     </div>
                 </div>
 
-                {/* Motifs Grid */}
+             
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {motifs?.data && motifs.data.length > 0 ? (
                         motifs.data.map(motif => (
@@ -304,7 +304,7 @@ export default function AdminMotifs({ motifs, categories, stats, filters }) {
                 {motifs?.links && <Pagination links={motifs.links} />}
             </div>
 
-            {/* Modal Create/Edit */}
+            
             {showModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
                     <div className="bg-white rounded-lg max-w-2xl w-full p-6 my-8">

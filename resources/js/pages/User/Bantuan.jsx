@@ -153,8 +153,8 @@ export default function Bantuan() {
 
   return (
     <UserLayout title="Bantuan">
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50">
-        {/* Hero Section */}
+      <div className="min-h-screen bg-gradient-to-br ">
+       
         <div className="bg-gradient-to-r from-[#8B4513] to-[#BA682A] text-white py-16 mb-8 rounded-lg">
           <div className="max-w-7xl mx-auto px-4 text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-full mb-6 backdrop-blur-sm">
@@ -170,11 +170,9 @@ export default function Bantuan() {
         <div className="max-w-7xl mx-auto px-4 pb-12">
           
       
-
-          {/* Search and Filter Section */}
-          <div className="bg-white rounded-2xl shadow-lg border border-amber-200 p-6 mb-8">
+          <div className="bg-white rounded-2xl shadow-lg border  p-6 mb-8">
             <div className="flex flex-col lg:flex-row gap-6">
-              {/* Search */}
+             
               <div className="flex-1">
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -196,7 +194,7 @@ export default function Bantuan() {
                 </div>
               </div>
 
-              {/* Quick Actions */}
+              
               <div className="flex gap-3">
                 <button className="px-6 py-3 bg-[#BA682A] text-white rounded-xl hover:bg-[#9d5a24] transition-colors font-medium">
                   Hubungi Support
@@ -207,7 +205,7 @@ export default function Bantuan() {
               </div>
             </div>
 
-            {/* Category Filters */}
+          
             <div className="mt-6 pt-6 border-t border-gray-200">
               <div className="flex items-center gap-2 mb-4">
                 <Filter className="w-5 h-5 text-gray-600" />
@@ -239,7 +237,7 @@ export default function Bantuan() {
             </div>
           </div>
 
-          {/* Popular Questions */}
+          
           {searchQuery === '' && selectedCategory === 'Semua' && (
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
@@ -248,7 +246,7 @@ export default function Bantuan() {
               </h2>
               <div className="grid md:grid-cols-3 gap-4">
                 {popularQuestions.map((faq) => (
-                  <div key={faq.id} className="bg-white rounded-xl p-6 shadow-sm border border-amber-200 hover:shadow-md transition-shadow">
+                  <div key={faq.id} className="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-2 mb-3">
                       <span className="px-2 py-1 bg-[#BA682A]/10 text-[#BA682A] text-xs rounded-full">
                         {faq.category}
@@ -272,8 +270,7 @@ export default function Bantuan() {
             </div>
           )}
 
-          {/* FAQ Section - Full Width */}
-          <div className="bg-white rounded-2xl shadow-lg border border-amber-200">
+          <div className="bg-white rounded-2xl shadow-lg border ">
             <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-orange-50 rounded-t-2xl">
               <div className="flex items-center justify-between">
                 <div>
@@ -361,7 +358,7 @@ export default function Bantuan() {
                       <div className="mt-6 pt-6 border-t border-gray-100 animate-fadeIn">
                         <div className="bg-amber-50 rounded-xl p-6 border border-amber-200">
                           <p className="text-gray-700 leading-relaxed text-base">{faq.answer}</p>
-                          <div className="mt-4 pt-4 border-t border-amber-200 flex items-center justify-between">
+                          <div className="mt-4 pt-4 border-t  flex items-center justify-between">
                             <div className="text-sm text-gray-500">
                               Apakah jawaban ini membantu?
                             </div>
@@ -383,7 +380,6 @@ export default function Bantuan() {
             )}
           </div>
 
-          {/* Contact Support Section - Enhanced */}
           <div className="mt-8 bg-gradient-to-r from-[#8B4513] to-[#BA682A] rounded-2xl shadow-xl text-white overflow-hidden">
             <div className="p-8">
               <div className="text-center mb-8">
@@ -410,7 +406,7 @@ export default function Bantuan() {
                     <Phone className="w-6 h-6 text-white" />
                   </div>
                   <h4 className="font-bold text-lg mb-2">Telepon</h4>
-                  <p className="text-amber-100 text-sm mb-2">0274-123-4567</p>
+                  <p className="text-amber-100 text-sm mb-2">0858-1417-4267</p>
                   <p className="text-amber-100/80 text-xs mb-4">Senin-Minggu 08:00-22:00</p>
                   <button className="w-full py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-medium transition-colors">
                     Hubungi Sekarang

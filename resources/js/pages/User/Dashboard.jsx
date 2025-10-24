@@ -2,17 +2,17 @@ import UserLayout from '@/layouts/User/Layout';
 import { Link, router, usePage } from '@inertiajs/react';
 import {
   Plus,
-  Filter,
   Grid3X3,
   List,
-  Heart,
   Edit3,
   Download,
-  Share2,
   Search,
-  Trash2
+  Trash2,
+  Wand2,
+  Paintbrush,
+  X
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export default function Dashboard({ designs = [] }) {
   const { auth } = usePage().props;
@@ -20,6 +20,7 @@ export default function Dashboard({ designs = [] }) {
   const [activeFilter, setActiveFilter] = useState(0);
   const [showCanvasModal, setShowCanvasModal] = useState(false);
   const [customSize, setCustomSize] = useState({ width: 800, height: 600 });
+  const [fabOpen, setFabOpen] = useState(false);
   const user = auth.user;
 
   const filterItems = ['Semua', 'Terbaru', 'Favorit', 'Draft'];
@@ -31,20 +32,31 @@ export default function Dashboard({ designs = [] }) {
     { label: '16:9 (1600×900)', width: 1600, height: 900 },
   ];
 
-  // Filter designs berdasarkan search term
-  const filteredDesigns = designs.filter(design =>
-    design.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+ 
+  const filteredDesigns = useMemo(() => {
+    let list = designs.filter(d => (d.title || '').toLowerCase().includes(searchTerm.toLowerCase()));
+    switch (activeFilter) {
+      case 1: 
+        list = [...list].sort((a, b) =>
+          new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0)
+        );
+        break;
+      case 2: 
+        list = list.filter(d => d.is_favorite === true || d.favorite === true || d.favorite === 1);
+        break;
+      case 3: 
+        list = list.filter(d => d.status === 'draft' || d.is_draft === true || d.draft === true);
+        break;
+      default: break;
+    }
+    return list;
+  }, [designs, searchTerm, activeFilter]);
 
   const handleDelete = (designId) => {
     if (window.confirm('Apakah Anda yakin ingin menghapus desain ini?')) {
       router.delete(`/designs/${designId}`, {
-        onSuccess: () => {
-          alert('Desain berhasil dihapus');
-        },
-        onError: () => {
-          alert('Gagal menghapus desain');
-        }
+        onSuccess: () => alert('Desain berhasil dihapus'),
+        onError: () => alert('Gagal menghapus desain')
       });
     }
   };
@@ -67,19 +79,21 @@ export default function Dashboard({ designs = [] }) {
 
   return (
     <UserLayout title="Batik Saya">
-      {/* Header dengan Action Cards */}
+   
       <div className="flex justify-between items-start mb-6">
-        <div>
-          {/* Judul 'Batik Saya' sekarang akan ditampilkan oleh Layout dari prop 'title' */}
-          {/* Tampilkan sapaan di bawahnya */}
-          <p className="text-gray-600 text-lg font-regular mb-2">
-            Hi, <span className='text-[#BA682A]'>{user.name}</span>! Selamat datang kembali.<br /> Kamu sudah membuat : <span className='text-[#BA682A]'>{filteredDesigns.length} desain</span>
+        <div className="max-w-full">
+          <p className="text-gray-600 text-base sm:text-lg font-regular mb-2 leading-relaxed">
+            Hi, <span className="text-[#BA682A] font-semibold">{user.name}</span>! Selamat datang kembali.
+            <br className="hidden sm:block" />
+            Kamu sudah membuat:{' '}
+            <span className="text-[#BA682A] font-semibold">
+              {filteredDesigns.length} desain
+            </span>
           </p>
         </div>
-        
-        {/* Action Cards */}
-        <div className="flex gap-4">
-          {/* Button Buat Batik - TAMPILKAN MODAL */}
+
+     
+        <div className="hidden md:flex gap-4">
           <button
             onClick={() => setShowCanvasModal(true)}
             className="relative overflow-hidden rounded-2xl p-4 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer group h-16 w-48"
@@ -89,21 +103,16 @@ export default function Dashboard({ designs = [] }) {
             }}
           >
             <div className="relative z-10 h-full flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-md">Buat Batik</h3>
-              </div>
-              <div 
+              <h3 className="font-semibold text-md">Buat Batik</h3>
+              <div
                 className="w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform group-hover:scale-110"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.25)',
-                }}
+                style={{ background: 'rgba(255, 255, 255, 0.25)' }}
               >
                 <Plus className="w-4 h-4" />
               </div>
             </div>
           </button>
 
-          {/* Button Generate AI - mengarah ke Batik Generator */}
           <Link
             href="/batik-generator"
             className="relative overflow-hidden rounded-2xl p-4 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer group h-16 w-48 block"
@@ -113,14 +122,10 @@ export default function Dashboard({ designs = [] }) {
             }}
           >
             <div className="relative z-10 h-full flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-md">Generate AI</h3>
-              </div>
-              <div 
+              <h3 className="font-semibold text-md">Generate AI</h3>
+              <div
                 className="w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform group-hover:scale-110"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.25)',
-                }}
+                style={{ background: 'rgba(255, 255, 255, 0.25)' }}
               >
                 <img src="/images/icons/ai.svg" alt="AI Icon" className="w-4 h-4" />
               </div>
@@ -129,8 +134,7 @@ export default function Dashboard({ designs = [] }) {
         </div>
       </div>
 
-      {/* Filter Section dengan Search */}
-      <div className="flex items-center justify-between gap-6 mb-6">
+      <div className="hidden md:flex items-center justify-between gap-6 mb-6">
         <div className="flex gap-2">
           {filterItems.map((filter, index) => (
             <button
@@ -148,11 +152,8 @@ export default function Dashboard({ designs = [] }) {
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-gray-700 font-medium">Sort</span>
-          
-          {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
               placeholder="Cari desain..."
@@ -161,7 +162,7 @@ export default function Dashboard({ designs = [] }) {
               className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#D2691E] focus:border-transparent w-64"
             />
           </div>
-          
+
           <div className="flex bg-white border border-gray-200 rounded-lg p-1">
             <button className="p-2 rounded-md bg-[#D2691E] text-white">
               <Grid3X3 className="w-4 h-4" />
@@ -173,7 +174,36 @@ export default function Dashboard({ designs = [] }) {
         </div>
       </div>
 
-      {/* Project Cards */}
+      <div className="md:hidden mb-6 space-y-3">
+    
+        <div className="flex gap-2 overflow-x-auto px-1 -mx-1">
+          {filterItems.map((filter, index) => (
+            <button
+              key={index}
+              onClick={() => setActiveFilter(index)}
+              className={`whitespace-nowrap px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                index === activeFilter
+                  ? 'bg-[#D2691E] text-white shadow-md'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+
+        <div className="relative w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Cari desain..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#D2691E] focus:border-transparent"
+          />
+        </div>
+      </div>
+  
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredDesigns.length > 0 ? (
           filteredDesigns.map((design) => (
@@ -185,17 +215,15 @@ export default function Dashboard({ designs = [] }) {
                 <img
                   src={design.image_url || 'https://via.placeholder.com/400x300?text=No+Image'}
                   alt={design.title}
-                  className="w-full h-48 object-contain bg-gray-50" // ✅ Ubah dari cover ke contain
+                  className="w-full h-48 object-contain bg-gray-50"
                 />
-                
-                {/* Size badge - ✅ TAMPILKAN UKURAN CANVAS */}
+
                 <div className="absolute top-3 left-3">
                   <span className="bg-blue-600/90 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-md font-medium">
                     {design.canvas_width || 800} × {design.canvas_height || 600}
                   </span>
                 </div>
 
-                {/* Date Tag */}
                 <div className="absolute top-3 right-3">
                   <span className="bg-white/90 backdrop-blur-sm text-gray-600 text-xs px-2 py-1 rounded-md font-medium">
                     {new Date(design.updated_at).toLocaleDateString('id-ID')}
@@ -204,27 +232,23 @@ export default function Dashboard({ designs = [] }) {
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                {/* Hover Buttons */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                   <div className="flex gap-2">
-                    {/* Edit button */}
                     <Link
                       href={`/designs/${design.id}`}
                       className="p-2 bg-white/90 backdrop-blur-sm rounded-lg text-gray-700 hover:bg-blue-500 hover:text-white transition-colors"
                     >
                       <Edit3 className="w-4 h-4" />
                     </Link>
-                    
-                    {/* Download button */}
-                    <button 
+
+                    <button
                       onClick={() => handleDownload(design)}
                       className="p-2 bg-white/90 backdrop-blur-sm rounded-lg text-gray-700 hover:bg-[#D2691E] hover:text-white transition-colors"
                     >
                       <Download className="w-4 h-4" />
                     </button>
-                    
-                    {/* Delete button */}
-                    <button 
+
+                    <button
                       onClick={() => handleDelete(design.id)}
                       className="p-2 bg-white/90 backdrop-blur-sm rounded-lg text-gray-700 hover:bg-red-500 hover:text-white transition-colors"
                     >
@@ -264,13 +288,65 @@ export default function Dashboard({ designs = [] }) {
         )}
       </div>
 
-      {/* Modal Pilih Canvas */}
+   
+      <div className="md:hidden">
+        {fabOpen && (
+          <button
+            aria-label="Close FAB overlay"
+            className="fixed inset-0 bg-black/30 backdrop-blur-[1px] z-40"
+            onClick={() => setFabOpen(false)}
+          />
+        )}
+
+        <div className="fixed right-4 bottom-24 z-50 flex flex-col items-end gap-3 pointer-events-none">
+          {fabOpen && (
+            <>
+              <button
+                onClick={() => {
+                  setFabOpen(false);
+                  router.visit('/batik-generator');
+                }}
+                className="pointer-events-auto flex items-center gap-2 px-3 py-2 rounded-lg shadow-lg bg-white text-gray-800 hover:bg-gray-50 transition"
+              >
+                <span className="text-sm font-medium">Generate AI</span>
+                <Wand2 className="w-4 h-4 text-indigo-600" />
+              </button>
+
+              <button
+                onClick={() => {
+                  setFabOpen(false);
+                  setShowCanvasModal(true);
+                }}
+                className="pointer-events-auto flex items-center gap-2 px-3 py-2 rounded-lg shadow-lg bg-white text-gray-800 hover:bg-gray-50 transition"
+              >
+                <span className="text-sm font-medium">Buat Batik</span>
+                <Paintbrush className="w-4 h-4 text-amber-600" />
+              </button>
+            </>
+          )}
+        </div>
+
+        <button
+          onClick={() => setFabOpen((s) => !s)}
+          aria-label="Buka tindakan cepat"
+          className="fixed right-4 bottom-6 z-50 w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white transition-transform active:scale-95"
+          style={{
+            background: fabOpen
+              ? 'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)'
+              : 'linear-gradient(135deg, #D2691E 0%, #A0522D 100%)',
+          }}
+        >
+          {fabOpen ? <X className="w-6 h-6" /> : <Plus className="w-6 h-6" />}
+        </button>
+      </div>
+
+   
       {showCanvasModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4 animate-in fade-in zoom-in duration-200">
+          <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4">
             <h2 className="text-xl font-bold text-gray-800">Pilih Ukuran Canvas</h2>
             <p className="text-sm text-gray-600">Pilih ukuran canvas untuk desain batik Anda</p>
-            
+
             <div className="space-y-2">
               {canvasPresets.map((preset) => (
                 <button
@@ -284,7 +360,7 @@ export default function Dashboard({ designs = [] }) {
                 </button>
               ))}
             </div>
-            
+
             <div className="border-t pt-4">
               <p className="text-sm text-gray-600 mb-2 font-medium">Ukuran Custom (px)</p>
               <div className="grid grid-cols-2 gap-3">
@@ -293,7 +369,9 @@ export default function Dashboard({ designs = [] }) {
                   min={200}
                   max={3000}
                   value={customSize.width}
-                  onChange={(e) => setCustomSize((prev) => ({ ...prev, width: Number(e.target.value) }))}
+                  onChange={(e) =>
+                    setCustomSize((prev) => ({ ...prev, width: Number(e.target.value) }))
+                  }
                   className="border-2 border-gray-200 rounded-lg px-3 py-2 focus:border-[#D2691E] focus:outline-none"
                   placeholder="Lebar"
                 />
@@ -302,7 +380,9 @@ export default function Dashboard({ designs = [] }) {
                   min={200}
                   max={3000}
                   value={customSize.height}
-                  onChange={(e) => setCustomSize((prev) => ({ ...prev, height: Number(e.target.value) }))}
+                  onChange={(e) =>
+                    setCustomSize((prev) => ({ ...prev, height: Number(e.target.value) }))
+                  }
                   className="border-2 border-gray-200 rounded-lg px-3 py-2 focus:border-[#D2691E] focus:outline-none"
                   placeholder="Tinggi"
                 />
@@ -314,7 +394,7 @@ export default function Dashboard({ designs = [] }) {
                 Gunakan ukuran custom
               </button>
             </div>
-            
+
             <button
               onClick={() => setShowCanvasModal(false)}
               className="w-full px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition"

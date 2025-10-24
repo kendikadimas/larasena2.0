@@ -10,7 +10,6 @@ export default function AuthenticatedLayout({ children }) {
                 </div>
                 <nav className="p-4 space-y-2">
                     <a href="/dashboard" className="block text-gray-700 hover:text-blue-500">Dashboard</a>
-                    <a href="#" className="block text-gray-700 hover:text-blue-500">Settings</a>
                 </nav>
             </aside>
 
@@ -18,7 +17,7 @@ export default function AuthenticatedLayout({ children }) {
             <div className="flex-1 flex flex-col">
                 {/* Navbar */}
                 <header className="bg-white shadow p-4">
-                    <h1 className="text-xl font-semibold">Dashboard</h1>
+                    <h1 className="text-xl font-semibold"></h1>
                 </header>
 
                 {/* Main */}

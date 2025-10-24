@@ -17,15 +17,17 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminMotifController;
 use App\Http\Controllers\Admin\AdminTransactionController;
+use App\Http\Controllers\Admin\AdminKonveksiController;
 use App\Http\Controllers\Konveksi\DashboardController as KonveksiDashboardController; // ✅ Import Controller Konveksi
+use App\Http\Controllers\Konveksi\ProfileController as KonveksiProfileController;
 
-// Route halaman utama (welcome)
+
 Route::get('/', function () {
     if (!Auth::check()) {
         return Inertia::render('Auth/Login');
     }
 
-    // ✅ Redirect berdasarkan role
+    
     return match (Auth::user()->role) {
         'Admin' => redirect()->route('admin.dashboard'),
         'Convection' => redirect()->route('konveksi.dashboard'),
@@ -33,7 +35,7 @@ Route::get('/', function () {
     };
 });
 
-// ✅ Routes untuk General User (role: General)
+// Routes untuk General User (role: General)
 Route::middleware(['auth', 'verified', 'role:General'])->group(function () {
     Route::get('/dashboard', [DesignController::class, 'index'])->name('dashboard');
 
@@ -72,8 +74,9 @@ Route::middleware(['auth', 'verified', 'role:Convection'])->group(function () {
     Route::get('/konveksi-penghasilan', [KonveksiDashboardController::class, 'income'])->name('konveksi.income');
     
     // Profile untuk konveksi
-    Route::get('/konveksi-profile', [ProfileController::class, 'edit'])->name('konveksi.profile.edit');
-    Route::patch('/konveksi-profile', [ProfileController::class, 'update'])->name('konveksi.profile.update');
+    Route::get('/konveksi-profile', [KonveksiProfileController::class, 'edit'])->name('konveksi.profile.edit');
+    Route::post('/konveksi-profile', [KonveksiProfileController::class, 'update'])->name('konveksi.profile.update');
+    Route::delete('/konveksi-profile/documentation', [KonveksiProfileController::class, 'deleteDocumentation'])->name('konveksi.profile.deleteDocumentation');
 });
 
 // ✅ Routes untuk Admin (role: Admin) - TANPA PREFIX
@@ -99,6 +102,11 @@ Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
     Route::get('/admin-transactions/{transaction}', [AdminTransactionController::class, 'show'])->name('admin.transactions.show');
     Route::put('/admin-transactions/{transaction}/status', [AdminTransactionController::class, 'updateStatus'])->name('admin.transactions.updateStatus');
     Route::delete('/admin-transactions/{transaction}', [AdminTransactionController::class, 'destroy'])->name('admin.transactions.destroy');
+    
+    // Konveksi Management
+    Route::get('/admin-konveksi', [AdminKonveksiController::class, 'index'])->name('admin.konveksi.index');
+    Route::get('/admin-konveksi/{konveksi}', [AdminKonveksiController::class, 'show'])->name('admin.konveksi.show');
+    Route::put('/admin-konveksi/{konveksi}/toggle-verification', [AdminKonveksiController::class, 'toggleVerification'])->name('admin.konveksi.toggleVerification');
 });
 
 // ✅ Shared routes untuk semua authenticated users

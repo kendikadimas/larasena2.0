@@ -42,7 +42,7 @@ class AdminTransactionController extends Controller
             'completed_orders' => Production::where('production_status', 'diterima_selesai')->count(),
         ];
 
-        // Revenue chart data (6 bulan terakhir)
+        
         $revenueChart = Production::where('payment_status', 'paid')
             ->where('created_at', '>=', now()->subMonths(6))
             ->select(
