@@ -50,7 +50,7 @@ export default function UserLayout({ children, title }) {
       <div className="flex h-screen bg-gray-50">
         <Sidebar />
         <main className="flex-1 flex flex-col overflow-hidden min-h-screen">
-          {/* Desktop Header - Hidden on mobile */}
+         
           <header
             className="hidden md:flex items-center justify-between px-6 py-6 bg-white shadow-sm"
             style={{ height: '97px' }}
@@ -58,7 +58,7 @@ export default function UserLayout({ children, title }) {
             <div>
               <h1 className="text-2xl font-bold text-[#BA682A] mb-1">{title}</h1>
 
-              {/* Breadcrumbs - Only show on desktop when not on dashboard */}
+             
               {url !== '/dashboard' && (
                 <div className="hidden md:flex">
                   <Breadcrumbs />
@@ -67,7 +67,7 @@ export default function UserLayout({ children, title }) {
             </div>
 
             <div className="flex items-center gap-4">
-              {/* User Menu Dropdown */}
+             
               <Menu as="div" className="relative z-10">
                 <MenuButton className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg transition-colors">
                   <img 
@@ -128,10 +128,9 @@ export default function UserLayout({ children, title }) {
             </div>
           </header>
           
-          {/* Mobile Header Spacer - Add padding-top on mobile to prevent content from being hidden */}
           <div className="md:hidden h-16" />
 
-          {/* Mobile Title Section - Shows below mobile header */}
+         
           <div className="md:hidden bg-white border-b px-4 py-4 shadow-sm">
             <h1 className="text-xl font-bold text-[#BA682A]">{title}</h1>
             {url !== '/dashboard' && (
