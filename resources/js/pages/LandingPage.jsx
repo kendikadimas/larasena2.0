@@ -69,6 +69,7 @@ export default function LandingPage() {
   const [isVisible, setIsVisible] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
+const [openFaq, setOpenFaq] = useState(null);
   // --- BARU: STATE & DATA UNTUK GALERI INTERAKTIF ---
   const galleryItems = [
     { name: "Batik Parang", img: "/images/kategori/parang.jpg" },
@@ -283,6 +284,15 @@ export default function LandingPage() {
 
       {/* ===== HERO SECTION YANG LEBIH ORGANIK DAN ALAMI ===== */}
       <header className="relative flex flex-col md:flex-row items-center justify-between flex-1 px-8 md:px-16 lg:px-24 pt-48 pb-24 md:pt-32 md:pb-36 overflow-hidden bg-white">
+
+  <div className="absolute inset-0 opacity-40">
+    <div className="absolute top-20 right-10 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl"></div>
+    <div className="absolute bottom-32 left-20 w-80 h-80 bg-orange-200/20 rounded-full blur-3xl"></div>
+    <div className="absolute inset-0" style={{
+      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l5 10-5 10-5-10z M0 30l10 5-10 5-10-5z M60 30l-10 5 10 5 10-5z M30 40l5 10-5 10-5-10z' fill='%23d97706' fill-opacity='0.08'/%3E%3C/svg%3E")`,
+      backgroundSize: '60px 60px'
+    }}></div>
+  </div>
         
         {/* Traditional Ornament */}
         <TraditionalOrnament />
@@ -369,6 +379,7 @@ export default function LandingPage() {
 
      {/* ===== KATEGORI POPULER (VERSI GALERI 3D INTERAKTIF) ===== */}
      <section className="py-20 bg-gradient-to-b from-white via-amber-50/30 to-white overflow-hidden">
+
         {/* Judul Section */}
         <div
           className={`text-center mb-12 px-8 md:px-16 lg:px-24 fade-in-up ${
@@ -380,10 +391,10 @@ export default function LandingPage() {
           </p>
           <h3 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 font-serif">
             {/* PERBAIKAN: Menggunakan .gallery-gradient-text agar tidak konflik */}
-            My Visual <span className="gallery-gradient-text">Batik</span> Diary
+            Visual <span className="gallery-gradient-text">Batik</span> Larasena
           </h3>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            See the world through my lens: adventures in batik patterns and designs
+            Lihat dunia melalui karya, petualangan dalam pola dan desain batik
           </p>
         </div>
 
@@ -518,13 +529,7 @@ export default function LandingPage() {
                       </p>
                     </div>
 
-                    {/* Badge untuk Featured */}
-            _       {isFeatured && (
-                      <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                        Featured
-                      </div>
-                    )}
-
+                  
                     {/* Border Batik */}
                     <div className="absolute inset-0 border-4 border-amber-600/20 rounded-2xl pointer-events-none" />
                   </a>
@@ -600,7 +605,6 @@ export default function LandingPage() {
       {
         title: "Generate Motif dengan AI",
         description: "Cukup deskripsikan motif yang Anda inginkan, AI generator kami akan merekomendasikan desain batik yang seamless dan realistis.",
-        icon: "✨",
         img: "/images/fitur/ai.png",
         delay: 0.1,
         stats: { label: "Desain", value: "10,000+" }
@@ -608,7 +612,6 @@ export default function LandingPage() {
       {
         title: "Editor & Kanvas Digital",
         description: "Generator desain batik revolusioner dengan proses yang mudah. Upload inspirasi atau gunakan AI prompt, lihat desain batik Anda dalam preview 3D secara instan.",
-        icon: "⚡",
         img: "/images/fitur/editor.png",
         delay: 0.2,
         stats: { label: "Tools", value: "50+" }
@@ -616,7 +619,6 @@ export default function LandingPage() {
       {
         title: "Kelola Produksi Terintegrasi",
         description: "Sistem produksi batik yang komprehensif. Kelola pesanan, pantau progres produksi, koordinasi dengan konveksi, hingga pengiriman dalam satu platform.",
-        icon: "🔄",
         img: "/images/fitur/produksi.png",
         delay: 0.3,
         stats: { label: "Pesanan", value: "5,000+" }
@@ -624,7 +626,6 @@ export default function LandingPage() {
       {
         title: "Jaringan Mitra Konveksi",
         description: "Akses ke jaringan mitra konveksi profesional dan terpercaya. Pilih, hubungkan, dan kelola proyek batik Anda dengan mudah.",
-        icon: "🤝",
         img: "/images/fitur/mitra.png",
         delay: 0.4,
         stats: { label: "Mitra", value: "200+" }
@@ -639,11 +640,7 @@ export default function LandingPage() {
         {/* --- BLOK TEKS --- */}
         <div className={`lg:w-1/2 ${index % 2 !== 0 ? 'lg:order-last' : ''}`}>
           {/* Icon Container - More refined */}
-          <div className="inline-flex w-16 h-16 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl 
-                        items-center justify-center text-2xl shadow-lg shadow-amber-500/30 mb-6
-                        transform hover:scale-110 hover:rotate-6 transition-all duration-300">
-            {feature.icon}
-          </div>
+        
           
           <h4 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight">
             {feature.title}
@@ -746,10 +743,10 @@ export default function LandingPage() {
   {/* Header */}
   <div className={`text-center mb-12 px-8 md:px-16 lg:px-24 fade-in-up ${isVisible ? 'visible' : ''}`}>
     <p className="text-sm font-semibold text-amber-600 tracking-wider uppercase mb-3">
-      TRUSTED BY
+      TERPERCAYA
     </p>
     <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-serif">
-      Dipercaya oleh <span className="gallery-gradient-text">200+ Mitra Konveksi</span>
+      Berbagai <span className="gallery-gradient-text"> Mitra </span> Konveksi
     </h3>
     <p className="text-gray-600 text-lg max-w-2xl mx-auto">
       Bergabung dengan jaringan konveksi profesional yang tersebar di seluruh Indonesia
@@ -765,19 +762,19 @@ export default function LandingPage() {
     {/* Scrolling Logos - Row 1 */}
     <div className="flex gap-8 mb-8 animate-scroll-right hover:pause-animation">
       {[
-        { name: "Batik Trusmi", city: "Cirebon", logo: "🏭" },
-        { name: "Kampung Batik", city: "Pekalongan", logo: "🎨" },
-        { name: "Batik Lasem", city: "Rembang", logo: "✨" },
-        { name: "Griya Batik", city: "Solo", logo: "🏛️" },
-        { name: "Rumah Batik", city: "Yogyakarta", logo: "🏡" },
-        { name: "Batik Madura", city: "Pamekasan", logo: "⚡" },
-        { name: "Danar Hadi", city: "Solo", logo: "👑" },
-        { name: "Batik Keris", city: "Jakarta", logo: "🗡️" },
+        { name: "Batik Trusmi", city: "Cirebon",  },
+        { name: "Kampung Batik", city: "Pekalongan", },
+        { name: "Batik Lasem", city: "Rembang",  },
+        { name: "Griya Batik", city: "Solo",  },
+        { name: "Rumah Batik", city: "Yogyakarta",  },
+        { name: "Batik Madura", city: "Pamekasan",  },
+        { name: "Danar Hadi", city: "Solo",  },
+        { name: "Batik Keris", city: "Jakarta",  },
         // Duplicate untuk seamless loop
-        { name: "Batik Trusmi", city: "Cirebon", logo: "🏭" },
-        { name: "Kampung Batik", city: "Pekalongan", logo: "🎨" },
-        { name: "Batik Lasem", city: "Rembang", logo: "✨" },
-        { name: "Griya Batik", city: "Solo", logo: "🏛️" },
+        { name: "Batik Trusmi", city: "Cirebon",  },
+        { name: "Kampung Batik", city: "Pekalongan",  },
+        { name: "Batik Lasem", city: "Rembang", },
+        { name: "Griya Batik", city: "Solo",  },
       ].map((partner, index) => (
         <div
           key={`row1-${index}`}
@@ -787,11 +784,7 @@ export default function LandingPage() {
         >
           <div className="flex items-center gap-4">
             {/* Logo Icon */}
-            <div className="w-14 h-14 bg-gradient-to-br from-amber-100 to-amber-200 
-                          rounded-xl flex items-center justify-center text-2xl
-                          group-hover:scale-110 transition-transform duration-300">
-              {partner.logo}
-            </div>
+           
             
             {/* Partner Info */}
             <div className="flex-1">
@@ -806,12 +799,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Verified Badge */}
-            <div className="flex-shrink-0">
-              <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-            </div>
+         
           </div>
         </div>
       ))}
@@ -820,19 +808,19 @@ export default function LandingPage() {
     {/* Scrolling Logos - Row 2 (Reverse Direction) */}
     <div className="flex gap-8 animate-scroll-left hover:pause-animation">
       {[
-        { name: "Sekar Jagad", city: "Surabaya", logo: "🌺" },
-        { name: "Batik Tulis", city: "Kudus", logo: "✍️" },
-        { name: "Mahkota Batik", city: "Semarang", logo: "👑" },
-        { name: "Batik Sidoarjo", city: "Sidoarjo", logo: "🎭" },
-        { name: "Pusaka Batik", city: "Bandung", logo: "💎" },
-        { name: "Mega Batik", city: "Tangerang", logo: "🏢" },
-        { name: "Indo Batik", city: "Bekasi", logo: "🇮🇩" },
-        { name: "Royal Batik", city: "Bogor", logo: "🏰" },
+        { name: "Sekar Jagad", city: "Surabaya",  },
+        { name: "Batik Tulis", city: "Kudus",  },
+        { name: "Mahkota Batik", city: "Semarang",  },
+        { name: "Batik Sidoarjo", city: "Sidoarjo",  },
+        { name: "Pusaka Batik", city: "Bandung", },
+        { name: "Mega Batik", city: "Tangerang",  },
+        { name: "Indo Batik", city: "Bekasi", },
+        { name: "Royal Batik", city: "Bogor", },
         // Duplicate untuk seamless loop
-        { name: "Sekar Jagad", city: "Surabaya", logo: "🌺" },
-        { name: "Batik Tulis", city: "Kudus", logo: "✍️" },
-        { name: "Mahkota Batik", city: "Semarang", logo: "👑" },
-        { name: "Batik Sidoarjo", city: "Sidoarjo", logo: "🎭" },
+        { name: "Sekar Jagad", city: "Surabaya",  },
+        { name: "Batik Tulis", city: "Kudus", },
+        { name: "Mahkota Batik", city: "Semarang", },
+        { name: "Batik Sidoarjo", city: "Sidoarjo", },
       ].map((partner, index) => (
         <div
           key={`row2-${index}`}
@@ -841,12 +829,7 @@ export default function LandingPage() {
                      transition-all duration-300 group cursor-pointer"
         >
           <div className="flex items-center gap-4">
-            {/* Logo Icon */}
-            <div className="w-14 h-14 bg-gradient-to-br from-amber-100 to-amber-200 
-                          rounded-xl flex items-center justify-center text-2xl
-                          group-hover:scale-110 transition-transform duration-300">
-              {partner.logo}
-            </div>
+         
             
             {/* Partner Info */}
             <div className="flex-1">
@@ -861,35 +844,14 @@ export default function LandingPage() {
               </p>
             </div>
 
-            {/* Verified Badge */}
-            <div className="flex-shrink-0">
-              <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-            </div>
+      
           </div>
         </div>
       ))}
     </div>
   </div>
 
-  {/* Stats Below */}
-  <div className={`mt-16 px-8 md:px-16 lg:px-24 fade-in-up ${isVisible ? 'visible' : ''}`} style={{transitionDelay: '0.3s'}}>
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-      {[
-        { number: "200+", label: "Mitra Aktif", icon: "🤝" },
-        { number: "50+", label: "Kota", icon: "📍" },
-        { number: "10k+", label: "Produksi/Bulan", icon: "📦" },
-        { number: "4.9/5", label: "Rating", icon: "⭐" }
-      ].map((stat, index) => (
-        <div key={index} className="text-center bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-          <div className="text-3xl mb-2">{stat.icon}</div>
-          <p className="text-3xl font-bold text-amber-600 mb-1">{stat.number}</p>
-          <p className="text-sm text-gray-600">{stat.label}</p>
-        </div>
-      ))}
-    </div>
-  </div>
+
 </section>
 
 {/* Custom Animations */}
@@ -934,66 +896,351 @@ export default function LandingPage() {
 
 
 
-      {/* ===== FOOTER ELEGAN ===== */}
-      <footer className="bg-gray-900 text-white px-8 md:px-16 lg:px-24 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          <div>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-orange-400 rounded-xl flex items-center justify-center">
-                <BatikIcon />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold font-serif">Larasena</h3>
-                <p className="text-xs text-orange-400">Teknologi Batik Dengan Tradisi</p>
-              </div>
-            </div>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              Platform digital terdepan untuk mendesain dan memproduksi batik dengan teknologi modern, melestarikan warisan budaya dengan inovasi terkini.
-            </p>
-          </div>
+{/* ===== TESTIMONI SECTION (VIDEO CENTERED) ===== */}
+<section
+  id="testimonials"
+  className="px-8 md:px-16 lg:px-24 py-20 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden"
+>
+  {/* ===== Dekorasi background ===== */}
+  <div className="absolute top-1/2 -right-10 w-96 h-96 bg-amber-100/30 rounded-full blur-3xl opacity-60 -z-0 transform -translate-y-1/2"></div>
+  <div className="absolute top-1/4 -left-10 w-80 h-80 bg-orange-100/20 rounded-full blur-3xl opacity-50 -z-0"></div>
 
-          {[
-            {
-              title: "Produk",
-              links: ["Editor Batik", "Kolaborasi", "Produksi", "AI Generator"]
-            },
-            {
-              title: "Perusahaan", 
-              links: ["Tentang Kami", "Kontak", "Karir", "Blog"]
-            },
-            {
-              title: "Dukungan",
-              links: ["Bantuan", "Dokumentasi", "Privasi", "Syarat Layanan"]
-            }
-          ].map((section, index) => (
-            <div key={index}>
-              <h4 className="font-semibold text-lg mb-4 text-white">{section.title}</h4>
-              <ul className="space-y-3">
-                {section.links.map((link, linkIndex) => (
-                  <li key={linkIndex}>
-                    <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors duration-300 text-sm">
-                      {link}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
+  {/* ===== FLEX UTAMA ===== */}
+  <div
+    className={`flex flex-col lg:flex-row items-center gap-12 lg:gap-16 relative z-10 fade-in-up ${
+      isVisible ? "visible" : ""
+    }`}
+  >
+    {/* === KOLOM KIRI === */}
+    <div className="lg:w-6/12 w-full flex flex-col justify-between">
+      {/* Judul & Deskripsi */}
+      <div>
+        <p className="text-sm font-semibold text-amber-600 tracking-wider uppercase mb-3">
+          TESTIMONI
+        </p>
+        <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 font-serif">
+          Dari <span className="gallery-gradient-text">Industri</span> Hingga{" "}
+          <span className="gallery-gradient-text">Edukasi</span>
+        </h3>
+        <p className="text-gray-600 text-lg leading-relaxed mb-8">
+          Dengarkan langsung dari para pelaku industri dan pendidikan yang telah
+          merasakan dampak positif Larasena dalam menjembatani tradisi dengan
+          teknologi.
+        </p>
+      </div>
 
-        <div className="border-t border-gray-800 pt-8 text-center text-gray-400 text-sm">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-              © {new Date().getFullYear()} Larasena — Teknologi Batik Dengan Tradisi
-            </div>
-            <div className="flex gap-6">
-              <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors duration-300">Privacy</a>
-              <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors duration-300">Terms</a>
-              <a href="#" className="text-gray-400 hover:text-orange-400 transition-colors duration-300">Cookies</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* === QUOTES HORIZONTAL SCROLL === */}
+      <div className="relative fade-in-up w-full overflow-hidden">
+        {/* Fade Edge */}
+  
+
+        {/* Kontainer Quote dengan tinggi tetap */}
+        <div className="w-full h-[210px] relative overflow-hidden">
+          {(() => {
+            const testimonialData = [
+              {
+                quote:
+                  "Manajemen produksi jadi jauh lebih mudah. Desain 3D dari klien sangat detail, mengurangi miskomunikasi dan mempercepat proses di 'Batik Jaya Abadi'.",
+                name: "Pemilik Batik Jaya Abadi",
+                role: "Mitra Konveksi",
+                isKonveksi: true,
+              },
+              {
+                quote:
+                  "Siswa kami jadi antusias belajar batik. Fitur AI dan 3D view membuat mereka 'melek' warisan budaya dengan cara yang sangat relevan.",
+                name: "Guru SMK Desain Nusantara",
+                role: "Mitra Pendidikan",
+                isKonveksi: false,
+              },
+              {
+                quote:
+                  "Fitur 'Galeri Nusantara' sangat membantu kami sebagai desainer muda untuk eksplorasi motif tanpa harus ke museum. Sangat inspiratif!",
+                name: "Mahasiswa DKV",
+                role: "Pengguna Umum",
+                isKonveksi: false,
+              },
+              {
+                quote:
+                  "Akhirnya ada platform yang memikirkan efisiensi dari hulu ke hilir. Approval desain 3D menghemat banyak biaya sampel kain. Larasena ini game-changer.",
+                name: "Owner 'Mahkota Batik Solo'",
+                role: "Mitra Konveksi",
+                isKonveksi: true,
+              },
+            ];
+
+            const loopedData = [...testimonialData, ...testimonialData];
+
+            return (
+              <div className="flex gap-8 animate-scroll-right hover:pause-animation absolute">
+                {loopedData.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex-shrink-0 w-[19rem] md:w-[21rem] bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-amber-100/70"
+                  >
+                    <p className="text-gray-700 italic leading-relaxed mb-4 line-clamp-4">
+                      "{item.quote}"
+                    </p>
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center mr-3 flex-shrink-0">
+                        {item.isKonveksi ? (
+                          <svg
+                            className="w-5 h-5 text-amber-700"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 21V10M19 10L12 3L5 10M19 10H5M21 21H3M12 21V14"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            className="w-6 h-6 text-amber-700"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={1.5}
+                              d="M12 14l9-5-9-5-9 5 9 5zm0 0v6m0-6L3 9m9 5l9-5M3 9v6l9 5"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900">
+                          {item.name}
+                        </p>
+                        <p className="text-sm text-amber-600 font-medium">
+                          {item.role}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+        </div>
+      </div>
+    </div>
+
+    {/* === KOLOM KANAN (VIDEO CENTERED) === */}
+    <div className="lg:w-6/12 w-full flex justify-center lg:justify-end items-center">
+      <div
+        className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white/80 backdrop-blur-sm transform hover:scale-[1.02] transition-transform duration-500 max-w-xl w-full"
+      >
+        <div className="absolute -inset-4 bg-gradient-to-br from-amber-100/50 to-amber-50/50 rounded-3xl blur-2xl -z-10 opacity-75"></div>
+        <video
+          className="w-full h-auto object-cover rounded-xl"
+          controls
+          src="video/testi.mp4"
+        >
+          Browser Anda tidak mendukung tag video.
+        </video>
+      </div>
+    </div>
+  </div>
+
+  {/* Animasi Scroll */}
+  <style jsx>{`
+    @keyframes scroll-right {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+    .animate-scroll-right {
+      animation: scroll-right 45s linear infinite;
+    }
+    .hover\:pause-animation:hover {
+      animation-play-state: paused;
+    }
+  `}</style>
+</section>
+
+
+     {/* --- BATAS AKHIR SECTION TESTIMONI --- */}
+
+
+{/* ===== FAQ SECTION (BERDASARKAN PROPOSAL) ===== */}
+<section id="faq" className="px-8 md:px-16 lg:px-24 py-20 bg-gradient-to-b from-gray-50 to-amber-50/30 relative overflow-hidden">
+  
+  {/* Dekorasi background senada tema */}
+  <div className="absolute top-0 left-0 w-80 h-80 bg-amber-200/20 rounded-full blur-3xl opacity-50 -z-0"></div>
+  <div className="absolute bottom-0 right-0 w-72 h-72 bg-orange-100/20 rounded-full blur-3xl opacity-50 -z-0"></div>
+
+  {/* Header Section */}
+  <div className={`text-center mb-16 fade-in-up relative z-10 ${isVisible ? 'visible' : ''}`}>
+    <p className="text-sm font-semibold text-amber-600 tracking-wider uppercase mb-3">
+      BANTUAN
+    </p>
+    <h3 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 font-serif">
+      Pertanyaan yang <span className="gallery-gradient-text">Sering Diajukan</span>
+    </h3>
+    <p className="text-gray-600 text-lg max-w-3xl mx-auto">
+      Menemukan jawaban yang Anda butuhkan tentang platform Larasena, dari AI hingga produksi.
+    </p>
+  </div>
+
+  {/* Data FAQ */}
+  {(() => {
+    const faqData = [
+      {
+        q: "Apa itu Larasena?",
+        a: "Larasena adalah sebuah platform digital yang memanfaatkan teknologi 3D modelling dan kecerdasan buatan (AI) untuk mendigitalisasi, memodelkan, dan mengoptimalkan produksi batik Nusantara[cite: 17]. Kami hadir sebagai jembatan antara pelestarian budaya dan efisiensi industri tekstil lokal[cite: 18]."
+      },
+      {
+        q: "Apa masalah utama yang ingin diselesaikan Larasena?",
+        a: "Kami fokus mengatasi krisis regenerasi pengrajin batik[cite: 30]. Data APPBI menunjukkan jumlah pengrajin nasional menyusut drastis dari 151.565 orang pada 2020 menjadi 37.914 pada 2023[cite: 33]. Larasena bertujuan menarik generasi muda (yang saat ini hanya 12% [cite: 49, 51]) untuk terlibat melalui teknologi yang modern[cite: 65]."
+      },
+      {
+        q: "Bagaimana cara kerja fitur AI Generator Batik?",
+        a: "Anda dapat membuat desain batik menggunakan generator AI [cite: 233] yang terintegrasi dengan Hugging Face API[cite: 274]. Fitur ini memanfaatkan kecerdasan buatan untuk menghasilkan motif batik otomatis berdasarkan parameter atau deskripsi yang Anda tentukan[cite: 109]."
+      },
+      {
+        q: "Apakah saya bisa melihat desain saya di produk jadi?",
+        a: "Ya. Platform kami dilengkapi fitur 3D Modelling Products menggunakan Three.js[cite: 109, 258]. Setelah Anda selesai mendesain di kanvas, Anda bisa melihat preview desain Anda secara langsung pada model 3D seperti kemeja, kaos, atau gaun[cite: 109, 236, 301, 304, 305]."
+      },
+      {
+        q: "Apakah Larasena yang akan mencetak kain batik saya?",
+        a: "Tidak secara langsung. Larasena adalah platform untuk perencanaan dan desain produksi[cite: 79]. Namun, kami memiliki fitur 'Konveksi Bermitra' [cite: 111] yang memungkinkan Anda terhubung dan membuat pesanan produksi [cite: 237] langsung ke mitra konveksi terverifikasi yang ada di platform kami."
+      },
+      {
+        q: "Saya tidak tahu banyak tentang batik. Bisakah saya belajar di sini?",
+        a: "Tentu. Kami memiliki fitur 'Galeri Nusantara' [cite: 112, 164] yang merupakan repositori untuk Anda menjelajahi koleksi motif batik dari berbagai daerah[cite: 430]. Anda bisa mempelajari sejarah, filosofi, dan makna di balik setiap motif sebagai inspirasi desain Anda[cite: 112, 164, 430]."
+      }
+    ];
+
+    return (
+      <div className={`max-w-7xl mx-auto space-y-5 relative z-10 fade-in-up ${isVisible ? 'visible' : ''}`} style={{transitionDelay: '0.2s'}}>
+        {faqData.map((item, index) => (
+          <div 
+            key={index} 
+            className="bg-white rounded-2xl border border-amber-100/70 overflow-hidden transition-all duration-300"
+          >
+            
+            {/* Tombol Pertanyaan */}
+            <button
+              onClick={() => setOpenFaq(openFaq === index ? null : index)}
+              className="flex justify-between items-center w-full p-6 text-left"
+            >
+              <span className="text-base md:text-lg font-semibold text-gray-900">
+                {item.q}
+              </span>
+              
+              {/* Ikon Chevron */}
+              <div className="w-6 h-6 flex-shrink-0 flex items-center justify-center text-amber-600">
+                <svg
+                  className={`w-5 h-5 transition-transform duration-300 ${openFaq === index ? 'transform rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </button>
+
+            {/* Area Jawaban */}
+            <div
+              className={`overflow-hidden transition-all duration-500 ease-in-out ${openFaq === index ? 'max-h-screen' : 'max-h-0'}`}
+            >
+              <div className="p-6 pt-0 prose prose-sm md:prose-base text-gray-600 leading-relaxed">
+                <p>{item.a}</p>
+              </div>
+            </div>
+
+          </div>
+        ))}
+      </div>
+    );
+  })()}
+</section>
+{/* --- BATAS AKHIR SECTION FAQ --- */}
+
+
+      {/* ===== FOOTER MODERN & HANGAT ===== */}
+<footer className="bg-gradient-to-br from-amber-50 via-orange-50/40 to-white text-gray-800 px-8 md:px-16 lg:px-24 py-16 relative overflow-hidden">
+  {/* Background dekoratif lembut */}
+  <div className="absolute inset-0 opacity-40 pointer-events-none">
+    <div className="absolute top-10 right-20 w-80 h-80 bg-amber-200/30 rounded-full blur-3xl"></div>
+    <div className="absolute bottom-10 left-10 w-72 h-72 bg-orange-100/30 rounded-full blur-3xl"></div>
+  </div>
+
+  {/* Konten utama footer */}
+  <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 relative z-10">
+    {/* Brand */}
+    <div>
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-400 rounded-xl flex items-center justify-center shadow-md">
+          <BatikIcon />
+        </div>
+        <div>
+          <h3 className="text-xl font-bold font-serif text-gray-900">Larasena</h3>
+          <p className="text-xs text-orange-600 font-medium">Teknologi Batik Dengan Tradisi</p>
+        </div>
+      </div>
+      <p className="text-gray-600 text-sm leading-relaxed max-w-sm">
+        Platform digital terdepan untuk mendesain dan memproduksi batik dengan teknologi modern,
+        melestarikan warisan budaya dengan sentuhan inovasi terkini.
+      </p>
+    </div>
+
+    {/* Link Sections */}
+    {[
+      {
+        title: "Produk",
+        links: ["Editor Batik", "Kolaborasi", "Produksi", "AI Generator"]
+      },
+      {
+        title: "Perusahaan",
+        links: ["Tentang Kami", "Kontak", "Karir", "Blog"]
+      },
+      {
+        title: "Dukungan",
+        links: ["Bantuan", "Dokumentasi", "Privasi", "Syarat Layanan"]
+      }
+    ].map((section, index) => (
+      <div key={index}>
+        <h4 className="font-semibold text-lg mb-4 text-gray-900">{section.title}</h4>
+        <ul className="space-y-3">
+          {section.links.map((link, linkIndex) => (
+            <li key={linkIndex}>
+              <a
+                href="#"
+                className="text-gray-600 hover:text-orange-600 transition-colors duration-300 text-sm"
+              >
+                {link}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+
+  {/* Garis & Copyright */}
+  <div className="border-t border-amber-200/70 pt-8 relative z-10 text-sm text-gray-600">
+    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+      <div>
+        © {new Date().getFullYear()} <span className="font-semibold text-orange-600">Larasena</span> — Teknologi Batik Dengan Tradisi
+      </div>
+ 
+    </div>
+  </div>
+
+  {/* Ornamen bawah */}
+  <div className="absolute -bottom-10 right-10 w-60 h-60 bg-gradient-to-tr from-orange-200/40 to-amber-100/30 rounded-full blur-3xl opacity-60"></div>
+</footer>
+
     </div>
   );
 }

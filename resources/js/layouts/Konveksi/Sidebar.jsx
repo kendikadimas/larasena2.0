@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutDashboard, ShoppingCart, Users, DollarSign } from 'lucide-react';
+import { LayoutDashboard, ShoppingCart, Users, DollarSign, UserCog } from 'lucide-react';
 
 export default function Sidebar() {
   const { url } = usePage();
@@ -9,6 +9,7 @@ export default function Sidebar() {
     { name: 'Pesanan', href: '/konveksi-pesanan', icon: <ShoppingCart className="w-5 h-5" /> },
     { name: 'Pelanggan', href: '/konveksi-pelanggan', icon: <Users className="w-5 h-5" /> },
     { name: 'Penghasilan', href: '/konveksi-penghasilan', icon: <DollarSign className="w-5 h-5" /> },
+    { name: 'Profil', href: '/konveksi-profile', icon: <UserCog className="w-5 h-5" /> },
   ];
 
   return (

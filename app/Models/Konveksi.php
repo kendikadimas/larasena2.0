@@ -18,7 +18,8 @@ class Konveksi extends Model
         'no_telp',
         'description',
         'documentation',
-        'icon'
+        'icon',
+        'user_id'
     ];
 
     protected $casts = [
@@ -27,6 +28,17 @@ class Konveksi extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    // Relationship
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function productions()
+    {
+        return $this->hasMany(Production::class, 'convection_id');
+    }
 
     // Scope untuk konveksi terverifikasi
     public function scopeVerified($query)
@@ -57,9 +69,14 @@ class Konveksi extends Model
     public function getDocumentationUrlAttribute()
     {
         if ($this->documentation) {
-            return asset('storage/' . $this->documentation);
+            $docs = json_decode($this->documentation, true);
+            if (is_array($docs)) {
+                return array_map(function($doc) {
+                    return asset('storage/' . $doc);
+                }, $docs);
+            }
         }
-        return 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop';
+        return [];
     }
 
     // Accessor untuk mendapatkan URL icon
@@ -75,11 +92,5 @@ class Konveksi extends Model
     public function getVerificationStatusAttribute()
     {
         return $this->is_verified ? 'Terverifikasi' : 'Belum Terverifikasi';
-    }
-
-    public function user(): BelongsTo
-    {
-        // 'user_id' adalah nama foreign key di tabel 'konveksis'
-        return $this->belongsTo(User::class, 'user_id');
     }
 }

@@ -17,7 +17,9 @@ use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminMotifController;
 use App\Http\Controllers\Admin\AdminTransactionController;
+use App\Http\Controllers\Admin\AdminKonveksiController;
 use App\Http\Controllers\Konveksi\DashboardController as KonveksiDashboardController;
+use App\Http\Controllers\Konveksi\ProfileController as KonveksiProfileController;
 
 // ============================================================================
 // 🏠 ROUTE HALAMAN UTAMA (LANDING PAGE)
@@ -79,10 +81,11 @@ Route::middleware(['auth', 'verified', 'role:Convection'])->group(function () {
     Route::get('/konveksi-pesanan', [KonveksiDashboardController::class, 'orders'])->name('konveksi.orders');
     Route::get('/konveksi-pelanggan', [KonveksiDashboardController::class, 'customers'])->name('konveksi.customers');
     Route::get('/konveksi-penghasilan', [KonveksiDashboardController::class, 'income'])->name('konveksi.income');
-
-    // Profile konveksi
-    Route::get('/konveksi-profile', [ProfileController::class, 'edit'])->name('konveksi.profile.edit');
-    Route::patch('/konveksi-profile', [ProfileController::class, 'update'])->name('konveksi.profile.update');
+    
+    // Profile untuk konveksi
+    Route::get('/konveksi-profile', [KonveksiProfileController::class, 'edit'])->name('konveksi.profile.edit');
+    Route::post('/konveksi-profile', [KonveksiProfileController::class, 'update'])->name('konveksi.profile.update');
+    Route::delete('/konveksi-profile/documentation', [KonveksiProfileController::class, 'deleteDocumentation'])->name('konveksi.profile.deleteDocumentation');
 });
 
 // ============================================================================
@@ -110,6 +113,11 @@ Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
     Route::get('/admin-transactions/{transaction}', [AdminTransactionController::class, 'show'])->name('admin.transactions.show');
     Route::put('/admin-transactions/{transaction}/status', [AdminTransactionController::class, 'updateStatus'])->name('admin.transactions.updateStatus');
     Route::delete('/admin-transactions/{transaction}', [AdminTransactionController::class, 'destroy'])->name('admin.transactions.destroy');
+    
+    // Konveksi Management
+    Route::get('/admin-konveksi', [AdminKonveksiController::class, 'index'])->name('admin.konveksi.index');
+    Route::get('/admin-konveksi/{konveksi}', [AdminKonveksiController::class, 'show'])->name('admin.konveksi.show');
+    Route::put('/admin-konveksi/{konveksi}/toggle-verification', [AdminKonveksiController::class, 'toggleVerification'])->name('admin.konveksi.toggleVerification');
 });
 
 // ============================================================================
@@ -140,7 +148,7 @@ Route::prefix('api')->group(function () {
 });
 
 // ============================================================================
-// 🔑 AUTH ROUTES (LOGIN, REGISTER, LOGOUT, dll.)
+// 🔑 AUTH ROUTES
 // ============================================================================
 require __DIR__ . '/auth.php';
 

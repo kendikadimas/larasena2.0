@@ -40,7 +40,7 @@ const Breadcrumbs = () => {
 };
 
 export default function UserLayout({ children, title }) {
-  // Ambil data user dari props global Inertia
+
   const { auth, url } = usePage().props;
   const user = auth.user;
 
@@ -50,25 +50,24 @@ export default function UserLayout({ children, title }) {
       <div className="flex h-screen bg-gray-50">
         <Sidebar />
         <main className="flex-1 flex flex-col overflow-hidden min-h-screen">
+          {/* Desktop Header - Hidden on mobile */}
           <header
-            className=" relative z-20 flex items-center justify-between px-6 py-6 border-b bg-white shadow-sm"
+            className="hidden md:flex items-center justify-between px-6 py-6 bg-white shadow-sm"
             style={{ height: '97px' }}
           >
             <div>
               <h1 className="text-2xl font-bold text-[#BA682A] mb-1">{title}</h1>
-              {/* Sembunyikan breadcrumbs hanya di halaman dashboard utama */}
-              {url !== '/dashboard' && <Breadcrumbs />}
+
+              {/* Breadcrumbs - Only show on desktop when not on dashboard */}
+              {url !== '/dashboard' && (
+                <div className="hidden md:flex">
+                  <Breadcrumbs />
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-4">
-              <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                <Bell className="w-5 h-5 text-gray-400" />
-              </button>
-              <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                <Settings className="w-5 h-5 text-gray-400" />
-              </button>
-              
-              {/* Dropdown Profil Pengguna */}
+              {/* User Menu Dropdown */}
               <Menu as="div" className="relative z-10">
                 <MenuButton className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg transition-colors">
                   <img 
@@ -111,8 +110,8 @@ export default function UserLayout({ children, title }) {
                                 {({ active }) => (
                                     <Link
                                         href={route('logout')}
-                                        method="post" // Logout harus menggunakan metode POST
-                                        as="button"   // Render sebagai tombol agar bisa diklik
+                                        method="post" 
+                                        as="button"   
                                         className={`${
                                             active ? 'bg-red-500 text-white' : 'text-gray-700'
                                         } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
@@ -129,8 +128,21 @@ export default function UserLayout({ children, title }) {
             </div>
           </header>
           
-          {/* Konten Halaman */}
-          <div className="flex-1 overflow-y-auto p-6">
+          {/* Mobile Header Spacer - Add padding-top on mobile to prevent content from being hidden */}
+          <div className="md:hidden h-16" />
+
+          {/* Mobile Title Section - Shows below mobile header */}
+          <div className="md:hidden bg-white border-b px-4 py-4 shadow-sm">
+            <h1 className="text-xl font-bold text-[#BA682A]">{title}</h1>
+            {url !== '/dashboard' && (
+              <div className="mt-2">
+                <Breadcrumbs />
+              </div>
+            )}
+          </div>
+      
+          {/* Main Content Area */}
+          <div className="flex-1 overflow-y-auto p-4 md:p-6">
               {children}
           </div>
 

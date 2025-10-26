@@ -1,7 +1,3 @@
-import InputError from '@/components/InputError';
-import InputLabel from '@/components/InputLabel';
-import PrimaryButton from '@/components/PrimaryButton';
-import TextInput from '@/components/TextInput';
 import { Transition } from '@headlessui/react';
 import { Link, useForm, usePage } from '@inertiajs/react';
 
@@ -20,14 +16,13 @@ export default function UpdateProfileInformation({
 
     const submit = (e) => {
         e.preventDefault();
-
         patch(route('profile.update'));
     };
 
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900">
+                <h2 className="text-lg font-bold text-gray-800">
                     Profile Information
                 </h2>
 
@@ -37,38 +32,56 @@ export default function UpdateProfileInformation({
             </header>
 
             <form onSubmit={submit} className="mt-6 space-y-6">
+                
                 <div>
-                    <InputLabel htmlFor="name" value="Name" />
-
-                    <TextInput
+                    <label
+                        htmlFor="name"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                        Name
+                    </label>
+                    <input
                         id="name"
-                        className="mt-1 block w-full"
+                        type="text"
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:border-[#BA682A] focus:ring focus:ring-[#BA682A] focus:ring-opacity-30 transition"
                         value={data.name}
                         onChange={(e) => setData('name', e.target.value)}
                         required
-                        isFocused
+                        autoFocus
                         autoComplete="name"
                     />
-
-                    <InputError className="mt-2" message={errors.name} />
+                    {errors.name && (
+                        <p className="text-red-500 text-xs mt-1">
+                            {errors.name}
+                        </p>
+                    )}
                 </div>
 
+                
                 <div>
-                    <InputLabel htmlFor="email" value="Email" />
-
-                    <TextInput
+                    <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                        Email
+                    </label>
+                    <input
                         id="email"
                         type="email"
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:border-[#BA682A] focus:ring focus:ring-[#BA682A] focus:ring-opacity-30 transition"
                         value={data.email}
                         onChange={(e) => setData('email', e.target.value)}
                         required
                         autoComplete="username"
                     />
-
-                    <InputError className="mt-2" message={errors.email} />
+                    {errors.email && (
+                        <p className="text-red-500 text-xs mt-1">
+                            {errors.email}
+                        </p>
+                    )}
                 </div>
 
+                
                 {mustVerifyEmail && user.email_verified_at === null && (
                     <div>
                         <p className="mt-2 text-sm text-gray-800">
@@ -77,7 +90,7 @@ export default function UpdateProfileInformation({
                                 href={route('verification.send')}
                                 method="post"
                                 as="button"
-                                className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                className="ml-1 rounded-md text-sm text-gray-600 underline hover:text-[#BA682A] focus:outline-none focus:ring-2 focus:ring-[#BA682A] focus:ring-offset-2 transition"
                             >
                                 Click here to re-send the verification email.
                             </Link>
@@ -92,8 +105,15 @@ export default function UpdateProfileInformation({
                     </div>
                 )}
 
+                
                 <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
+                    <button
+                        type="submit"
+                        disabled={processing}
+                        className="inline-flex items-center px-4 py-2 bg-[#BA682A] text-white rounded-lg hover:bg-[#A0522D] transition disabled:opacity-50"
+                    >
+                        Save
+                    </button>
 
                     <Transition
                         show={recentlySuccessful}
@@ -102,12 +122,11 @@ export default function UpdateProfileInformation({
                         leave="transition ease-in-out"
                         leaveTo="opacity-0"
                     >
-                        <p className="text-sm text-gray-600">
-                            Saved.
-                        </p>
+                        <p className="text-sm text-gray-600">Saved.</p>
                     </Transition>
                 </div>
             </form>
         </section>
     );
 }
+

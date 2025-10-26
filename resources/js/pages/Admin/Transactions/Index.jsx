@@ -129,7 +129,7 @@ export default function AdminTransactions({ transactions, stats, revenueChart, f
         });
     };
 
-    // Chart data
+   
     const chartData = {
         labels: revenueChart.map(item => item.month),
         datasets: [

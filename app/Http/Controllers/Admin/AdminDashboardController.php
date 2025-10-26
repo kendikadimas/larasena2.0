@@ -35,7 +35,7 @@ class AdminDashboardController extends Controller
             ->take(5)
             ->get();
 
-        // Revenue trend (7 hari terakhir)
+        
         $revenueTrend = Production::where('payment_status', 'paid')
             ->where('created_at', '>=', now()->subDays(7))
             ->select(

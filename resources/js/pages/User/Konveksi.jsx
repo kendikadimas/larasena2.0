@@ -76,7 +76,7 @@ export default function Konveksi({ konveksis, stats, filters, locations }) {
         </p>
       </div>
 
-      {/* Search Bar */}
+     
       <div className="mb-8">
         <div className="relative max-w-4xl">
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: '#BA682A' }} />
@@ -92,7 +92,6 @@ export default function Konveksi({ konveksis, stats, filters, locations }) {
         </div>
       </div>
 
-      {/* Filter Dropdowns */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div className="relative">
           <select 
@@ -130,7 +129,7 @@ export default function Konveksi({ konveksis, stats, filters, locations }) {
         </div>
       </div>
 
-      {/* Loading State */}
+      
       {loading && (
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#BA682A] mx-auto"></div>
@@ -138,14 +137,13 @@ export default function Konveksi({ konveksis, stats, filters, locations }) {
         </div>
       )}
 
-      {/* Konveksi Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
         {konveksis.data.map((konveksi) => (
           <div
             key={konveksi.id}
             className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group hover:-translate-y-2 border border-gray-100"
           >
-            {/* Header with verification */}
+            
             <div className="p-6 pb-4">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
@@ -163,7 +161,7 @@ export default function Konveksi({ konveksis, stats, filters, locations }) {
                 </div>
               </div>
 
-              {/* Documentation Image */}
+             
               <div className="mb-4 relative group/image">
                 <div className="aspect-video w-full bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden">
                   <img
@@ -176,7 +174,7 @@ export default function Konveksi({ konveksis, stats, filters, locations }) {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/image:opacity-100 transition-opacity duration-300" />
                 </div>
-                {/* Optional: Overlay with "View More" text */}
+                
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/image:opacity-100 transition-opacity duration-300">
                   <div className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-gray-800">
                     Lihat Portfolio
@@ -184,12 +182,12 @@ export default function Konveksi({ konveksis, stats, filters, locations }) {
                 </div>
               </div>
 
-              {/* Description */}
+             
               <p className="text-gray-600 text-sm mb-4">
                 {konveksi.description}
               </p>
 
-              {/* Location and Rating */}
+              
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-1 text-sm" style={{ color: '#BA682A' }}>
                   <MapPin className="w-4 h-4" />
@@ -201,13 +199,11 @@ export default function Konveksi({ konveksis, stats, filters, locations }) {
                 </div>
               </div>
 
-              {/* Contact Info */}
               <div className="flex items-center gap-2 mb-4 text-sm text-gray-600">
                 <Phone className="w-4 h-4" style={{ color: '#BA682A' }} />
                 <span>{konveksi.no_telp}</span>
               </div>
 
-              {/* Action Button */}
               <button
                 onClick={() => router.visit(`/konveksi/${konveksi.id}`)}
                 className="w-full py-3 px-4 rounded-xl font-medium text-white transition-all duration-300 hover:shadow-lg"
@@ -226,7 +222,6 @@ export default function Konveksi({ konveksis, stats, filters, locations }) {
         ))}
       </div>
 
-      {/* Pagination */}
       {konveksis.links && (
         <div className="flex justify-center mt-8">
           <div className="flex space-x-2">

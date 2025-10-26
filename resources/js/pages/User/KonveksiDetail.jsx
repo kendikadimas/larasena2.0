@@ -4,7 +4,7 @@ import UserLayout from '@/layouts/User/Layout';
 import { Phone, MapPin, Star } from 'lucide-react';
 
 export default function KonveksiDetail({ konveksi }) {
-    // Ambil galeri gambar, berikan array kosong jika tidak ada
+    
     const gallery = JSON.parse(konveksi.documentation || '[]');
 
     return (
@@ -12,7 +12,7 @@ export default function KonveksiDetail({ konveksi }) {
             <Head title={konveksi.name} />
 
             <div className="max-w-7xl mx-auto p-6 space-y-8">
-                {/* Header Detail Konveksi */}
+               
                 <div className="flex flex-col md:flex-row items-start gap-8">
                     <img 
                         src={konveksi.icon_url || `https://ui-avatars.com/api/?name=${konveksi.name}&size=128&background=BA682A&color=fff`} 
