@@ -68,8 +68,11 @@ export default function LandingPage() {
   const [user] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [openFaq, setOpenFaq] = useState(null);
+  
+  // --- BARU: STATE UNTUK MENU MOBILE ---
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-const [openFaq, setOpenFaq] = useState(null);
   // --- BARU: STATE & DATA UNTUK GALERI INTERAKTIF ---
   const galleryItems = [
     { name: "Batik Parang", img: "/images/kategori/parang.jpg" },
@@ -86,7 +89,6 @@ const [openFaq, setOpenFaq] = useState(null);
     ...galleryItems.map(item => item.name),
     "View More →"
   ];
-
   const [activeFilterIndex, setActiveFilterIndex] = useState(0);
   // Set default featured ke tengah array (lebih dinamis)
   const [featuredIndex, setFeaturedIndex] = useState(Math.floor(galleryItems.length / 2)); 
@@ -119,6 +121,16 @@ const [openFaq, setOpenFaq] = useState(null);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // --- useEffect BARU: Mencegah scroll body saat menu mobile terbuka ---
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isMobileMenuOpen]);
+
 
   // --- dashboardRoute LAMA KAMU ---
   const dashboardRoute = user?.role === 'Admin' 
@@ -184,13 +196,16 @@ const [openFaq, setOpenFaq] = useState(null);
           z-index: -1;
           opacity: 0.2;
         }
+        /* Perbaikan: border-radius untuk navbar */
+        .traditional-border.rounded-2xl::before {
+          border-radius: 1rem; /* 16px */
+        }
         .handcrafted-underline {
           background: linear-gradient(90deg, transparent, #C97540, transparent);
           height: 2px;
           width: 100%;
           margin-top: 4px;
         }
-
         {/* --- PERBAIKAN: CSS digabung & ganti nama biar gak konflik --- */}
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
@@ -221,14 +236,15 @@ const [openFaq, setOpenFaq] = useState(null);
           : 'bg-transparent py-4'
       }`}>
         <div className="px-8 md:px-16 lg:px-24">
-          <div className={`flex justify-between items-center px-10 py-2 rounded-2xl transition-all duration-300 ${
+          {/* PENYESUAIAN PADDING: px-10 diubah menjadi responsif */}
+          <div className={`flex justify-between items-center px-4 sm:px-6 md:px-10 py-2 rounded-2xl transition-all duration-300 ${
             isScrolled 
               ? 'bg-white/90 backdrop-blur-lg border border-amber-100 traditional-border' 
               : 'bg-white/85 backdrop-blur-lg border border-amber-50/30 traditional-border'
           }`}>
             
             {/* Logo dengan gambar asli dari local */}
-            <a href="/" className="flex items-center transform hover:scale-105 transition-transform duration-300 group">
+            <a href="/" className="flex-shrink-0 flex items-center transform hover:scale-105 transition-transform duration-300 group">
               <img 
                 src="/images/logolarasena.png" 
                 alt="Larasena Logo" 
@@ -236,24 +252,32 @@ const [openFaq, setOpenFaq] = useState(null);
               />
             </a>
 
-            {/* Navigation Links */}
+            {/* Navigation Links (Desktop) */}
             <div className="hidden md:flex items-center gap-10">
               <a href="#tentang" className="text-gray-700 hover:text-amber-700 font-medium transition-all duration-300 relative group text-lg group-hover:-translate-y-0.5 transform transition-transform duration-300">
                 Tentang
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
+              </a>
+              <a href="#galeri" className="text-gray-700 hover:text-amber-700 font-medium transition-all duration-300 relative group text-lg group-hover:-translate-y-0.5 transform transition-transform duration-300">
+                Galeri
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
               </a>
               <a href="#fitur" className="text-gray-700 hover:text-amber-700 font-medium transition-all duration-300 relative group text-lg group-hover:-translate-y-0.5 transform transition-transform duration-300">
                 Fitur
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
               </a>
-              <a href="#kontak" className="text-gray-700 hover:text-amber-700 font-medium transition-all duration-300 relative group text-lg group-hover:-translate-y-0.5 transform transition-transform duration-300">
-                Kontak
+              <a href="#mitra" className="text-gray-700 hover:text-amber-700 font-medium transition-all duration-300 relative group text-lg group-hover:-translate-y-0.5 transform transition-transform duration-300">
+                Mitra
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
+              </a>
+              <a href="#bantuan" className="text-gray-700 hover:text-amber-700 font-medium transition-all duration-300 relative group text-lg group-hover:-translate-y-0.5 transform transition-transform duration-300">
+                Bantuan
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
               </a>
             </div>
 
-            {/* Auth Buttons */}
-            <div className="flex items-center gap-4">
+            {/* Auth Buttons (Desktop) - TAMBAHKAN hidden md:flex */}
+            <div className="hidden md:flex items-center gap-4">
               {user ? (
                 <a
                   href={dashboardRoute}
@@ -278,25 +302,103 @@ const [openFaq, setOpenFaq] = useState(null);
                 </>
               )}
             </div>
+
+            {/* ===== BARU: Tombol Hamburger Menu (Mobile) ===== */}
+            <div className="md:hidden flex items-center">
+              <button 
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="text-gray-800 hover:text-amber-700 focus:outline-none"
+                aria-label="Buka menu"
+              >
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </nav>
 
-      {/* ===== HERO SECTION YANG LEBIH ORGANIK DAN ALAMI ===== */}
-      <header className="relative flex flex-col md:flex-row items-center justify-between flex-1 px-8 md:px-16 lg:px-24 pt-48 pb-24 md:pt-32 md:pb-36 overflow-hidden bg-white">
+      {/* ===== BARU: Panel Menu Mobile ===== */}
+      <div
+        className={`fixed inset-0 z-[60] bg-white transform ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} 
+                    transition-transform duration-300 ease-in-out md:hidden`}
+      >
+        {/* Header Menu Mobile */}
+        <div className="flex justify-between items-center p-8 border-b border-gray-200">
+          <a href="/" className="flex items-center">
+            <img 
+              src="/images/logolarasena.png" 
+              alt="Larasena Logo" 
+              className="h-10 w-auto"
+            />
+          </a>
+          <button 
+            onClick={() => setIsMobileMenuOpen(false)} 
+            className="text-gray-800 hover:text-amber-700 focus:outline-none"
+            aria-label="Tutup menu"
+          >
+            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        {/* Konten Menu Mobile */}
+        <div className="flex flex-col items-center justify-center h-full space-y-8 -mt-20">
+          <a href="#tentang" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Tentang</a>
+          <a href="#galeri" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Galeri</a>
+          <a href="#fitur" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Fitur</a>
+          <a href="#mitra" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Mitra</a>
+          <a href="#bantuan" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Bantuan</a>
+          
+          {/* Garis pemisah */}
+          <div className="border-t border-gray-200 w-3/4 pt-8 mt-8 flex flex-col items-center gap-5">
+            {user ? (
+              <a
+                href={dashboardRoute}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="w-full text-center px-7 py-3 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold transition-all duration-300"
+              >
+                Dashboard
+              </a>
+            ) : (
+              <>
+                <a
+                  href="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full text-center px-6 py-3 rounded-xl border-2 border-amber-600 text-amber-600 font-semibold transition-all duration-300"
+                >
+                  Masuk
+                </a>
+                <a
+                  href="/register"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full text-center px-7 py-3 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold transition-all duration-300"
+                >
+                  Mulai Sekarang
+                </a>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
 
-  <div className="absolute inset-0 opacity-40">
-    <div className="absolute top-20 right-10 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl"></div>
-    <div className="absolute bottom-32 left-20 w-80 h-80 bg-orange-200/20 rounded-full blur-3xl"></div>
-    <div className="absolute inset-0" style={{
-      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l5 10-5 10-5-10z M0 30l10 5-10 5-10-5z M60 30l-10 5 10 5 10-5z M30 40l5 10-5 10-5-10z' fill='%23d97706' fill-opacity='0.08'/%3E%3C/svg%3E")`,
-      backgroundSize: '60px 60px'
-    }}></div>
-  </div>
+
+      {/* ===== HERO SECTION YANG LEBIH ORGANIK DAN ALAMI ===== */}
+      {/* Padding atas (pt-48) Anda biarkan sesuai asli untuk memberi ruang bagi nav fixed */}
+      <header className="relative flex flex-col md:flex-row items-center justify-between flex-1 px-8 md:px-16 lg:px-24 pt-48 pb-24 md:pt-32 md:pb-36 overflow-hidden bg-white">
+        <div className="absolute inset-0 opacity-40">
+          <div className="absolute top-20 right-10 w-96 h-96 bg-amber-200/30 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-32 left-20 w-80 h-80 bg-orange-200/20 rounded-full blur-3xl"></div>
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l5 10-5 10-5-10z M0 30l10 5-10 5-10-5z M60 30l-10 5 10 5 10-5z M30 40l5 10-5 10-5-10z' fill='%23d97706' fill-opacity='0.08'/%3E%3C/svg%3E")`,
+            backgroundSize: '60px 60px'
+          }}></div>
+        </div>
         
         {/* Traditional Ornament */}
         <TraditionalOrnament />
-
         {/* Floating Elements yang lebih natural */}
         <FloatingElement delay={0}>
           <div className="w-10 h-10 bg-amber-200 rounded-full opacity-40 blur-sm top-24 left-16 animate-gentle-glow"></div>
@@ -310,7 +412,6 @@ const [openFaq, setOpenFaq] = useState(null);
         <FloatingElement delay={4.5}>
           <div className="w-12 h-12 bg-amber-100 rounded-full opacity-25 blur-sm bottom-28 right-16 animate-gentle-glow"></div>
         </FloatingElement>
-
         {/* Konten Teks Kiri yang lebih natural */}
         <div className={`md:w-1/2 space-y-8 relative z-10 fade-in-up ${isVisible ? 'visible' : ''}`}>
           <div className="inline-flex items-center gap-3 px-5 py-3 bg-white/90 backdrop-blur-sm border border-amber-200 text-amber-800 rounded-full text-sm font-medium shadow-lg traditional-border">
@@ -334,7 +435,6 @@ const [openFaq, setOpenFaq] = useState(null);
             Larasena menghadirkan platform komprehensif untuk mendesain, memproduksi, dan berkolaborasi dalam ekosistem batik digital. 
             <span className="text-amber-700 font-medium"> Menggabungkan warisan tradisi Nusantara dengan inovasi teknologi modern</span> untuk melestarikan dan mengembangkan seni batik.
           </p>
-
           <div className="flex flex-col sm:flex-row gap-5 pt-6">
             <a
               href={user ? dashboardRoute : '/register'}
@@ -344,7 +444,6 @@ const [openFaq, setOpenFaq] = useState(null);
             </a>
           </div>
         </div>
-
         {/* Gambar Hero yang lebih natural */}
         <div className={`md:w-1/2 mt-16 md:mt-0 flex justify-center relative z-10 fade-in-up ${isVisible ? 'visible' : ''}`} style={{transitionDelay: '0.3s'}}>
           <div className="relative">
@@ -376,10 +475,8 @@ const [openFaq, setOpenFaq] = useState(null);
         </div>
       </header>
  
-
      {/* ===== KATEGORI POPULER (VERSI GALERI 3D INTERAKTIF) ===== */}
-     <section className="py-20 bg-gradient-to-b from-white via-amber-50/30 to-white overflow-hidden">
-
+     <section id="galeri" className="py-20 bg-gradient-to-b from-white via-amber-50/30 to-white overflow-hidden">
         {/* Judul Section */}
         <div
           className={`text-center mb-12 px-8 md:px-16 lg:px-24 fade-in-up ${
@@ -397,7 +494,6 @@ const [openFaq, setOpenFaq] = useState(null);
             Lihat dunia melalui karya, petualangan dalam pola dan desain batik
           </p>
         </div>
-
         {/* Filter Pills Navigation (INTERAKTIF) */}
         <div
           className={`flex justify-center gap-3 mb-16 px-8 overflow-x-auto hide-scrollbar fade-in-up ${
@@ -425,7 +521,6 @@ const [openFaq, setOpenFaq] = useState(null);
             )
           )}
         </div>
-
         {/* GALERI 3D CASCADING (INTERAKTIF) */}
         <div className="relative px-8 md:px-16 lg:px-24">
           {/* Container dengan perspective untuk efek 3D */}
@@ -445,7 +540,6 @@ const [openFaq, setOpenFaq] = useState(null);
                 // Kanan belakang
                 { right: "5%", top: "25%", rotate: "8deg", scale: "0.85", zIndex: 1 },
               ];
-
               // --- LOGIKA DINAMIS BARU (untuk 5 posisi) ---
               const len = galleryItems.length;
               // '2' adalah index 'Center' di array positions
@@ -461,30 +555,29 @@ const [openFaq, setOpenFaq] = useState(null);
               
               const isFeatured = index === featuredIndex;
               // -------------------------
-
               return (
                 <div
                   key={category.name}
                   className={`absolute fade-in-up ${isVisible ? "visible" : ""}`}
-                  style={{
-                    left: pos.left,
-                    right: pos.right,
-                    top: pos.top,
-                    transform: pos.transform || `rotate(${pos.rotate}) scale(${pos.scale})`,
-                    zIndex: pos.zIndex,
-                    transition: "all 0.5s ease-out", // Transisi dinamis
-                  }}
+                  style={{
+                    left: pos.left,
+                    right: pos.right,
+                    top: pos.top,
+                    transform: pos.transform || `rotate(${pos.rotate}) scale(${pos.scale})`,
+                    zIndex: pos.zIndex,
+                    transition: "all 0.5s ease-out", // Transisi dinamis
+                  }}
                 >
                   {/* !!! INI PERBAIKAN ERROR UTAMA KAMU !!! */}
                   <a
                     href="#"
-                    className={`block group relative overflow-hidden rounded-2xl
-                                transition-all duration-500 ease-out
-                                ${
-                                  isFeatured
-                                    ? "w-72 md:w-96 shadow-2xl hover:shadow-3xl hover:scale-105"
-                                    : "w-56 md:w-72 shadow-xl hover:shadow-2xl hover:scale-102"
-                                }`}
+className={`block group relative overflow-hidden rounded-2xl
+                      transition-all duration-500 ease-out
+                      ${
+                        isFeatured
+                          ? "w-72 md:w-96 shadow-2xl hover:shadow-3xl hover:scale-105"
+                          : "w-56 md:w-72 shadow-xl hover:shadow-2xl hover:scale-102"
+                      }`}
                   >
                     {/* Gambar */}
                     <img
@@ -494,13 +587,11 @@ const [openFaq, setOpenFaq] = useState(null);
                                   group-hover:scale-110
                                   ${isFeatured ? "aspect-[3/4]" : "aspect-[3/4]"}`}
                     />
-
                     {/* Gradient Overlay (Muncul pas hover) */}
                     <div
                       className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent
                                   opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     />
-
                     {/* Konten Text (Muncul pas hover) */}
                     <div
                       className="absolute bottom-0 left-0 right-0 p-6
@@ -511,24 +602,23 @@ const [openFaq, setOpenFaq] = useState(null);
                       <h4 className="font-bold text-white text-xl md:text-2xl mb-1 drop-shadow-lg">
                         {category.name}
                       </h4>
-                      <p className="text-amber-300 font-medium text-sm flex items-center gap-2">
-                        View Detail
-                        <svg
-                          className="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 5l7 7-7 7"
-                          />
-                          </svg>
-                      </p>
+                    <p className="text-amber-300 font-medium text-sm flex items-center gap-2">
+                      View Detail
+                      <svg
+                        className="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </p>
                     </div>
-
                   
                     {/* Border Batik */}
                     <div className="absolute inset-0 border-4 border-amber-600/20 rounded-2xl pointer-events-none" />
@@ -537,7 +627,6 @@ const [openFaq, setOpenFaq] = useState(null);
               );
             })}
           </div>
-
           {/* Navigation Arrows (INTERAKTIF) */}
           <div className="flex justify-center gap-4 mt-12">
             <button
@@ -575,7 +664,6 @@ const [openFaq, setOpenFaq] = useState(null);
       </section>
       {/* --- BATAS AKHIR SECTION GALERI --- */}
 
-
       {/* ===== FITUR UTAMA (VERSI ZIG-ZAG REFINED) ===== */}
 <section id="fitur" className="px-8 md:px-16 lg:px-24 py-20 bg-gray-50 relative overflow-hidden">
   {/* Subtle Pattern Background */}
@@ -598,7 +686,6 @@ const [openFaq, setOpenFaq] = useState(null);
       Dilengkapi dengan AI, platform kami menghadirkan pengalaman mendesain batik yang revolusioner
     </p>
   </div>
-
   {/* Fitur Cards (Layout Zig-Zag) */}
   <div className="space-y-16 md:space-y-24 relative z-10">
     {[
@@ -617,9 +704,9 @@ const [openFaq, setOpenFaq] = useState(null);
         stats: { label: "Tools", value: "50+" }
       },
       {
-        title: "Kelola Produksi Terintegrasi",
+        title: "3D Modeling & Batik",
         description: "Sistem produksi batik yang komprehensif. Kelola pesanan, pantau progres produksi, koordinasi dengan konveksi, hingga pengiriman dalam satu platform.",
-        img: "/images/fitur/produksi.png",
+        img: "/images/fitur/3d.png",
         delay: 0.3,
         stats: { label: "Pesanan", value: "5,000+" }
       },
@@ -649,15 +736,7 @@ const [openFaq, setOpenFaq] = useState(null);
           <p className="text-gray-600 leading-relaxed text-base md:text-lg mb-6">
             {feature.description}
           </p>
-
-          {/* Stats Badge - Optional */}
-          <div className="inline-flex items-center gap-2 bg-white px-4 py-2 rounded-full 
-                        border border-gray-200 shadow-sm mb-6">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm font-semibold text-gray-900">{feature.stats.value}</span>
-            <span className="text-sm text-gray-500">{feature.stats.label}</span>
-          </div>
-
+        
           {/* CTA Link */}
           <a href="#" className="inline-flex items-center gap-2 text-amber-600 font-semibold 
                                hover:text-amber-700 hover:gap-3 transition-all duration-300 group">
@@ -668,7 +747,6 @@ const [openFaq, setOpenFaq] = useState(null);
             </svg>
           </a>
         </div>
-
         {/* --- BLOK GAMBAR --- */}
         <div className="lg:w-1/2 w-full">
           <div className="relative group">
@@ -685,19 +763,16 @@ const [openFaq, setOpenFaq] = useState(null);
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent 
                             opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               </div>
-
               {/* Border accent */}
               <div className="absolute inset-0 border-2 border-amber-500/20 rounded-2xl 
                             group-hover:border-amber-500/40 transition-colors duration-300">
               </div>
             </div>
-
             {/* Glow Effect */}
             <div className="absolute -inset-4 bg-gradient-to-br from-amber-100/50 to-amber-50/50 
                           rounded-3xl blur-2xl -z-10 opacity-0 group-hover:opacity-100 
                           transition-opacity duration-500">
             </div>
-
             {/* Floating Badge - Top Right */}
             <div className="absolute -top-3 -right-3 bg-amber-500 text-white px-4 py-2 
                           rounded-full text-xs font-bold shadow-lg
@@ -707,11 +782,9 @@ const [openFaq, setOpenFaq] = useState(null);
             </div>
           </div>
         </div>
-
       </div>
     ))}
   </div>
-
   {/* Bottom CTA */}
   <div className={`text-center mt-20 fade-in-up relative z-10 ${isVisible ? 'visible' : ''}`}
        style={{transitionDelay: '0.5s'}}>
@@ -727,7 +800,6 @@ const [openFaq, setOpenFaq] = useState(null);
     </a>
   </div>
 </section>
-
 {/* Custom Styles */}
 <style jsx>{`
   .gallery-gradient-text {
@@ -738,9 +810,9 @@ const [openFaq, setOpenFaq] = useState(null);
   }
 `}</style>
 
-      {/* ===== MITRA KONVEKSI (HORIZONTAL SCROLL) ===== */}
-<section className="py-20 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
-  {/* Header */}
+     {/* ===== MITRA KONVEKSI (VERSI STATIS 2 LOGO) ===== */}
+<section id="mitra" className="py-20 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
+  {/* Header (Tidak berubah) */}
   <div className={`text-center mb-12 px-8 md:px-16 lg:px-24 fade-in-up ${isVisible ? 'visible' : ''}`}>
     <p className="text-sm font-semibold text-amber-600 tracking-wider uppercase mb-3">
       TERPERCAYA
@@ -752,139 +824,31 @@ const [openFaq, setOpenFaq] = useState(null);
       Bergabung dengan jaringan konveksi profesional yang tersebar di seluruh Indonesia
     </p>
   </div>
-
-  {/* Infinite Scroll Container */}
-  <div className="relative">
-    {/* Gradient Fade Edges */}
-    <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-white via-white/90 to-transparent z-10 pointer-events-none"></div>
-    <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-gray-50 via-gray-50/90 to-transparent z-10 pointer-events-none"></div>
-
-    {/* Scrolling Logos - Row 1 */}
-    <div className="flex gap-8 mb-8 animate-scroll-right hover:pause-animation">
-      {[
-        { name: "Batik Trusmi", city: "Cirebon",  },
-        { name: "Kampung Batik", city: "Pekalongan", },
-        { name: "Batik Lasem", city: "Rembang",  },
-        { name: "Griya Batik", city: "Solo",  },
-        { name: "Rumah Batik", city: "Yogyakarta",  },
-        { name: "Batik Madura", city: "Pamekasan",  },
-        { name: "Danar Hadi", city: "Solo",  },
-        { name: "Batik Keris", city: "Jakarta",  },
-        // Duplicate untuk seamless loop
-        { name: "Batik Trusmi", city: "Cirebon",  },
-        { name: "Kampung Batik", city: "Pekalongan",  },
-        { name: "Batik Lasem", city: "Rembang", },
-        { name: "Griya Batik", city: "Solo",  },
-      ].map((partner, index) => (
-        <div
-          key={`row1-${index}`}
-          className="flex-shrink-0 w-64 bg-white rounded-2xl p-6 shadow-md hover:shadow-xl
-                     border-2 border-gray-100 hover:border-amber-500/30
-                     transition-all duration-300 group cursor-pointer"
-        >
-          <div className="flex items-center gap-4">
-            {/* Logo Icon */}
-           
-            
-            {/* Partner Info */}
-            <div className="flex-1">
-              <h5 className="font-bold text-gray-900 text-base mb-1 group-hover:text-amber-600 transition-colors">
-                {partner.name}
-              </h5>
-              <p className="text-sm text-gray-500 flex items-center gap-1">
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                </svg>
-                {partner.city}
-              </p>
-            </div>
-
-         
-          </div>
-        </div>
-      ))}
-    </div>
-
-    {/* Scrolling Logos - Row 2 (Reverse Direction) */}
-    <div className="flex gap-8 animate-scroll-left hover:pause-animation">
-      {[
-        { name: "Sekar Jagad", city: "Surabaya",  },
-        { name: "Batik Tulis", city: "Kudus",  },
-        { name: "Mahkota Batik", city: "Semarang",  },
-        { name: "Batik Sidoarjo", city: "Sidoarjo",  },
-        { name: "Pusaka Batik", city: "Bandung", },
-        { name: "Mega Batik", city: "Tangerang",  },
-        { name: "Indo Batik", city: "Bekasi", },
-        { name: "Royal Batik", city: "Bogor", },
-        // Duplicate untuk seamless loop
-        { name: "Sekar Jagad", city: "Surabaya",  },
-        { name: "Batik Tulis", city: "Kudus", },
-        { name: "Mahkota Batik", city: "Semarang", },
-        { name: "Batik Sidoarjo", city: "Sidoarjo", },
-      ].map((partner, index) => (
-        <div
-          key={`row2-${index}`}
-          className="flex-shrink-0 w-64 bg-white rounded-2xl p-6 shadow-md hover:shadow-xl
-                     border-2 border-gray-100 hover:border-amber-500/30
-                     transition-all duration-300 group cursor-pointer"
-        >
-          <div className="flex items-center gap-4">
-         
-            
-            {/* Partner Info */}
-            <div className="flex-1">
-              <h5 className="font-bold text-gray-900 text-base mb-1 group-hover:text-amber-600 transition-colors">
-                {partner.name}
-              </h5>
-              <p className="text-sm text-gray-500 flex items-center gap-1">
-                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                </svg>
-                {partner.city}
-              </p>
-            </div>
-
-      
-          </div>
-        </div>
-      ))}
-    </div>
+  
+  {/* === PERUBAHAN UTAMA DI SINI === */}
+  {/* Logo Container (Menggantikan <div className="relative">) */}
+  <div 
+    className={`flex justify-center items-center gap-12 md:gap-20 lg:gap-24 px-8 fade-in-up ${isVisible ? 'visible' : ''}`}
+    style={{ transitionDelay: '0.1s' }}
+  >
+    {/* Logo 1 */}
+    <img 
+      src="/images/mitra/batikantodjamil.jpg" 
+      alt="Logo Mitra Batik Antodjamil"
+      className="h-20 md:h-24 w-auto object-contain transition-all duration-300 hover:scale-110"
+    />
+    {/* Logo 2 */}
+    <img 
+      src="/images/mitra/batikmartadireja.jpg" 
+      alt="Logo Mitra Batik Martadireja"
+      className="h-20 md:h-24 w-auto object-contain transition-all duration-300 hover:scale-110"
+    />
   </div>
-
-
 </section>
 
-{/* Custom Animations */}
+{/* Custom Animations (HANYA CSS YANG DIPERLUKAN) */}
 <style jsx>{`
-  @keyframes scroll-right {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(-50%);
-    }
-  }
-
-  @keyframes scroll-left {
-    0% {
-      transform: translateX(-50%);
-    }
-    100% {
-      transform: translateX(0);
-    }
-  }
-
-  .animate-scroll-right {
-    animation: scroll-right 40s linear infinite;
-  }
-
-  .animate-scroll-left {
-    animation: scroll-left 40s linear infinite;
-  }
-
-  .hover\:pause-animation:hover {
-    animation-play-state: paused;
-  }
+  /* Animasi scroll-right dan scroll-left dihapus karena tidak lagi digunakan */
 
   .gallery-gradient-text {
     background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
@@ -894,8 +858,6 @@ const [openFaq, setOpenFaq] = useState(null);
   }
 `}</style>
 
-
-
 {/* ===== TESTIMONI SECTION (VIDEO CENTERED) ===== */}
 <section
   id="testimonials"
@@ -904,7 +866,6 @@ const [openFaq, setOpenFaq] = useState(null);
   {/* ===== Dekorasi background ===== */}
   <div className="absolute top-1/2 -right-10 w-96 h-96 bg-amber-100/30 rounded-full blur-3xl opacity-60 -z-0 transform -translate-y-1/2"></div>
   <div className="absolute top-1/4 -left-10 w-80 h-80 bg-orange-100/20 rounded-full blur-3xl opacity-50 -z-0"></div>
-
   {/* ===== FLEX UTAMA ===== */}
   <div
     className={`flex flex-col lg:flex-row items-center gap-12 lg:gap-16 relative z-10 fade-in-up ${
@@ -928,48 +889,51 @@ const [openFaq, setOpenFaq] = useState(null);
           teknologi.
         </p>
       </div>
-
       {/* === QUOTES HORIZONTAL SCROLL === */}
       <div className="relative fade-in-up w-full overflow-hidden">
         {/* Fade Edge */}
   
-
         {/* Kontainer Quote dengan tinggi tetap */}
         <div className="w-full h-[210px] relative overflow-hidden">
           {(() => {
             const testimonialData = [
               {
                 quote:
-                  "Manajemen produksi jadi jauh lebih mudah. Desain 3D dari klien sangat detail, mengurangi miskomunikasi dan mempercepat proses di 'Batik Jaya Abadi'.",
-                name: "Pemilik Batik Jaya Abadi",
-                role: "Mitra Konveksi",
+                  "Setelah kami menggunakan Larasena, sangat seru dalam membuat gambar bantik bisa menggunakan AI. Kami jadi lebih mudah dalam membuat motif batik sesuai imajinasi kami.",
+                name: "Thalita, Dina, Tia",
+                role: "Siswi Kesenian SMP Persada Sokaraja",
                 isKonveksi: true,
               },
               {
                 quote:
-                  "Siswa kami jadi antusias belajar batik. Fitur AI dan 3D view membuat mereka 'melek' warisan budaya dengan cara yang sangat relevan.",
-                name: "Guru SMK Desain Nusantara",
-                role: "Mitra Pendidikan",
+                  "Dengan adanya Larasena, kami dapat mengembangkan desain batik yang lebih kreatif dan unik terutama pada pembelajaran seni pada siswa siswi kami menjadi lebih interaktif karena adanya AI dan Membatik digital.",
+                name: "Mas Rey",
+                role: "Guru Kesenian SMP Persada Sokaraja",
+                isKonveksi: true,
+              },
+              {
+                quote:
+                  "Melalui Larasena, dengan adanya AI, kami dapat mempercepat proses desain batik kami menjadi lebih efisien dan model batik yang dihasilkan juga lebih variatif.",
+                name: " Bapak Anto Djamil",
+                role: "Owner 'Batik Anto Djamil'",
                 isKonveksi: false,
               },
               {
                 quote:
-                  "Fitur 'Galeri Nusantara' sangat membantu kami sebagai desainer muda untuk eksplorasi motif tanpa harus ke museum. Sangat inspiratif!",
-                name: "Mahasiswa DKV",
-                role: "Pengguna Umum",
+                  "Harapanya, dengan Larasena kami dapat lebih mudah dalam mengelola produksi batik kami, serta memperluas jaringan pemasaran kami ke seluruh Indonesia.",
+                name: "Bapak Untung",
+                role: "Owner 'Batik Martadireja'",
                 isKonveksi: false,
               },
               {
                 quote:
-                  "Akhirnya ada platform yang memikirkan efisiensi dari hulu ke hilir. Approval desain 3D menghemat banyak biaya sampel kain. Larasena ini game-changer.",
-                name: "Owner 'Mahkota Batik Solo'",
-                role: "Mitra Konveksi",
+                  "Akhirnya ada platform yang memikirkan efisiensi dari hulu ke hilir. mulai dari desain 3d modeling hingga produksi semua ada di Larasena.",
+                name: "Mba Nabila Rima",
+                role: "Tim Desain 'Batik Martadireja'",
                 isKonveksi: true,
               },
             ];
-
             const loopedData = [...testimonialData, ...testimonialData];
-
             return (
               <div className="flex gap-8 animate-scroll-right hover:pause-animation absolute">
                 {loopedData.map((item, index) => (
@@ -1029,7 +993,6 @@ const [openFaq, setOpenFaq] = useState(null);
         </div>
       </div>
     </div>
-
     {/* === KOLOM KANAN (VIDEO CENTERED) === */}
     <div className="lg:w-6/12 w-full flex justify-center lg:justify-end items-center">
       <div
@@ -1046,7 +1009,6 @@ const [openFaq, setOpenFaq] = useState(null);
       </div>
     </div>
   </div>
-
   {/* Animasi Scroll */}
   <style jsx>{`
     @keyframes scroll-right {
@@ -1065,18 +1027,14 @@ const [openFaq, setOpenFaq] = useState(null);
     }
   `}</style>
 </section>
-
-
-     {/* --- BATAS AKHIR SECTION TESTIMONI --- */}
-
+      {/* --- BATAS AKHIR SECTION TESTIMONI --- */}
 
 {/* ===== FAQ SECTION (BERDASARKAN PROPOSAL) ===== */}
-<section id="faq" className="px-8 md:px-16 lg:px-24 py-20 bg-gradient-to-b from-gray-50 to-amber-50/30 relative overflow-hidden">
+<section id="bantuan" className="px-8 md:px-16 lg:px-24 py-20 bg-gradient-to-b from-gray-50 to-amber-50/30 relative overflow-hidden">
   
   {/* Dekorasi background senada tema */}
   <div className="absolute top-0 left-0 w-80 h-80 bg-amber-200/20 rounded-full blur-3xl opacity-50 -z-0"></div>
   <div className="absolute bottom-0 right-0 w-72 h-72 bg-orange-100/20 rounded-full blur-3xl opacity-50 -z-0"></div>
-
   {/* Header Section */}
   <div className={`text-center mb-16 fade-in-up relative z-10 ${isVisible ? 'visible' : ''}`}>
     <p className="text-sm font-semibold text-amber-600 tracking-wider uppercase mb-3">
@@ -1089,36 +1047,34 @@ const [openFaq, setOpenFaq] = useState(null);
       Menemukan jawaban yang Anda butuhkan tentang platform Larasena, dari AI hingga produksi.
     </p>
   </div>
-
   {/* Data FAQ */}
   {(() => {
     const faqData = [
       {
         q: "Apa itu Larasena?",
-        a: "Larasena adalah sebuah platform digital yang memanfaatkan teknologi 3D modelling dan kecerdasan buatan (AI) untuk mendigitalisasi, memodelkan, dan mengoptimalkan produksi batik Nusantara[cite: 17]. Kami hadir sebagai jembatan antara pelestarian budaya dan efisiensi industri tekstil lokal[cite: 18]."
+        a: "Larasena adalah sebuah platform digital yang memanfaatkan teknologi 3D modelling dan kecerdasan buatan (AI) untuk mendigitalisasi, memodelkan, dan mengoptimalkan produksi batik Nusantara. Kami hadir sebagai jembatan antara pelestarian budaya dan efisiensi industri tekstil lokal."
       },
       {
         q: "Apa masalah utama yang ingin diselesaikan Larasena?",
-        a: "Kami fokus mengatasi krisis regenerasi pengrajin batik[cite: 30]. Data APPBI menunjukkan jumlah pengrajin nasional menyusut drastis dari 151.565 orang pada 2020 menjadi 37.914 pada 2023[cite: 33]. Larasena bertujuan menarik generasi muda (yang saat ini hanya 12% [cite: 49, 51]) untuk terlibat melalui teknologi yang modern[cite: 65]."
+        a: "Kami fokus mengatasi krisis regenerasi pengrajin batik. Data APPBI menunjukkan jumlah pengrajin nasional menyusut drastis dari 151.565 orang pada 2020 menjadi 37.914 pada 2023. Larasena bertujuan menarik generasi muda (yang saat ini hanya 12%) untuk terlibat melalui teknologi yang modern."
       },
       {
         q: "Bagaimana cara kerja fitur AI Generator Batik?",
-        a: "Anda dapat membuat desain batik menggunakan generator AI [cite: 233] yang terintegrasi dengan Hugging Face API[cite: 274]. Fitur ini memanfaatkan kecerdasan buatan untuk menghasilkan motif batik otomatis berdasarkan parameter atau deskripsi yang Anda tentukan[cite: 109]."
+        a: "Anda dapat membuat desain batik menggunakan generator AI yang terintegrasi dengan Hugging Face API. Fitur ini memanfaatkan kecerdasan buatan untuk menghasilkan motif batik otomatis berdasarkan parameter atau deskripsi yang Anda tentukan."
       },
       {
         q: "Apakah saya bisa melihat desain saya di produk jadi?",
-        a: "Ya. Platform kami dilengkapi fitur 3D Modelling Products menggunakan Three.js[cite: 109, 258]. Setelah Anda selesai mendesain di kanvas, Anda bisa melihat preview desain Anda secara langsung pada model 3D seperti kemeja, kaos, atau gaun[cite: 109, 236, 301, 304, 305]."
+        a: "Ya. Platform kami dilengkapi fitur 3D Modelling Products menggunakan Three.js. Setelah Anda selesai mendesain di kanvas, Anda bisa melihat preview desain Anda secara langsung pada model 3D seperti kemeja, kaos, atau gaun."
       },
       {
         q: "Apakah Larasena yang akan mencetak kain batik saya?",
-        a: "Tidak secara langsung. Larasena adalah platform untuk perencanaan dan desain produksi[cite: 79]. Namun, kami memiliki fitur 'Konveksi Bermitra' [cite: 111] yang memungkinkan Anda terhubung dan membuat pesanan produksi [cite: 237] langsung ke mitra konveksi terverifikasi yang ada di platform kami."
+        a: "Tidak secara langsung. Larasena adalah platform untuk perencanaan dan desain produksi. Namun, kami memiliki fitur 'Konveksi Bermitra' yang memungkinkan Anda terhubung dan membuat pesanan produksi langsung ke mitra konveksi terverifikasi yang ada di platform kami."
       },
       {
         q: "Saya tidak tahu banyak tentang batik. Bisakah saya belajar di sini?",
-        a: "Tentu. Kami memiliki fitur 'Galeri Nusantara' [cite: 112, 164] yang merupakan repositori untuk Anda menjelajahi koleksi motif batik dari berbagai daerah[cite: 430]. Anda bisa mempelajari sejarah, filosofi, dan makna di balik setiap motif sebagai inspirasi desain Anda[cite: 112, 164, 430]."
+        a: "Tentu. Kami memiliki fitur 'Galeri Nusantara' yang merupakan repositori untuk Anda menjelajahi koleksi motif batik dari berbagai daerah. Anda bisa mempelajari sejarah, filosofi, dan makna di balik setiap motif sebagai inspirasi desain Anda."
       }
     ];
-
     return (
       <div className={`max-w-7xl mx-auto space-y-5 relative z-10 fade-in-up ${isVisible ? 'visible' : ''}`} style={{transitionDelay: '0.2s'}}>
         {faqData.map((item, index) => (
@@ -1148,7 +1104,6 @@ const [openFaq, setOpenFaq] = useState(null);
                 </svg>
               </div>
             </button>
-
             {/* Area Jawaban */}
             <div
               className={`overflow-hidden transition-all duration-500 ease-in-out ${openFaq === index ? 'max-h-screen' : 'max-h-0'}`}
@@ -1157,7 +1112,6 @@ const [openFaq, setOpenFaq] = useState(null);
                 <p>{item.a}</p>
               </div>
             </div>
-
           </div>
         ))}
       </div>
@@ -1166,7 +1120,6 @@ const [openFaq, setOpenFaq] = useState(null);
 </section>
 {/* --- BATAS AKHIR SECTION FAQ --- */}
 
-
       {/* ===== FOOTER MODERN & HANGAT ===== */}
 <footer className="bg-gradient-to-br from-amber-50 via-orange-50/40 to-white text-gray-800 px-8 md:px-16 lg:px-24 py-16 relative overflow-hidden">
   {/* Background dekoratif lembut */}
@@ -1174,35 +1127,33 @@ const [openFaq, setOpenFaq] = useState(null);
     <div className="absolute top-10 right-20 w-80 h-80 bg-amber-200/30 rounded-full blur-3xl"></div>
     <div className="absolute bottom-10 left-10 w-72 h-72 bg-orange-100/30 rounded-full blur-3xl"></div>
   </div>
-
   {/* Konten utama footer */}
   <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 relative z-10">
     {/* Brand */}
     <div>
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-400 rounded-xl flex items-center justify-center shadow-md">
-          <BatikIcon />
-        </div>
-        <div>
-          <h3 className="text-xl font-bold font-serif text-gray-900">Larasena</h3>
-          <p className="text-xs text-orange-600 font-medium">Teknologi Batik Dengan Tradisi</p>
-        </div>
+        <a href="/" className="flex-shrink-0 flex items-center transform hover:scale-105 transition-transform duration-300 group">
+              <img 
+                src="/images/logolarasena.png" 
+                alt="Larasena Logo" 
+                className="h-12 w-auto"
+              />
+            </a>
       </div>
       <p className="text-gray-600 text-sm leading-relaxed max-w-sm">
         Platform digital terdepan untuk mendesain dan memproduksi batik dengan teknologi modern,
         melestarikan warisan budaya dengan sentuhan inovasi terkini.
       </p>
     </div>
-
     {/* Link Sections */}
     {[
       {
-        title: "Produk",
-        links: ["Editor Batik", "Kolaborasi", "Produksi", "AI Generator"]
+        title: "Fitur",
+        links: ["Generte Batik AI", "Canvas Digital", "3D Model Batik", "Mitra Konveksi"]
       },
       {
         title: "Perusahaan",
-        links: ["Tentang Kami", "Kontak", "Karir", "Blog"]
+        links: ["Tentang Kami", "Galeri", "Fitur", "Mitra"]
       },
       {
         title: "Dukungan",
@@ -1226,7 +1177,6 @@ const [openFaq, setOpenFaq] = useState(null);
       </div>
     ))}
   </div>
-
   {/* Garis & Copyright */}
   <div className="border-t border-amber-200/70 pt-8 relative z-10 text-sm text-gray-600">
     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
@@ -1236,11 +1186,9 @@ const [openFaq, setOpenFaq] = useState(null);
  
     </div>
   </div>
-
   {/* Ornamen bawah */}
   <div className="absolute -bottom-10 right-10 w-60 h-60 bg-gradient-to-tr from-orange-200/40 to-amber-100/30 rounded-full blur-3xl opacity-60"></div>
 </footer>
-
     </div>
   );
 }
