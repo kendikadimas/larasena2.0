@@ -104,6 +104,7 @@ Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
     Route::put('/admin-users/{user}', [AdminUserController::class, 'update'])->name('admin.users.update');
     Route::put('/admin-users/{user}/role', [AdminUserController::class, 'updateRole'])->name('admin.users.updateRole');
     Route::delete('/admin-users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::delete('/admin/users/{user}', [AdminUserController::class, 'destroy']);
 
     // Motif Management
     Route::get('/admin-motifs', [AdminMotifController::class, 'index'])->name('admin.motifs.index');
