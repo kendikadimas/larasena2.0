@@ -108,7 +108,7 @@ Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
     // Motif Management
     Route::get('/admin-motifs', [AdminMotifController::class, 'index'])->name('admin.motifs.index');
     Route::post('/admin-motifs', [AdminMotifController::class, 'store'])->name('admin.motifs.store');
-    Route::post('/admin-motifs/{motif}', [AdminMotifController::class, 'update'])->name('admin.motifs.update');
+    Route::put('/admin-motifs/{motif}', [AdminMotifController::class, 'update'])->name('admin.motifs.update');
     Route::put('/admin-motifs/{motif}/toggle-status', [AdminMotifController::class, 'toggleStatus'])->name('admin.motifs.toggleStatus');
     Route::delete('/admin-motifs/{motif}', [AdminMotifController::class, 'destroy'])->name('admin.motifs.destroy');
 
