@@ -165,11 +165,11 @@ export default function Konveksi({ konveksis, stats, filters, locations }) {
               <div className="mb-4 relative group/image">
                 <div className="aspect-video w-full bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden">
                   <img
-                    src={konveksi.documentation_url || 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop'}
+                    src={konveksi.thumbnail_url}
                     alt={`Dokumentasi ${konveksi.name}`}
                     className="w-full h-full object-cover group-hover/image:scale-105 transition-transform duration-500"
                     onError={(e) => {
-                      e.target.src = 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop';
+                      e.target.src = '';
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/image:opacity-100 transition-opacity duration-300" />

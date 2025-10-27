@@ -60,6 +60,14 @@ class ProfileController extends Controller
 
         $konveksi = Konveksi::where('user_id', $user->id)->firstOrFail();
 
+        // Prepare data to update (only text fields first)
+        $updateData = [
+            'name' => $validated['name'],
+            'location' => $validated['location'],
+            'no_telp' => $validated['no_telp'],
+            'description' => $validated['description'] ?? '',
+        ];
+
         // Handle icon upload
         if ($request->hasFile('icon')) {
             // Delete old icon if exists
@@ -68,7 +76,7 @@ class ProfileController extends Controller
             }
             
             $iconPath = $request->file('icon')->store('konveksi/icons', 'public');
-            $validated['icon'] = $iconPath;
+            $updateData['icon'] = $iconPath;
         }
 
         // Handle documentation upload
@@ -82,33 +90,34 @@ class ProfileController extends Controller
             
             // Merge with existing documentation
             $existingDocs = $konveksi->documentation ? json_decode($konveksi->documentation, true) : [];
-            $validated['documentation'] = json_encode(array_merge($existingDocs, $documentationPaths));
+            $updateData['documentation'] = json_encode(array_merge($existingDocs, $documentationPaths));
         }
 
-        $konveksi->update($validated);
+        $konveksi->update($updateData);
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui');
     }
 
-    public function deleteDocumentation(Request $request, Konveksi $konveksi)
+    public function deleteDocumentation(Request $request)
     {
-        // Check authorization
-        if ($konveksi->user_id !== Auth::id()) {
-            abort(403);
-        }
+        $user = Auth::user();
+        $konveksi = Konveksi::where('user_id', $user->id)->firstOrFail();
 
         $validated = $request->validate([
-            'index' => 'required|integer|min:0',
+            'path' => 'required|string',
         ]);
 
         $documentation = json_decode($konveksi->documentation, true) ?? [];
         
-        if (isset($documentation[$validated['index']])) {
+        // Find and remove the specific file path
+        $key = array_search($validated['path'], $documentation);
+        
+        if ($key !== false) {
             // Delete file from storage
-            Storage::disk('public')->delete($documentation[$validated['index']]);
+            Storage::disk('public')->delete($documentation[$key]);
             
             // Remove from array
-            unset($documentation[$validated['index']]);
+            unset($documentation[$key]);
             
             // Reindex array
             $documentation = array_values($documentation);
@@ -117,8 +126,10 @@ class ProfileController extends Controller
             $konveksi->update([
                 'documentation' => json_encode($documentation),
             ]);
+
+            return response()->json(['success' => true, 'message' => 'Dokumentasi berhasil dihapus']);
         }
 
-        return redirect()->back()->with('success', 'Dokumentasi berhasil dihapus');
+        return response()->json(['success' => false, 'message' => 'File tidak ditemukan'], 404);
     }
 }

@@ -11,29 +11,31 @@ use App\Http\Controllers\UserMotifController;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
+
+// Admin Controllers
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminMotifController;
 use App\Http\Controllers\Admin\AdminTransactionController;
 use App\Http\Controllers\Admin\AdminKonveksiController;
+
+// Konveksi Controllers
 use App\Http\Controllers\Konveksi\DashboardController as KonveksiDashboardController;
 use App\Http\Controllers\Konveksi\ProfileController as KonveksiProfileController;
 
 // ============================================================================
-// 🏠 ROUTE HALAMAN UTAMA (LANDING PAGE)
+// 🏠 LANDING PAGE (Publik)
 // ============================================================================
 Route::get('/', function () {
     if (Auth::check()) {
-        // Jika user sudah login → arahkan sesuai role
         return match (Auth::user()->role) {
             'Admin' => redirect()->route('admin.dashboard'),
             'Convection' => redirect()->route('konveksi.dashboard'),
             default => redirect()->route('dashboard'),
         };
     }
-
     // Jika belum login → tampilkan landing page publik
     return Inertia::render('LandingPage');
 })->name('landing');
@@ -44,13 +46,13 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified', 'role:General'])->group(function () {
     Route::get('/dashboard', [DesignController::class, 'index'])->name('dashboard');
 
-    // Design CRUD
+    // CRUD Desain
     Route::post('/designs', [DesignController::class, 'store'])->name('designs.store');
     Route::get('/designs/{id}', [DesignController::class, 'show'])->name('designs.show');
     Route::put('/designs/{id}', [DesignController::class, 'update'])->name('designs.update');
     Route::delete('/designs/{id}', [DesignController::class, 'destroy'])->name('designs.destroy');
 
-    // Motif
+    // Motif dan AI
     Route::get('/motif', [MotifController::class, 'index'])->name('motif');
     Route::post('/motifs/ai', [MotifController::class, 'storeFromAi'])->name('motifs.store.ai');
     Route::post('/designs/ai', [DesignController::class, 'storeFromAi'])->name('designs.store.ai');
@@ -58,6 +60,8 @@ Route::middleware(['auth', 'verified', 'role:General'])->group(function () {
     // Menu utama
     Route::get('/konveksi', [KonveksiController::class, 'index'])->name('konveksi.index');
     Route::get('/konveksi/{konveksi}', [KonveksiController::class, 'show'])->name('konveksi.show');
+    Route::post('/konveksi/{konveksi}/review', [KonveksiController::class, 'storeReview'])->name('konveksi.review.store');
+    Route::delete('/konveksi/{konveksi}/review', [KonveksiController::class, 'deleteReview'])->name('konveksi.review.delete');
     Route::get('/bantuan', fn () => Inertia::render('User/Bantuan'))->name('bantuan');
     Route::get('/editor', [DesignEditorController::class, 'create'])->name('editor.create');
     Route::get('/batik-generator', fn () => Inertia::render('BatikGeneratorPage'))->name('batik.generator');
@@ -67,7 +71,7 @@ Route::middleware(['auth', 'verified', 'role:General'])->group(function () {
     Route::post('/produksi', [ProductionController::class, 'store'])->name('production.store');
     Route::get('/produksi/pesan', [ProductionController::class, 'create'])->name('production.create');
 
-    // Profile
+    // Profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -81,11 +85,11 @@ Route::middleware(['auth', 'verified', 'role:Convection'])->group(function () {
     Route::get('/konveksi-pesanan', [KonveksiDashboardController::class, 'orders'])->name('konveksi.orders');
     Route::get('/konveksi-pelanggan', [KonveksiDashboardController::class, 'customers'])->name('konveksi.customers');
     Route::get('/konveksi-penghasilan', [KonveksiDashboardController::class, 'income'])->name('konveksi.income');
-    
-    // Profile untuk konveksi
+
+    // Profil Konveksi
     Route::get('/konveksi-profile', [KonveksiProfileController::class, 'edit'])->name('konveksi.profile.edit');
     Route::post('/konveksi-profile', [KonveksiProfileController::class, 'update'])->name('konveksi.profile.update');
-    Route::delete('/konveksi-profile/documentation', [KonveksiProfileController::class, 'deleteDocumentation'])->name('konveksi.profile.deleteDocumentation');
+    Route::post('/konveksi-profile/documentation/delete', [KonveksiProfileController::class, 'deleteDocumentation'])->name('konveksi.profile.deleteDocumentation');
 });
 
 // ============================================================================
@@ -113,7 +117,7 @@ Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
     Route::get('/admin-transactions/{transaction}', [AdminTransactionController::class, 'show'])->name('admin.transactions.show');
     Route::put('/admin-transactions/{transaction}/status', [AdminTransactionController::class, 'updateStatus'])->name('admin.transactions.updateStatus');
     Route::delete('/admin-transactions/{transaction}', [AdminTransactionController::class, 'destroy'])->name('admin.transactions.destroy');
-    
+
     // Konveksi Management
     Route::get('/admin-konveksi', [AdminKonveksiController::class, 'index'])->name('admin.konveksi.index');
     Route::get('/admin-konveksi/{konveksi}', [AdminKonveksiController::class, 'show'])->name('admin.konveksi.show');
@@ -121,7 +125,7 @@ Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
 });
 
 // ============================================================================
-// 🌐 ROUTE UNTUK SEMUA AUTHENTICATED USER (SHARED)
+// 🌐 ROUTE UNTUK SEMUA AUTHENTICATED USER
 // ============================================================================
 Route::middleware('auth')->group(function () {
     // API Motif
@@ -134,7 +138,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // ============================================================================
-// 🔒 API AUTH USER (Sanctum)
+// 🔒 AUTH SANCTUM
 // ============================================================================
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -153,7 +157,7 @@ Route::prefix('api')->group(function () {
 require __DIR__ . '/auth.php';
 
 // ============================================================================
-// 🚧 ROUTE FALLBACK (404 PAGE)
+// 🚧 ROUTE FALLBACK (404)
 // ============================================================================
 Route::fallback(function () {
     return Inertia::render('Errors/NotFound', [

@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
 import KonveksiLayout from '@/layouts/Konveksi/Layout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import { Camera, Upload, MapPin, Phone, FileText, CheckCircle, AlertCircle, Trash2 } from 'lucide-react';
+import axios from 'axios';
 
 export default function Profile({ konveksi, auth }) {
     const [previewIcon, setPreviewIcon] = useState(konveksi.icon_url);
+    const [deletingIndex, setDeletingIndex] = useState(null);
+    
+    // Initialize with existing documentation URLs
+    const existingDocs = konveksi.documentation_url || [];
     const [documentationPreviews, setDocumentationPreviews] = useState(
-        konveksi.documentation ? JSON.parse(konveksi.documentation) : []
+        Array.isArray(existingDocs) ? existingDocs : []
+    );
+
+    // Track which images are from server (existing) vs new uploads
+    const [existingImages, setExistingImages] = useState(
+        Array.isArray(existingDocs) ? existingDocs : []
     );
 
     const { data, setData, post, processing, errors, progress } = useForm({
@@ -15,8 +25,7 @@ export default function Profile({ konveksi, auth }) {
         no_telp: konveksi.no_telp || '',
         description: konveksi.description || '',
         icon: null,
-        documentation: [],
-        _method: 'PUT'
+        documentation: []
     });
 
     const handleIconChange = (e) => {
@@ -49,9 +58,54 @@ export default function Profile({ konveksi, auth }) {
         });
     };
 
-    const removeDocumentationPreview = (index) => {
-        const newPreviews = documentationPreviews.filter((_, i) => i !== index);
-        setDocumentationPreviews(newPreviews);
+    const removeDocumentationPreview = async (index) => {
+        const imageUrl = documentationPreviews[index];
+        
+        // Check if this is an existing image from server (starts with http)
+        if (imageUrl.startsWith('http')) {
+            if (!confirm('Yakin ingin menghapus gambar ini dari galeri?')) {
+                return;
+            }
+            
+            setDeletingIndex(index);
+            
+            try {
+                // Extract the path from URL
+                // URL format: http://localhost:8000/storage/konveksi/documentation/xxx.jpg
+                // We need: konveksi/documentation/xxx.jpg
+                const urlParts = imageUrl.split('/storage/');
+                const filePath = urlParts[1];
+                
+                // Get CSRF token
+                const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                
+                // Send delete request to backend
+                const response = await axios.post(route('konveksi.profile.deleteDocumentation'), {
+                    path: filePath
+                }, {
+                    headers: {
+                        'X-CSRF-TOKEN': token,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (response.data.success) {
+                    // Remove from both states
+                    setDocumentationPreviews(prev => prev.filter((_, i) => i !== index));
+                    setExistingImages(prev => prev.filter((_, i) => i !== index));
+                }
+                
+            } catch (error) {
+                console.error('Error deleting image:', error);
+                alert('Gagal menghapus gambar. Silakan coba lagi.');
+            } finally {
+                setDeletingIndex(null);
+            }
+        } else {
+            // New upload, just remove from preview
+            const newPreviews = documentationPreviews.filter((_, i) => i !== index);
+            setDocumentationPreviews(newPreviews);
+        }
     };
 
     const handleSubmit = (e) => {
@@ -66,7 +120,7 @@ export default function Profile({ konveksi, auth }) {
         <KonveksiLayout title="Profil Konveksi">
             <Head title="Profil Konveksi" />
             
-            <div className="p-4 sm:p-6 max-w-5xl mx-auto">
+            <div className="p-4 sm:p-6">
                 {/* Header with Status */}
                 <div className="mb-6 sm:mb-8">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -145,7 +199,7 @@ export default function Profile({ konveksi, auth }) {
                             </div>
 
                             <div>
-                                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                                <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700 mb-2">
                                     <MapPin className="w-4 h-4 text-gray-400" />
                                     Lokasi *
                                 </label>
@@ -161,7 +215,7 @@ export default function Profile({ konveksi, auth }) {
                             </div>
 
                             <div>
-                                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                                <label className="flex items-center gap-2 text-xs sm:text-sm font-medium text-gray-700 mb-2">
                                     <Phone className="w-4 h-4 text-gray-400" />
                                     Nomor Telepon *
                                 </label>
@@ -195,10 +249,13 @@ export default function Profile({ konveksi, auth }) {
 
                     {/* Documentation/Gallery */}
                     <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
-                        <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 flex items-center gap-2">
                             <Upload className="w-5 h-5 text-[#BA682A]" />
                             Galeri Portfolio
                         </h2>
+                        <p className="text-xs sm:text-sm text-gray-600 mb-4">
+                            💡 <span className="font-semibold">Tip:</span> Foto pertama akan menjadi thumbnail utama di halaman konveksi
+                        </p>
                         
                         <div className="space-y-4">
                             <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 sm:p-8 text-center hover:border-[#BA682A] transition-colors">
@@ -223,23 +280,36 @@ export default function Profile({ konveksi, auth }) {
 
                             {/* Preview Gallery */}
                             {documentationPreviews.length > 0 && (
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
-                                    {documentationPreviews.map((preview, index) => (
-                                        <div key={index} className="relative group">
-                                            <img
-                                                src={preview}
-                                                alt={`Preview ${index + 1}`}
-                                                className="w-full aspect-square object-cover rounded-lg"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeDocumentationPreview(index)}
-                                                className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    ))}
+                                <div>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+                                        {documentationPreviews.map((preview, index) => (
+                                            <div key={index} className="relative group">
+                                                <img
+                                                    src={preview}
+                                                    alt={`Preview ${index + 1}`}
+                                                    className="w-full aspect-square object-cover rounded-lg"
+                                                />
+                                                {index === 0 && (
+                                                    <div className="absolute top-2 left-2 bg-[#BA682A] text-white text-xs px-2 py-1 rounded-full font-semibold">
+                                                        Thumbnail
+                                                    </div>
+                                                )}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeDocumentationPreview(index)}
+                                                    disabled={deletingIndex === index}
+                                                    className="absolute top-2 right-2 bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    title={deletingIndex === index ? 'Menghapus...' : 'Hapus gambar'}
+                                                >
+                                                    {deletingIndex === index ? (
+                                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                                    ) : (
+                                                        <Trash2 className="w-4 h-4" />
+                                                    )}
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                             {errors.documentation && <p className="text-red-500 text-xs mt-2">{errors.documentation}</p>}

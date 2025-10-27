@@ -40,6 +40,11 @@ class Konveksi extends Model
         return $this->hasMany(Production::class, 'convection_id');
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(KonveksiReview::class);
+    }
+
     // Scope untuk konveksi terverifikasi
     public function scopeVerified($query)
     {
@@ -72,18 +77,37 @@ class Konveksi extends Model
             $docs = json_decode($this->documentation, true);
             if (is_array($docs)) {
                 return array_map(function($doc) {
-                    return asset('storage/' . $doc);
+                    // Clean path if it already contains 'storage/'
+                    $cleanPath = str_replace('storage/', '', $doc);
+                    return asset('storage/' . $cleanPath);
                 }, $docs);
             }
         }
         return [];
     }
 
+    // Accessor untuk mendapatkan thumbnail (gambar pertama dari galeri)
+    public function getThumbnailUrlAttribute()
+    {
+        if ($this->documentation) {
+            $docs = json_decode($this->documentation, true);
+            if (is_array($docs) && count($docs) > 0) {
+                // Clean path if it already contains 'storage/'
+                $cleanPath = str_replace('storage/', '', $docs[0]);
+                return asset('storage/' . $cleanPath);
+            }
+        }
+        // Fallback ke placeholder jika tidak ada dokumentasi
+        return 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&h=300&fit=crop';
+    }
+
     // Accessor untuk mendapatkan URL icon
     public function getIconUrlAttribute()
     {
         if ($this->icon) {
-            return asset('storage/' . $this->icon);
+            // Clean path if it already contains 'storage/'
+            $cleanPath = str_replace('storage/', '', $this->icon);
+            return asset('storage/' . $cleanPath);
         }
         return null;
     }
