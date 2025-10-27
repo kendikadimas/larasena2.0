@@ -26,18 +26,26 @@ class MotifController extends Controller
 
             $motifsData = $motifs->map(function ($motif) {
                 $imagePath = $motif->file_path;
+                $imageUrl = '';
                 
-            
-                
+                // ✅ FIX: Handle different path formats
                 if (str_starts_with($imagePath, 'http')) {
+                    // Already full URL
+                    $imageUrl = $imagePath;
+                } elseif (str_starts_with($imagePath, '/storage/')) {
+                    // Already has /storage/ prefix
+                    $imageUrl = $imagePath;
+                } elseif (str_starts_with($imagePath, '/')) {
+                    // Starts with / but not /storage/
                     $imageUrl = $imagePath;
                 } else {
-                    // Langsung gunakan path dari database
-                    $imageUrl = $imagePath;
+                    // Relative path from storage disk (admin uploads)
+                    $imageUrl = Storage::url($imagePath);
                 }
 
                 \Log::info('Processing motif', [
                     'id' => $motif->id,
+                    'name' => $motif->name,
                     'original_path' => $motif->file_path,
                     'processed_url' => $imageUrl
                 ]);
