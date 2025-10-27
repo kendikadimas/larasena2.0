@@ -183,7 +183,7 @@ export default function Konveksi({ konveksis, stats, filters, locations }) {
               </div>
 
              
-              <p className="text-gray-600 text-sm mb-4">
+              <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                 {konveksi.description}
               </p>
 
