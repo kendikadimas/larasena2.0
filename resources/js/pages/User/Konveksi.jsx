@@ -183,9 +183,18 @@ export default function Konveksi({ konveksis, stats, filters, locations }) {
               </div>
 
              
-              <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                {konveksi.description}
-              </p>
+              <p
+              className="text-gray-600 text-sm mb-4"
+              style={{
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
+              {konveksi.description}
+            </p>
+
 
               
               <div className="flex items-center justify-between mb-4">
