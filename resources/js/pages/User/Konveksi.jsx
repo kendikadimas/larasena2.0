@@ -1,4 +1,5 @@
 import UserLayout from '@/layouts/User/Layout';
+import SEO from '@/components/SEO';
 import { Search, ChevronDown, MapPin, Star, CheckCircle, Briefcase, Award, Users, TrendingUp, Phone } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { router } from '@inertiajs/react';
@@ -70,6 +71,11 @@ export default function Konveksi({ konveksis, stats, filters, locations }) {
 
   return (
     <UserLayout title="Konveksi">
+      <SEO 
+        title="Daftar Konveksi Batik Terpercaya"
+        description="Temukan partner konveksi batik terpercaya untuk memproduksi desain Anda. Pilihan konveksi terverifikasi dengan rating terbaik di seluruh Indonesia."
+        keywords="konveksi batik, produksi batik, mitra konveksi, pabrik batik, konveksi terverifikasi, produksi batik Indonesia"
+      />
       <div className="mb-8">
         <p className="text-gray-600">
           Realisasikan ide yang ada kembankan dan menjadi kenyataan

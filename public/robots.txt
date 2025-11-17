@@ -1,2 +1,19 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin-dashboard
+Disallow: /admin-users
+Disallow: /admin-motifs
+Disallow: /admin-transactions
+Disallow: /admin-konveksi
+Disallow: /konveksi-dashboard
+Disallow: /konveksi-profile
+Disallow: /konveksi-pesanan
+Disallow: /konveksi-pelanggan
+Disallow: /konveksi-penghasilan
+Disallow: /profile
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://larasena.id/sitemap.xml

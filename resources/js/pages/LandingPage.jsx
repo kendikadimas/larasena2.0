@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import SEO from '@/components/SEO';
 
 // Ikon Batik yang lebih detail (Disimpan jika diperlukan di masa depan)
 const BatikIcon = () => (

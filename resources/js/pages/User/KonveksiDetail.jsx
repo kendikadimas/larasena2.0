@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import UserLayout from '@/layouts/User/Layout';
+import SEO from '@/components/SEO';
 import { Phone, MapPin, Star, StarOff, CheckCircle, MessageSquare, Trash2, Edit2, ShoppingBag, Image as ImageIcon } from 'lucide-react';
 
 export default function KonveksiDetail({ konveksi, userReview, auth }) {
@@ -61,6 +62,12 @@ export default function KonveksiDetail({ konveksi, userReview, auth }) {
     return (
         <UserLayout title={konveksi.name}>
             <Head title={konveksi.name} />
+            <SEO 
+                title={konveksi.name}
+                description={konveksi.description || `${konveksi.name} - Konveksi batik terpercaya di ${konveksi.location}. Rating ${konveksi.rating}/5 dari ${konveksi.reviews?.length || 0} review.`}
+                keywords={`${konveksi.name}, konveksi batik, ${konveksi.location}, produksi batik, ${konveksi.is_verified ? 'terverifikasi' : ''}`}
+                image={konveksi.thumbnail_url || konveksi.icon_url}
+            />
 
             <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
                 {/* Header Section */}
