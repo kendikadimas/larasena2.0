@@ -42,6 +42,7 @@ export default function Sidebar() {
       name: 'pelatihan',
       label: 'Pelatihan',
       color: 'text-[#dc213e]',
+      hoverColor: 'hover:text-[#dc213e]',
       items: [
         {
           name: 'Pelatihan',
@@ -62,7 +63,8 @@ export default function Sidebar() {
     {
       name: 'produksi',
       label: 'Produksi & Layanan',
-      color: 'text-blue-700',
+      color: 'text-[#3B82F6]',
+      hoverColor: 'hover:text-[#3B82F6]',
       items: [
         {
           name: 'Galeri',
@@ -164,8 +166,10 @@ export default function Sidebar() {
                   <button
                     onClick={() => toggleGroup(group.name)}
                     className={`w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${
-                      group.color || 'text-gray-500'
-                    } hover:text-gray-700`}
+                      isExpanded && hasActiveItem
+                        ? group.color || 'text-gray-700'
+                        : `text-gray-500 ${group.hoverColor || 'hover:text-gray-700'}`
+                    }`}
                   >
                     <span>{group.label}</span>
                     <ChevronDown 

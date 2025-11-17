@@ -7,7 +7,7 @@ export default function SEO({
     image = '/images/Logo.svg',
     url = null 
 }) {
-    const fullTitle = title === 'Larasena' ? title : `${title} - Larasena`;
+    const fullTitle = title === 'Larasena' ? title : `${title} Larasena`;
     
     return (
         <Head>
