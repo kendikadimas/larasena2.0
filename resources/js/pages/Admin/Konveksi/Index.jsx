@@ -8,7 +8,7 @@ const StatusBadge = ({ isVerified }) => {
         <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
             isVerified ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
         }`}>
-            {isVerified ? 'Bermitra' : 'Menunggu'}
+            {isVerified ? 'Bermitra' : 'Menunggu '}
         </span>
     );
 };

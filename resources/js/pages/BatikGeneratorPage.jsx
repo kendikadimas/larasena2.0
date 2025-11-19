@@ -85,27 +85,50 @@ export default function BatikGeneratorPage({ auth }) {
             return;
         }
 
+        // Map pilihan UI ke enumerasi API (seamless | single | repeat)
+        const apiPatternType = patternType === 'seamless'
+            ? 'seamless'
+            : ['medalion','tumpal'].includes(patternType)
+                ? 'single'
+                : 'repeat'; // ceplok, lereng, nitik, isen, dll dianggap repeat
+
         try {
-            // Enhanced prompt with pattern options
-            const enhancedPrompt = `${prompt}, ${style} style, ${colorScheme} color scheme, ${patternType} pattern, repeated ${repeatCount}x${repeatCount}`;
-            
-            const response = await axios.post('/api/batik-generator', { 
-                prompt: enhancedPrompt,
-                pattern_type: patternType,
+            const response = await axios.post('/api/batik-generator', {
+                // Kirim prompt mentah (backend akan merangkai dengan style, warna, dll)
+                prompt: prompt,
+                pattern_type: apiPatternType,
                 repeat_count: repeatCount,
                 color_scheme: colorScheme,
-                style: style
+                style: style,
             });
-            
-            if (response.data.image_data) {
+
+            console.log('✅ Response success:', response.data);
+
+            // Backend mengembalikan image_url (file) + image_data (base64 inline)
+            if (response.data.image_url) {
+                setResultImage(response.data.image_url);
+            } else if (response.data.image_data) {
                 setResultImage(response.data.image_data);
             } else {
                 throw new Error('Respons dari server tidak berisi data gambar.');
             }
-
         } catch (err) {
-            console.error("Submit Error:", err.response);
-            setError(err.response?.data?.error || 'Terjadi kesalahan di server. Silakan coba lagi.');
+            console.error('❌ Submit Error:', err);
+            if (err.response) {
+                console.error('🧩 Error Data:', err.response.data);
+                console.error('🧩 Status:', err.response.status);
+                setError(
+                    err.response.data.details ||
+                    err.response.data.error ||
+                    'Server error.'
+                );
+            } else if (err.request) {
+                console.error('🛰 No response:', err.request);
+                setError('Server tidak merespon.');
+            } else {
+                console.error('⚙️ Config Error:', err.message);
+                setError('Kesalahan konfigurasi frontend.');
+            }
         } finally {
             setIsLoading(false);
         }
