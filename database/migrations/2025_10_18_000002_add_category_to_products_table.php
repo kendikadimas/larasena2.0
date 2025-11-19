@@ -9,7 +9,9 @@ return new class extends Migration
     public function up()
     {
         Schema::table('product', function (Blueprint $table) {
-            $table->enum('category', ['fabric', 'clothing'])->default('clothing')->after('name');
+            if (!Schema::hasColumn('product', 'category')) {
+                $table->enum('category', ['fabric', 'clothing'])->default('clothing')->after('name');
+            }
         });
     }
 

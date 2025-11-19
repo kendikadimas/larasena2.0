@@ -1,5 +1,5 @@
 import { Link, usePage, router } from '@inertiajs/react';
-import { LayoutDashboard, Users, Package, DollarSign, LogOut, Menu, X, Store } from 'lucide-react';
+import { LayoutDashboard, Users, Package, DollarSign, LogOut, Menu, X, Store, GraduationCap } from 'lucide-react';
 import { useState } from 'react';
 
 export default function AdminLayout({ children }) {
@@ -13,6 +13,7 @@ export default function AdminLayout({ children }) {
         { name: 'Konveksi', href: '/admin-konveksi', icon: Store },
         { name: 'Motifs', href: '/admin-motifs', icon: Package },
         { name: 'Transactions', href: '/admin-transactions', icon: DollarSign },
+        { name: 'Pelatihan', href: '/admin-training', icon: GraduationCap },
     ];
 
     const handleLogout = () => {

@@ -1,48 +1,94 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Menu, X, ChevronLeft, ChevronRight, ChevronDown, Home, Palette, ShoppingBag, Package, GraduationCap, Award, HelpCircle } from 'lucide-react';
 
 export default function Sidebar() {
   const { url } = usePage();
   const [isOpen, setIsOpen] = useState(false); // For mobile
   const [isCollapsed, setIsCollapsed] = useState(false); // For desktop
+  const [expandedGroups, setExpandedGroups] = useState(['batik', 'pelatihan', 'produksi']); // All expanded by default
 
-  const menuItems = [
+  const toggleGroup = (groupName) => {
+    if (isCollapsed) return; // Don't toggle when sidebar collapsed
+    setExpandedGroups(prev => 
+      prev.includes(groupName) 
+        ? prev.filter(g => g !== groupName)
+        : [...prev, groupName]
+    );
+  };
+
+  const menuGroups = [
     {
-      name: 'Batik Saya',
-      href: '/dashboard',
-      icon: url === '/dashboard'
-        ? '/images/sideicon/home-active.svg'
-        : '/images/sideicon/home.png',
+      name: 'batik',
+      label: null, // No header for main features
+      items: [
+        {
+          name: 'Batik Saya',
+          href: '/dashboard',
+          icon: Home,
+          activeColor: 'bg-gradient-to-r from-[#BA682A] to-[#D2691E]',
+          hoverColor: 'hover:bg-orange-50'
+        },
+        {
+          name: 'Motif',
+          href: '/motif',
+          icon: Palette,
+          activeColor: 'bg-gradient-to-r from-[#BA682A] to-[#D2691E]',
+          hoverColor: 'hover:bg-orange-50'
+        }
+      ]
     },
     {
-      name: 'Motif',
-      href: '/motif',
-      icon: url === '/motif'
-        ? '/images/sideicon/motif-active.svg'
-        : '/images/sideicon/motif.svg',
+      name: 'pelatihan',
+      label: 'Pelatihan',
+      color: 'text-[#dc213e]',
+      hoverColor: 'hover:text-[#dc213e]',
+      items: [
+        {
+          name: 'Pelatihan',
+          href: '/pelatihan',
+          icon: GraduationCap,
+          activeColor: 'bg-[#dc213e]',
+          hoverColor: 'hover:bg-red-50',
+        },
+        {
+          name: 'Sertifikat',
+          href: '/sertifikat',
+          icon: Award,
+          activeColor: 'bg-[#dc213e]',
+          hoverColor: 'hover:bg-red-50'
+        }
+      ]
     },
     {
-      name: 'Konveksi',
-      href: '/konveksi',
-      icon: url.startsWith('/konveksi')
-        ? '/images/sideicon/konveksi-active.svg'
-        : '/images/sideicon/konveksi.png',
-    },
-    {
-      name: 'Produksi',
-      href: '/produksi',
-      icon: url.startsWith('/produksi')
-        ? '/images/sideicon/produksi-active.svg'
-        : '/images/sideicon/produksi.png',
-    },
-    {
-      name: 'Bantuan',
-      href: '/bantuan',
-      icon: url === '/bantuan'
-        ? '/images/sideicon/bantuan-active.svg'
-        : '/images/sideicon/bantuan.png',
-    },
+      name: 'produksi',
+      label: 'Produksi & Layanan',
+      color: 'text-[#3B82F6]',
+      hoverColor: 'hover:text-[#3B82F6]',
+      items: [
+        {
+          name: 'Galeri',
+          href: '/konveksi',
+          icon: ShoppingBag,
+          activeColor: 'bg-gradient-to-r from-[#3B82F6] to-[#2563EB]',
+          hoverColor: 'hover:bg-blue-50'
+        },
+        {
+          name: 'Produksi',
+          href: '/produksi',
+          icon: Package,
+          activeColor: 'bg-gradient-to-r from-[#3B82F6] to-[#2563EB]',
+          hoverColor: 'hover:bg-blue-50'
+        },
+        {
+          name: 'Bantuan',
+          href: '/bantuan',
+          icon: HelpCircle,
+          activeColor: 'bg-gradient-to-r from-[#3B82F6] to-[#2563EB]',
+          hoverColor: 'hover:bg-blue-50'
+        }
+      ]
+    }
   ];
 
   return (
@@ -107,42 +153,92 @@ export default function Sidebar() {
         <div className="md:hidden h-16" />
 
         {/* Navigation Menu */}
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {menuItems.map((item) => {
-            const isActive = url.startsWith(item.href) && item.href !== '#';
+        <nav className="flex-1 p-4 space-y-4 overflow-y-auto">
+          {menuGroups.map((group) => {
+            // Groups without labels are always expanded (main features)
+            const isExpanded = !group.label || expandedGroups.includes(group.name) || isCollapsed;
+            const hasActiveItem = group.items.some(item => url.startsWith(item.href));
+            
             return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex items-center gap-3 rounded-lg font-medium transition-all duration-200 group relative
-                  ${isCollapsed ? 'justify-center px-3 py-3' : 'px-4 py-3'}
-                  ${
-                  isActive
-                    ? 'bg-[#BA682A] text-white shadow-md'
-                    : 'text-gray-500 hover:bg-[#BA682A1A] hover:text-[#BA682A]'
-                }`}
-                onClick={() => setIsOpen(false)}
-                title={isCollapsed ? item.name : ''}
-              >
-                <img
-                  src={item.icon}
-                  alt={item.name}
-                  className="w-5 h-5 object-contain flex-shrink-0"
-                />
-                <span className={`text-sm transition-all duration-300 ${
-                  isCollapsed ? 'md:hidden' : 'md:inline'
-                }`}>
-                  {item.name}
-                </span>
-                
-                {/* Tooltip for collapsed state */}
-                {isCollapsed && (
-                  <div className="hidden md:group-hover:block absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg whitespace-nowrap z-[70] pointer-events-none">
-                    {item.name}
-                    <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+              <div key={group.name} className="space-y-1">
+                {/* Group Header - Only show if label exists */}
+                {!isCollapsed && group.label && (
+                  <button
+                    onClick={() => toggleGroup(group.name)}
+                    className={`w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${
+                      isExpanded && hasActiveItem
+                        ? group.color || 'text-gray-700'
+                        : `text-gray-500 ${group.hoverColor || 'hover:text-gray-700'}`
+                    }`}
+                  >
+                    <span>{group.label}</span>
+                    <ChevronDown 
+                      className={`w-4 h-4 transition-transform duration-200 ${
+                        isExpanded ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                )}
+
+                {/* Divider - Only show before groups with labels in collapsed mode */}
+                {isCollapsed && group.label && (
+                  <div className="border-t border-gray-200 my-2" />
+                )}
+
+                {/* Group Items */}
+                {isExpanded && (
+                  <div className="space-y-1">
+                    {group.items.map((item) => {
+                      const isActive = url.startsWith(item.href) && item.href !== '#';
+                      const Icon = item.icon;
+                      
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          className={`flex items-center gap-3 rounded-xl font-medium transition-all duration-200 group relative
+                            ${isCollapsed ? 'justify-center px-3 py-3' : 'px-4 py-3'}
+                            ${
+                            isActive
+                              ? `${item.activeColor} text-white shadow-lg scale-105`
+                              : `text-gray-600 ${item.hoverColor} hover:text-gray-900`
+                          }`}
+                          onClick={() => setIsOpen(false)}
+                          title={isCollapsed ? item.name : ''}
+                        >
+                          <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? '' : ''}`} />
+                          
+                          <span className={`text-sm font-medium transition-all duration-300 ${
+                            isCollapsed ? 'md:hidden' : 'md:inline'
+                          }`}>
+                            {item.name}
+                          </span>
+                          
+                          {/* Badge for new features */}
+                          {item.badge && !isCollapsed && (
+                            <span className={`ml-auto ${item.badgeColor} text-white text-xs px-2 py-0.5 rounded-full font-semibold animate-pulse`}>
+                              {item.badge}
+                            </span>
+                          )}
+                          
+                          {/* Tooltip for collapsed state */}
+                          {isCollapsed && (
+                            <div className="hidden md:group-hover:block absolute left-full ml-2 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg shadow-lg whitespace-nowrap z-[70] pointer-events-none">
+                              {item.name}
+                              {item.badge && (
+                                <span className={`ml-2 ${item.badgeColor} px-2 py-0.5 rounded-full text-xs`}>
+                                  {item.badge}
+                                </span>
+                              )}
+                              <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+                            </div>
+                          )}
+                        </Link>
+                      );
+                    })}
                   </div>
                 )}
-              </Link>
+              </div>
             );
           })}
         </nav>

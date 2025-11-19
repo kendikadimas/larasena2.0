@@ -12,8 +12,12 @@ return new class extends Migration
 public function up()
 {
     Schema::table('designs', function (Blueprint $table) {
-        $table->integer('canvas_width')->default(800)->after('canvas_data');
-        $table->integer('canvas_height')->default(600)->after('canvas_width');
+        if (!Schema::hasColumn('designs', 'canvas_width')) {
+            $table->integer('canvas_width')->default(800)->after('canvas_data');
+        }
+        if (!Schema::hasColumn('designs', 'canvas_height')) {
+            $table->integer('canvas_height')->default(600)->after('canvas_width');
+        }
     });
 }
 

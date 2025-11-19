@@ -8,6 +8,10 @@ use App\Http\Controllers\MotifController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserMotifController;
+use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\TrainingController;
+use App\Http\Controllers\TrainingLessonController;
+use App\Http\Controllers\TrainingCertificateController;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +24,8 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminMotifController;
 use App\Http\Controllers\Admin\AdminTransactionController;
 use App\Http\Controllers\Admin\AdminKonveksiController;
+use App\Http\Controllers\Admin\AdminTrainingController;
+use App\Http\Controllers\Admin\AdminTrainingLessonController;
 
 // Konveksi Controllers
 use App\Http\Controllers\Konveksi\DashboardController as KonveksiDashboardController;
@@ -71,6 +77,17 @@ Route::middleware(['auth', 'verified', 'role:General'])->group(function () {
     Route::post('/produksi', [ProductionController::class, 'store'])->name('production.store');
     Route::get('/produksi/pesan', [ProductionController::class, 'create'])->name('production.create');
 
+    // Training/Pelatihan Batik
+    Route::get('/pelatihan', [TrainingController::class, 'index'])->name('training.index');
+    Route::get('/pelatihan/{course:slug}', [TrainingController::class, 'show'])->name('training.show');
+    Route::get('/pelatihan/{course:slug}/lesson/{lesson:slug}', [TrainingLessonController::class, 'show'])->name('training.lesson.show');
+    Route::post('/pelatihan/{course:slug}/lesson/{lesson:slug}/progress', [TrainingLessonController::class, 'saveProgress'])->name('training.lesson.progress');
+    
+    // Certificates
+    Route::get('/sertifikat', [TrainingCertificateController::class, 'index'])->name('training.certificates.index');
+    Route::get('/sertifikat/{certificate}', [TrainingCertificateController::class, 'show'])->name('training.certificates.show');
+    Route::get('/sertifikat/{certificate}/download', [TrainingCertificateController::class, 'download'])->name('training.certificates.download');
+
     // Profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -104,6 +121,7 @@ Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
     Route::put('/admin-users/{user}', [AdminUserController::class, 'update'])->name('admin.users.update');
     Route::put('/admin-users/{user}/role', [AdminUserController::class, 'updateRole'])->name('admin.users.updateRole');
     Route::delete('/admin-users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+    Route::delete('/admin/users/{user}', [AdminUserController::class, 'destroy']);
 
     // Motif Management
     Route::get('/admin-motifs', [AdminMotifController::class, 'index'])->name('admin.motifs.index');
@@ -122,6 +140,20 @@ Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
     Route::get('/admin-konveksi', [AdminKonveksiController::class, 'index'])->name('admin.konveksi.index');
     Route::get('/admin-konveksi/{konveksi}', [AdminKonveksiController::class, 'show'])->name('admin.konveksi.show');
     Route::put('/admin-konveksi/{konveksi}/toggle-verification', [AdminKonveksiController::class, 'toggleVerification'])->name('admin.konveksi.toggleVerification');
+
+    // Training Management
+    Route::get('/admin-training', [AdminTrainingController::class, 'index'])->name('admin.training.index');
+    Route::post('/admin-training', [AdminTrainingController::class, 'store'])->name('admin.training.store');
+    Route::put('/admin-training/{course}', [AdminTrainingController::class, 'update'])->name('admin.training.update');
+    Route::delete('/admin-training/{course}', [AdminTrainingController::class, 'destroy'])->name('admin.training.destroy');
+    Route::put('/admin-training/{course}/toggle-publish', [AdminTrainingController::class, 'togglePublish'])->name('admin.training.togglePublish');
+    
+    // Training Lessons Management
+    Route::get('/admin-training/{course}/lessons', [AdminTrainingLessonController::class, 'index'])->name('admin.training.lessons.index');
+    Route::post('/admin-training/{course}/lessons', [AdminTrainingLessonController::class, 'store'])->name('admin.training.lessons.store');
+    Route::put('/admin-training/lessons/{lesson}', [AdminTrainingLessonController::class, 'update'])->name('admin.training.lessons.update');
+    Route::delete('/admin-training/lessons/{lesson}', [AdminTrainingLessonController::class, 'destroy'])->name('admin.training.lessons.destroy');
+    Route::put('/admin-training/lessons/{lesson}/toggle-publish', [AdminTrainingLessonController::class, 'togglePublish'])->name('admin.training.lessons.togglePublish');
 });
 
 // ============================================================================
@@ -152,7 +184,12 @@ Route::prefix('api')->group(function () {
 });
 
 // ============================================================================
-// 🔑 AUTH ROUTES
+// �️ SITEMAP
+// ============================================================================
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+
+// ============================================================================
+// �🔑 AUTH ROUTES
 // ============================================================================
 require __DIR__ . '/auth.php';
 
