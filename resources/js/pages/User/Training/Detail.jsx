@@ -1,7 +1,7 @@
 import UserLayout from '@/layouts/User/Layout';
 import SEO from '@/components/SEO';
 import { router } from '@inertiajs/react';
-import { GraduationCap, Clock, BookOpen, CheckCircle, Play, Lock, Award, Download, FileText, Video, Palette } from 'lucide-react';
+import { GraduationCap, Clock, BookOpen, CheckCircle, Play, Lock, Award, Download, FileText, Video, Palette, ChevronRight } from 'lucide-react';
 
 export default function TrainingDetail({ course, lessons, user_progress, certificate }) {
     const levelColors = {
@@ -21,8 +21,8 @@ export default function TrainingDetail({ course, lessons, user_progress, certifi
         }
     };
 
-    const handleStartLesson = (lessonId) => {
-        router.get(`/pelatihan/${course.id}/lesson/${lessonId}`);
+    const handleStartLesson = (lessonSlug) => {
+        router.get(`/pelatihan/${course.slug}/lesson/${lessonSlug}`);
     };
 
     return (
@@ -35,6 +35,25 @@ export default function TrainingDetail({ course, lessons, user_progress, certifi
             />
 
             <div className="p-6 space-y-6">
+                {/* Breadcrumb */}
+                <nav className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                    <button 
+                        onClick={() => router.visit('/')}
+                        className="hover:text-[#dc213e] transition-colors cursor-pointer"
+                    >
+                        Home
+                    </button>
+                    <ChevronRight className="w-4 h-4" />
+                    <button 
+                        onClick={() => router.visit('/pelatihan')}
+                        className="hover:text-[#dc213e] transition-colors cursor-pointer"
+                    >
+                        Pelatihan
+                    </button>
+                    <ChevronRight className="w-4 h-4" />
+                    <span className="text-[#dc213e] font-semibold">{course.title}</span>
+                </nav>
+
                 {/* Course Header */}
                 <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                     <div className="relative h-64 md:h-96 bg-gradient-to-br from-gray-100 to-gray-200">
@@ -83,11 +102,17 @@ export default function TrainingDetail({ course, lessons, user_progress, certifi
                         <div className="px-8 py-4 bg-gradient-to-r from-gray-50 to-white border-b">
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-sm font-semibold text-gray-700">Progress Course</span>
-                                <span className="text-sm font-bold text-[#BA682A]">{user_progress.progress_percentage}%</span>
+                                <span className={`text-sm font-bold ${user_progress.progress_percentage >= 100 ? 'text-green-600' : 'text-[#dc213e]'}`}>
+                                    {user_progress.progress_percentage}%
+                                </span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                                 <div
-                                    className={`h-full rounded-full bg-gradient-to-r ${colors.gradient} transition-all duration-500`}
+                                    className={`h-full rounded-full transition-all duration-500 ${
+                                        user_progress.progress_percentage >= 100
+                                            ? 'bg-gradient-to-r from-green-400 to-emerald-500'
+                                            : 'bg-gradient-to-r from-[#dc213e] to-rose-600'
+                                    }`}
                                     style={{ width: `${user_progress.progress_percentage}%` }}
                                 />
                             </div>
@@ -202,9 +227,9 @@ export default function TrainingDetail({ course, lessons, user_progress, certifi
                                         </div>
 
                                         {/* Action Button */}
-                                        {isAccessible && (
+                                        {isAccessible ? (
                                             <button
-                                                onClick={() => handleStartLesson(lesson.id)}
+                                                onClick={() => handleStartLesson(lesson.slug)}
                                                 className={`flex-shrink-0 px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
                                                     isCompleted
                                                         ? 'bg-green-500 text-white hover:bg-green-600'
@@ -214,6 +239,11 @@ export default function TrainingDetail({ course, lessons, user_progress, certifi
                                                 <Play className="w-4 h-4" />
                                                 {isCompleted ? 'Review' : 'Mulai'}
                                             </button>
+                                        ) : (
+                                            <div className="flex-shrink-0 px-6 py-3 rounded-xl bg-gray-200 text-gray-500 font-semibold flex items-center gap-2">
+                                                <Lock className="w-4 h-4" />
+                                                Terkunci
+                                            </div>
                                         )}
                                     </div>
                                 </div>

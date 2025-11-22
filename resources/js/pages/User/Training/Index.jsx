@@ -2,7 +2,7 @@ import UserLayout from '@/layouts/User/Layout';
 import SEO from '@/components/SEO';
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
-import { GraduationCap, Clock, BookOpen, CheckCircle, TrendingUp, Award, Play, Filter } from 'lucide-react';
+import { GraduationCap, Clock, BookOpen, CheckCircle, TrendingUp, Award, Play, Filter, ChevronRight } from 'lucide-react';
 
 export default function TrainingIndex({ courses, stats, filters }) {
     const [selectedLevel, setSelectedLevel] = useState(filters.level || 'all');
@@ -30,6 +30,18 @@ export default function TrainingIndex({ courses, stats, filters }) {
             />
 
             <div className="p-6 space-y-6">
+                {/* Breadcrumb */}
+                <nav className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                    <button 
+                        onClick={() => router.visit('/')}
+                        className="hover:text-[#dc213e] transition-colors cursor-pointer"
+                    >
+                        Home
+                    </button>
+                    <ChevronRight className="w-4 h-4" />
+                    <span className="text-[#dc213e] font-semibold">Pelatihan</span>
+                </nav>
+
                 {/* Header Section */}
                 <div className="bg-[#dc213e] rounded-2xl p-8 text-white shadow-xl">
                     <div className="flex items-center gap-4 mb-4">
@@ -157,7 +169,7 @@ export default function TrainingIndex({ courses, stats, filters }) {
                                             </div>
                                             <div className="w-full bg-white/20 rounded-full h-1.5 overflow-hidden">
                                                 <div
-                                                    className="bg-white h-full rounded-full transition-all duration-500"
+                                                    className="bg-gradient-to-r from-green-400 to-emerald-500 h-full rounded-full transition-all duration-500 shadow-sm"
                                                     style={{ width: `${progress.progress_percentage}%` }}
                                                 />
                                             </div>

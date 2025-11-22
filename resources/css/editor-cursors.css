@@ -1,0 +1,61 @@
+/* Custom Cursors untuk Canvas Batik Editor */
+
+/* Default cursor - Canting (alat batik tradisional) */
+.cursor-canting {
+    cursor: url('/images/cankuy.png') 8 8, auto;
+}
+
+/* Brush Tool - Kuas */
+.cursor-brush {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23BA682A" d="M20.71 4.63l-1.34-1.34c-.39-.39-1.02-.39-1.41 0L9 12.25 11.75 15l8.96-8.96c.39-.39.39-1.02 0-1.41z"/><path fill="%23BA682A" d="M7 14l-3 3c-1.5 1.5-1 4.33.67 6s4.5 2.17 6 .67l3-3-6.67-6.67z"/></svg>') 4 20, crosshair;
+}
+
+/* Eraser Tool - Penghapus */
+.cursor-eraser {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%23EF4444" d="M16.24 3.56l4.2 4.2c.78.78.78 2.05 0 2.83L12 19.03l-6.44-6.44 8.48-8.48c.78-.79 2.05-.79 2.83-.01zm-2.12 10.61l-4.24-4.24-5.66 5.66c-.78.78-.78 2.05 0 2.83l2.83 2.83c.78.78 2.05.78 2.83 0l4.24-4.24z"/><path fill="%23DC2626" d="M2 20h20v2H2z"/></svg>') 8 20, auto;
+}
+
+/* Pen Tool - Pena Vektor dengan desain profesional seperti gambar */
+.cursor-pen {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><defs><linearGradient id="penGrad" x1="0%25" y1="0%25" x2="100%25" y2="100%25"><stop offset="0%25" style="stop-color:%23374151;stop-opacity:1" /><stop offset="100%25" style="stop-color:%231F2937;stop-opacity:1" /></linearGradient></defs><circle cx="16" cy="16" r="15" fill="%23F3F4F6" stroke="%23D1D5DB" stroke-width="1.5"/><g transform="translate(8, 6)"><path d="M8 2 L14 8 L8 20 L2 8 Z" fill="url(%23penGrad)" stroke="%23111827" stroke-width="0.8"/><ellipse cx="8" cy="9" rx="3" ry="4" fill="%23FFFFFF" opacity="0.3"/><path d="M8 20 L8 24" stroke="%23374151" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="2" r="1.5" fill="%233B82F6" stroke="%23FFFFFF" stroke-width="0.8"/></g></svg>') 16 16, crosshair;
+}
+
+/* Rectangle Tool - Persegi panjang */
+.cursor-rectangle {
+    cursor: crosshair;
+}
+
+.cursor-circle {
+    cursor: crosshair;
+}
+
+.cursor-triangle {
+    cursor: crosshair;
+}
+
+.cursor-pentagon {
+    cursor: crosshair;
+}
+
+.cursor-line {
+    cursor: crosshair;
+}
+
+/* Move Tool - Tangan untuk drag */
+.cursor-move-tool {
+    cursor: grab;
+}
+
+.cursor-move-tool:active {
+    cursor: grabbing;
+}
+
+/* Zoom In */
+.cursor-zoom-in {
+    cursor: zoom-in;
+}
+
+/* Zoom Out */
+.cursor-zoom-out {
+    cursor: zoom-out;
+}
