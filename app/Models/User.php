@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'profile_photo',
     ];
 
     /**
@@ -78,5 +79,51 @@ class User extends Authenticatable
     public function convectionJobs(): HasMany
     {
         return $this->hasMany(Production::class, 'convection_user_id');
+    }
+
+    // Published Motifs
+    public function publishedMotifs(): HasMany
+    {
+        return $this->hasMany(PublishedMotif::class);
+    }
+
+    // Badges
+    public function badges(): HasMany
+    {
+        return $this->hasMany(UserBadge::class);
+    }
+
+    // Motif Likes
+    public function motifLikes(): HasMany
+    {
+        return $this->hasMany(MotifLike::class);
+    }
+
+    // Award badge to user
+    public function awardBadge($badgeKey, $badgeName, $badgeIcon = null, $meta = [])
+    {
+        if (!$this->badges()->where('badge_key', $badgeKey)->exists()) {
+            $this->badges()->create([
+                'badge_key' => $badgeKey,
+                'badge_name' => $badgeName,
+                'badge_icon' => $badgeIcon,
+                'meta' => $meta,
+                'awarded_at' => now()
+            ]);
+        }
+    }
+
+    // Get profile photo URL
+    public function getProfilePhotoUrlAttribute()
+    {
+        if (!$this->profile_photo) {
+            return null;
+        }
+        
+        if (str_starts_with($this->profile_photo, 'http')) {
+            return $this->profile_photo;
+        }
+        
+        return asset('storage/' . str_replace('storage/', '', $this->profile_photo));
     }
 }

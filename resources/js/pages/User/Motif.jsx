@@ -1,5 +1,5 @@
 import UserLayout from '@/layouts/User/Layout'; 
-import { Search } from 'lucide-react'; 
+import { Search, Heart, Eye, User, Star } from 'lucide-react'; 
 import { useState, useEffect, useCallback } from 'react';
 import { router, Link } from '@inertiajs/react'; 
 
@@ -130,13 +130,58 @@ export default function Motif({ motifs: motifsProp = {}, filters = {} }) {
                     {motif.category}
                   </span>
                 </div>
+                {motif.is_featured && (
+                  <div className="absolute top-3 right-3 bg-yellow-400 rounded-full p-1.5 shadow-lg">
+                    <Star className="w-4 h-4 text-white fill-current" />
+                  </div>
+                )}
               </div>
               <div className="p-4">
                 <h3 className="text-lg font-semibold text-gray-800 truncate">
                   {motif.name}
                 </h3>
                 {motif.description && (
-                   <p className="text-sm text-gray-600 line-clamp-2">{motif.description}</p>
+                   <p className="text-sm text-gray-600 line-clamp-2 mb-3">{motif.description}</p>
+                )}
+
+                {/* Publisher Info for Community Motifs */}
+                {motif.is_published && motif.user && (
+                  <div className="pt-3 border-t border-gray-100 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-xs font-bold overflow-hidden">
+                        {motif.user.profile_photo_url ? (
+                          <img
+                            src={motif.user.profile_photo_url}
+                            alt={motif.user.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <User className="w-3 h-3" />
+                        )}
+                      </div>
+                      <span className="text-xs text-gray-600 font-medium truncate flex-1">
+                        {motif.user.name}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center gap-3">
+                        <span className="flex items-center gap-1">
+                          <Heart className="w-3 h-3" />
+                          {motif.likes_count}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Eye className="w-3 h-3" />
+                          {motif.views_count}
+                        </span>
+                      </div>
+                      <Link
+                        href={`/galeri-motif/${motif.slug}`}
+                        className="text-amber-600 hover:text-amber-700 font-medium"
+                      >
+                        Lihat Detail →
+                      </Link>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

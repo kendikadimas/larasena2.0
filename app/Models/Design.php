@@ -36,4 +36,9 @@ class Design extends Model
     {
         return $this->belongsTo(Preview3DModel::class, 'preview_3d_models_id');
     }
+
+    public function publishedMotif()
+    {
+        return $this->hasOne(PublishedMotif::class, 'design_data->design_id');
+    }
 }

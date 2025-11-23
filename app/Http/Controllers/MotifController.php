@@ -90,12 +90,56 @@ class MotifController extends Controller
      */
     public function index()
     {
-        $motifs = Motif::where('is_active', true)
+        // Get global motifs
+        $globalMotifs = Motif::where('is_active', true)
             ->whereNull('user_id')
-            ->paginate(20);
+            ->get();
+
+        // Get published motifs (approved only)
+        $publishedMotifs = \App\Models\PublishedMotif::approved()
+            ->with('user')
+            ->latest('published_at')
+            ->get()
+            ->map(function($motif) {
+                return [
+                    'id' => 'published_' . $motif->id,
+                    'name' => $motif->title,
+                    'description' => $motif->philosophy,
+                    'category' => 'Komunitas',
+                    'file_path' => $motif->image_url,
+                    'preview_image_path' => $motif->image_url,
+                    'image_url' => $motif->image_url,
+                    'is_published' => true,
+                    'user' => [
+                        'name' => $motif->user->name,
+                        'profile_photo_url' => $motif->user->profile_photo_url
+                    ],
+                    'likes_count' => $motif->likes_count,
+                    'views_count' => $motif->views_count,
+                    'is_featured' => $motif->is_featured,
+                    'published_at' => $motif->published_at->format('d M Y'),
+                    'slug' => $motif->slug
+                ];
+            });
+
+        // Merge both collections
+        $allMotifs = $globalMotifs->concat($publishedMotifs);
+
+        // Paginate manually
+        $perPage = 20;
+        $currentPage = request()->get('page', 1);
+        $offset = ($currentPage - 1) * $perPage;
+        
+        $paginatedMotifs = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allMotifs->slice($offset, $perPage)->values(),
+            $allMotifs->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
 
         return Inertia::render('User/Motif', [
-            'motifs' => $motifs
+            'motifs' => $paginatedMotifs
         ]);
     }
 

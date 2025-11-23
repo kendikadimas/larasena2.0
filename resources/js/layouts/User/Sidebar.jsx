@@ -1,6 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { Menu, X, ChevronLeft, ChevronRight, ChevronDown, Home, Palette, ShoppingBag, Package, GraduationCap, Award, HelpCircle } from 'lucide-react';
+import { Menu, X, ChevronLeft, ChevronRight, ChevronDown, Home, Palette, ShoppingBag, Package, GraduationCap, Award, HelpCircle, Upload } from 'lucide-react';
 
 export default function Sidebar() {
   const { url } = usePage();
@@ -30,8 +30,8 @@ export default function Sidebar() {
           hoverColor: 'hover:bg-orange-50'
         },
         {
-          name: 'Motif',
-          href: '/motif',
+          name: 'Batikpedia',
+          href: '/galeri-motif',
           icon: Palette,
           activeColor: 'bg-gradient-to-r from-[#BA682A] to-[#D2691E]',
           hoverColor: 'hover:bg-orange-50'

@@ -1,5 +1,5 @@
 import { Link, usePage, router } from '@inertiajs/react';
-import { LayoutDashboard, Users, Package, DollarSign, LogOut, Menu, X, Store, GraduationCap } from 'lucide-react';
+import { LayoutDashboard, Users, Package, DollarSign, LogOut, Menu, X, Store, GraduationCap, ImagePlus } from 'lucide-react';
 import { useState } from 'react';
 
 export default function AdminLayout({ children }) {
@@ -9,10 +9,11 @@ export default function AdminLayout({ children }) {
 
     const navigation = [
         { name: 'Dashboard', href: '/admin-dashboard', icon: LayoutDashboard },
-        { name: 'Users', href: '/admin-users', icon: Users },
+        { name: 'Pengguna', href: '/admin-users', icon: Users },
         { name: 'Konveksi', href: '/admin-konveksi', icon: Store },
-        { name: 'Motifs', href: '/admin-motifs', icon: Package },
-        { name: 'Transactions', href: '/admin-transactions', icon: DollarSign },
+        { name: 'Motif', href: '/admin-motifs', icon: Package },
+        { name: 'Verifikasi Batik', href: '/admin-published-motifs', icon: ImagePlus },
+        { name: 'Transaksi', href: '/admin-transactions', icon: DollarSign },
         { name: 'Pelatihan', href: '/admin-training', icon: GraduationCap },
     ];
 
