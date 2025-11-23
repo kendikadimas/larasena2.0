@@ -11,6 +11,7 @@ export default function AdminTrainingLessons({ course, lessons, availableMotifs 
     const [showModal, setShowModal] = useState(false);
     const [editingLesson, setEditingLesson] = useState(null);
     const [selectedMotifs, setSelectedMotifs] = useState([]);
+    const [quizQuestions, setQuizQuestions] = useState([]);
     const [formData, setFormData] = useState({
         title: '',
         description: '',
@@ -35,6 +36,14 @@ export default function AdminTrainingLessons({ course, lessons, availableMotifs 
             const canvasData = lesson.canvas_data || {};
             const motifIds = canvasData.available_motifs || [];
             setSelectedMotifs(motifIds);
+
+            // Load quiz questions kalau tipe lesson adalah quiz
+            if (lesson.type === 'quiz' && lesson.quiz_data && Array.isArray(lesson.quiz_data.questions)) {
+                setQuizQuestions(lesson.quiz_data.questions);
+            } else {
+                setQuizQuestions([]);
+            }
+
             setFormData({
                 title: lesson.title,
                 description: lesson.description || '',
@@ -49,6 +58,7 @@ export default function AdminTrainingLessons({ course, lessons, availableMotifs 
         } else {
             setEditingLesson(null);
             setSelectedMotifs([]);
+            setQuizQuestions([]); // reset quiz saat tambah materi baru
             setFormData({
                 title: '',
                 description: '',
@@ -64,6 +74,7 @@ export default function AdminTrainingLessons({ course, lessons, availableMotifs 
         setShowModal(true);
     };
 
+
     const toggleMotifSelection = (motifId) => {
         setSelectedMotifs(prev => {
             if (prev.includes(motifId)) {
@@ -74,18 +85,61 @@ export default function AdminTrainingLessons({ course, lessons, availableMotifs 
         });
     };
 
+    const addQuizQuestion = () => {
+        setQuizQuestions(prev => [
+            ...prev,
+            {
+                question: '',
+                type: 'multiple_choice', // atau 'essay'
+                options: ['', ''],       // default 2 opsi untuk pilihan ganda
+                correct_answer: ''
+            }
+        ]);
+    };
+
+    const updateQuizQuestion = (index, field, value) => {
+        const updated = [...quizQuestions];
+        updated[index][field] = value;
+        setQuizQuestions(updated);
+    };
+
+    const addOption = (qIndex) => {
+        const updated = [...quizQuestions];
+        updated[qIndex].options.push('');
+        setQuizQuestions(updated);
+    };
+
+    const removeOption = (qIndex, optIndex) => {
+        const updated = [...quizQuestions];
+        updated[qIndex].options.splice(optIndex, 1);
+        setQuizQuestions(updated);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        // Build canvas_data with selected motifs
-        const canvasData = formData.type === 'practice' ? {
-            available_motifs: selectedMotifs,
-            instructions: formData.content || ''
-        } : formData.canvas_data;
+        // Build canvas_data dengan selected motifs untuk practice
+        let canvasData = formData.canvas_data;
+
+        if (formData.type === 'practice') {
+            canvasData = {
+                available_motifs: selectedMotifs,
+                instructions: formData.content || ''
+            };
+        }
+
+        // Build quiz_data untuk quiz
+        let quizData = null;
+        if (formData.type === 'quiz') {
+            quizData = {
+                questions: quizQuestions
+            };
+        }
 
         const submitData = {
             ...formData,
-            canvas_data: canvasData
+            canvas_data: canvasData,
+            quiz_data: quizData
         };
         
         if (editingLesson) {
@@ -94,6 +148,7 @@ export default function AdminTrainingLessons({ course, lessons, availableMotifs 
                     setShowModal(false);
                     setEditingLesson(null);
                     setSelectedMotifs([]);
+                    setQuizQuestions([]);
                 }
             });
         } else {
@@ -101,10 +156,12 @@ export default function AdminTrainingLessons({ course, lessons, availableMotifs 
                 onSuccess: () => {
                     setShowModal(false);
                     setSelectedMotifs([]);
+                    setQuizQuestions([]);
                 }
             });
         }
     };
+
 
     const handleTogglePublish = (lesson) => {
         router.put(`/admin-training/lessons/${lesson.id}/toggle-publish`);
@@ -237,6 +294,14 @@ export default function AdminTrainingLessons({ course, lessons, availableMotifs 
                                                                     {lesson.duration} menit
                                                                 </span>
                                                             )}
+                                                            {/* Quiz Info */}
+                                                            {lesson.type === 'quiz' && lesson.quiz_data?.questions?.length > 0 && (
+                                                                <span className="flex items-center gap-1 text-green-600">
+                                                                    <ClipboardCheck className="w-4 h-4" />
+                                                                    {lesson.quiz_data.questions.length} Pertanyaan
+                                                                </span>
+                                                            )}
+
                                                             {lesson.video_url && (
                                                                 <span className="flex items-center gap-1">
                                                                     <Video className="w-4 h-4" />
@@ -415,6 +480,148 @@ export default function AdminTrainingLessons({ course, lessons, availableMotifs 
                                     }
                                 </p>
                             </div>
+                            {/* Quiz Builder - Only for Quiz type */}
+                            {formData.type === 'quiz' && (
+                                <div className="space-y-6">
+                                    <div className="flex justify-between items-center">
+                                        <label className="text-sm font-semibold text-gray-700">
+                                            Daftar Pertanyaan Kuis
+                                        </label>
+                                        <button
+                                            type="button"
+                                            onClick={addQuizQuestion}
+                                            className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                                        >
+                                            + Tambah Pertanyaan
+                                        </button>
+                                    </div>
+
+                                    {quizQuestions.length === 0 && (
+                                        <p className="text-sm text-gray-500">
+                                            Belum ada pertanyaan. Klik "Tambah Pertanyaan" untuk mulai membuat kuis.
+                                        </p>
+                                    )}
+
+                                    {quizQuestions.map((q, index) => (
+                                        <div key={index} className="border rounded-lg p-4 space-y-4 bg-gray-50">
+                                            <div className="flex justify-between items-start">
+                                                <div className="font-semibold text-gray-800">
+                                                    Pertanyaan {index + 1}
+                                                </div>
+                                            </div>
+
+                                            {/* Pertanyaan */}
+                                            <div>
+                                                <label className="text-sm font-semibold text-gray-700">
+                                                    Teks Pertanyaan
+                                                </label>
+                                                <textarea
+                                                    className="w-full mt-1 border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                                    value={q.question}
+                                                    onChange={(e) => updateQuizQuestion(index, 'question', e.target.value)}
+                                                    rows={3}
+                                                    placeholder="Tulis pertanyaan di sini..."
+                                                />
+                                            </div>
+
+                                            {/* Jenis Pertanyaan */}
+                                            <div>
+                                                <label className="text-sm font-semibold text-gray-700">
+                                                    Jenis Pertanyaan
+                                                </label>
+                                                <select
+                                                    className="w-full mt-1 border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                                    value={q.type}
+                                                    onChange={(e) => updateQuizQuestion(index, 'type', e.target.value)}
+                                                >
+                                                    <option value="multiple_choice">Pilihan Ganda</option>
+                                                    <option value="essay">Uraian</option>
+                                                </select>
+                                            </div>
+
+                                            {/* Jika pilihan ganda */}
+                                            {q.type === 'multiple_choice' && (
+                                                <div className="space-y-3">
+                                                    <div className="flex items-center justify-between">
+                                                        <label className="text-sm font-semibold text-gray-700">
+                                                            Opsi Jawaban
+                                                        </label>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => addOption(index)}
+                                                            className="px-3 py-1 text-xs bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+                                                        >
+                                                            + Tambah Opsi
+                                                        </button>
+                                                    </div>
+
+                                                    {q.options.map((opt, optIdx) => (
+                                                        <div key={optIdx} className="flex gap-2 items-center">
+                                                            <input
+                                                                type="text"
+                                                                className="flex-1 border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                                value={opt}
+                                                                onChange={(e) => {
+                                                                    const updated = [...quizQuestions];
+                                                                    updated[index].options[optIdx] = e.target.value;
+                                                                    setQuizQuestions(updated);
+                                                                }}
+                                                                placeholder={`Opsi ${optIdx + 1}`}
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeOption(index, optIdx)}
+                                                                className="p-1 text-red-500 hover:bg-red-50 rounded-lg"
+                                                            >
+                                                                <X className="w-4 h-4" />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+
+                                                    {/* Kunci jawaban */}
+                                                    <div>
+                                                        <label className="text-sm font-semibold text-gray-700">
+                                                            Kunci Jawaban
+                                                        </label>
+                                                        <select
+                                                            className="w-full mt-1 border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                            value={q.correct_answer}
+                                                            onChange={(e) =>
+                                                                updateQuizQuestion(index, 'correct_answer', e.target.value)
+                                                            }
+                                                        >
+                                                            <option value="">-- Pilih Jawaban Benar --</option>
+                                                            {q.options.map((opt, optIdx) => (
+                                                                <option key={optIdx} value={opt}>
+                                                                    {opt || `Opsi ${optIdx + 1}`}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Jika uraian */}
+                                            {q.type === 'essay' && (
+                                                <div>
+                                                    <label className="text-sm font-semibold text-gray-700">
+                                                        Kunci Jawaban (Opsional)
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        className="w-full mt-1 border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        value={q.correct_answer}
+                                                        onChange={(e) =>
+                                                            updateQuizQuestion(index, 'correct_answer', e.target.value)
+                                                        }
+                                                        placeholder="Isi jika ingin memberikan jawaban contoh (boleh dikosongkan)"
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
 
                             {/* Motif Selection - Only for Practice */}
                             {formData.type === 'practice' && (

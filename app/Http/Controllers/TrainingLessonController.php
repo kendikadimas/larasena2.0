@@ -19,7 +19,7 @@ class TrainingLessonController extends Controller
             abort(404);
         }
 
-        // Get all lessons for navigation
+        // Retrieve all lessons for navigation
         $allLessons = $course->lessons()
             ->where('is_published', true)
             ->orderBy('order')
@@ -41,31 +41,32 @@ class TrainingLessonController extends Controller
                     'order' => $l->order,
                     'user_progress' => $userProgress ? [
                         'completed' => $userProgress->completed,
-                        'completed_at' => $userProgress->completed_at
+                        'completed_at' => $userProgress->completed_at,
+                        'quiz_score' => $userProgress->quiz_score ?? null
                     ] : null
                 ];
             });
 
-        // Find next and previous lessons
+        // Next & previous lesson
         $currentIndex = $allLessons->search(fn($l) => $l['id'] === $lesson->id);
         $nextLesson = $allLessons->get($currentIndex + 1);
         $prevLesson = $currentIndex > 0 ? $allLessons->get($currentIndex - 1) : null;
 
-        // Get user progress for current lesson
+        // Progress for this lesson
         $progress = null;
         $canvasWork = null;
-        
+
         if (Auth::check()) {
             $progress = TrainingProgress::where('user_id', Auth::id())
                 ->where('training_lesson_id', $lesson->id)
                 ->first();
-            
+
             if ($progress) {
                 $canvasWork = $progress->canvas_work;
             }
         }
 
-        // Calculate course progress
+        // Calculate user progress for whole course
         $courseProgress = 0;
         if (Auth::check()) {
             $totalLessons = $allLessons->count();
@@ -73,11 +74,11 @@ class TrainingLessonController extends Controller
                 ->whereIn('training_lesson_id', $allLessons->pluck('id'))
                 ->where('completed', true)
                 ->count();
-            
+
             $courseProgress = $totalLessons > 0 ? ($completedLessons / $totalLessons) * 100 : 0;
         }
 
-        // Get available motifs for practice lessons
+        // Available motifs for practice lessons
         $availableMotifs = [];
         if ($lesson->type === 'practice' && $lesson->canvas_data && isset($lesson->canvas_data['available_motifs'])) {
             $motifIds = $lesson->canvas_data['available_motifs'];
@@ -114,6 +115,7 @@ class TrainingLessonController extends Controller
                 'type' => $lesson->type,
                 'duration' => $lesson->duration,
                 'canvas_data' => $lesson->canvas_data,
+                'quiz_data' => $lesson->quiz_data,
                 'order' => $lesson->order
             ],
             'availableMotifs' => $availableMotifs,
@@ -131,8 +133,8 @@ class TrainingLessonController extends Controller
             'canvas_work' => 'nullable|array'
         ]);
 
-        // Save or update progress
-        $progress = TrainingProgress::updateOrCreate(
+        // Save practice progress
+        TrainingProgress::updateOrCreate(
             [
                 'user_id' => Auth::id(),
                 'training_lesson_id' => $lesson->id
@@ -140,12 +142,63 @@ class TrainingLessonController extends Controller
             [
                 'training_course_id' => $course->id,
                 'canvas_work' => $validated['canvas_work'] ?? null,
+                'quiz_score' => null,
                 'completed' => true,
                 'completed_at' => now()
             ]
         );
 
-        // Check if all lessons completed -> generate certificate
+        $this->checkCertificateEligibility($course);
+
+        return back()->with('success', 'Progress berhasil disimpan!');
+    }
+
+    public function submitQuiz(Request $request, TrainingCourse $course, TrainingLesson $lesson)
+    {
+        $validated = $request->validate([
+            'answers' => 'required|array'
+        ]);
+
+        $questions = $lesson->quiz_data['questions'] ?? [];
+        $total = count($questions);
+        $correct = 0;
+
+        foreach ($questions as $index => $q) {
+            $userAnswer = $validated['answers'][$index] ?? null;
+
+            if ($q['type'] === 'multiple_choice') {
+                if ($userAnswer === ($q['correct_answer'] ?? null)) {
+                    $correct++;
+                }
+            } else {
+                // Essay auto completed (atau bisa kamu custom)
+                $correct++;
+            }
+        }
+
+        $score = $total > 0 ? round(($correct / $total) * 100) : 100;
+
+        TrainingProgress::updateOrCreate(
+            [
+                'user_id' => Auth::id(),
+                'training_lesson_id' => $lesson->id
+            ],
+            [
+                'training_course_id' => $course->id,
+                'quiz_score' => $score,
+                'completed' => true,
+                'completed_at' => now(),
+                'canvas_work' => null
+            ]
+        );
+
+        $this->checkCertificateEligibility($course);
+
+        return back()->with('success', "Kuis berhasil disubmit! Skor: $score");
+    }
+
+    private function checkCertificateEligibility(TrainingCourse $course)
+    {
         $totalLessons = $course->lessons()->where('is_published', true)->count();
         $completedLessons = TrainingProgress::where('user_id', Auth::id())
             ->where('training_course_id', $course->id)
@@ -153,7 +206,6 @@ class TrainingLessonController extends Controller
             ->count();
 
         if ($totalLessons === $completedLessons) {
-            // Generate certificate if not exists
             TrainingCertificate::firstOrCreate(
                 [
                     'user_id' => Auth::id(),
@@ -165,7 +217,5 @@ class TrainingLessonController extends Controller
                 ]
             );
         }
-
-        return back()->with('success', 'Progress berhasil disimpan!');
     }
 }

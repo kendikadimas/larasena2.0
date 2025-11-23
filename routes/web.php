@@ -86,6 +86,7 @@ Route::middleware(['auth', 'verified', 'role:General'])->group(function () {
     Route::get('/pelatihan/{course:slug}', [TrainingController::class, 'show'])->name('training.show');
     Route::get('/pelatihan/{course:slug}/lesson/{lesson:slug}', [TrainingLessonController::class, 'show'])->name('training.lesson.show');
     Route::post('/pelatihan/{course:slug}/lesson/{lesson:slug}/progress', [TrainingLessonController::class, 'saveProgress'])->name('training.lesson.progress');
+    Route::post('/pelatihan/{course:slug}/lesson/{lesson:slug}/quiz-submit',[TrainingLessonController::class, 'submitQuiz'])->name('training.lesson.quiz.submit');
     
     // Certificates
     Route::get('/sertifikat', [TrainingCertificateController::class, 'index'])->name('training.certificates.index');
