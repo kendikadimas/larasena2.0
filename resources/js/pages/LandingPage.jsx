@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
+import { Link } from '@inertiajs/react';
 import SEO from '@/components/SEO';
+import GalleryCTA from '@/components/GalleryCTA';
 
 // Ikon Batik yang lebih detail (Disimpan jika diperlukan di masa depan)
 const BatikIcon = () => (
@@ -259,10 +261,10 @@ export default function LandingPage() {
                 Tentang
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
               </a>
-              <a href="#galeri" className="text-gray-700 hover:text-amber-700 font-medium transition-all duration-300 relative group text-lg group-hover:-translate-y-0.5 transform transition-transform duration-300">
+              <Link href="/galeri-motif" className="text-gray-700 hover:text-amber-700 font-medium transition-all duration-300 relative group text-lg group-hover:-translate-y-0.5 transform transition-transform duration-300">
                 Galeri
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
-              </a>
+              </Link>
               <a href="#fitur" className="text-gray-700 hover:text-amber-700 font-medium transition-all duration-300 relative group text-lg group-hover:-translate-y-0.5 transform transition-transform duration-300">
                 Fitur
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
@@ -348,7 +350,7 @@ export default function LandingPage() {
         {/* Konten Menu Mobile */}
         <div className="flex flex-col items-center justify-center h-full space-y-8 -mt-20">
           <a href="#tentang" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Tentang</a>
-          <a href="#galeri" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Galeri</a>
+          <Link href="/galeri-motif" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Galeri</Link>
           <a href="#fitur" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Fitur</a>
           <a href="#mitra" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Mitra</a>
           <a href="#bantuan" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Bantuan</a>
@@ -664,6 +666,10 @@ className={`block group relative overflow-hidden rounded-2xl
         </div>
       </section>
       {/* --- BATAS AKHIR SECTION GALERI --- */}
+
+      {/* ===== CTA GALERI MOTIF ===== */}
+      <GalleryCTA user={user} dashboardRoute={dashboardRoute} />
+
 
       {/* ===== FITUR UTAMA (VERSI ZIG-ZAG REFINED) ===== */}
 <section id="fitur" className="px-8 md:px-16 lg:px-24 py-20 bg-gray-50 relative overflow-hidden">

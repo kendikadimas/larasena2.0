@@ -28,13 +28,22 @@ class TrainingController extends Controller
             ->map(function ($course) {
                 $userProgress = null;
                 if (Auth::check()) {
-                    $progress = $course->userProgress(Auth::id());
-                    if ($progress) {
+                    // Hitung progress user untuk course ini
+                    $totalLessons = $course->lessons()->where('is_published', true)->count();
+                    $completedLessons = TrainingProgress::where('user_id', Auth::id())
+                        ->where('training_course_id', $course->id)
+                        ->where('completed', true)
+                        ->count();
+                    
+                    if ($completedLessons > 0) {
+                        $progressPercentage = $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100, 2) : 0;
+                        $isCompleted = $completedLessons === $totalLessons;
+                        
                         $userProgress = [
-                            'progress_percentage' => $progress->progress_percentage,
-                            'completed_lessons' => $progress->completed_lessons,
-                            'total_lessons' => $progress->total_lessons,
-                            'is_completed' => $progress->is_completed
+                            'progress_percentage' => $progressPercentage,
+                            'completed_lessons_count' => $completedLessons,
+                            'total_lessons' => $totalLessons,
+                            'is_completed' => $isCompleted
                         ];
                     }
                 }
@@ -64,12 +73,23 @@ class TrainingController extends Controller
 
         if (Auth::check()) {
             $stats['my_courses'] = TrainingProgress::where('user_id', Auth::id())->distinct('training_course_id')->count();
-            $stats['completed_courses'] = TrainingCourse::whereHas('progress', function($query) {
-                $query->where('user_id', Auth::id())
-                      ->where('completed', true)
-                      ->groupBy('training_course_id')
-                      ->havingRaw('COUNT(*) = (SELECT COUNT(*) FROM training_lessons WHERE training_course_id = training_progress.training_course_id)');
-            })->count();
+            
+            // Fix: Hitung course yang semua lessonnya sudah completed
+            $stats['completed_courses'] = TrainingCourse::where('is_published', true)
+                ->whereExists(function($query) {
+                    $query->selectRaw('1')
+                        ->from('training_progress as tp')
+                        ->whereColumn('training_courses.id', 'tp.training_course_id')
+                        ->where('tp.user_id', Auth::id())
+                        ->where('tp.completed', true)
+                        ->groupBy('tp.training_course_id')
+                        ->havingRaw('COUNT(DISTINCT tp.training_lesson_id) = (
+                            SELECT COUNT(*) 
+                            FROM training_lessons 
+                            WHERE training_course_id = tp.training_course_id 
+                            AND is_published = true
+                        )');
+                })->count();
         }
 
         return Inertia::render('User/Training/Index', [
@@ -91,10 +111,12 @@ class TrainingController extends Controller
             ->get()
             ->map(function ($lesson) {
                 $userProgress = null;
+                $isCompleted = false;
                 if (Auth::check()) {
                     $userProgress = TrainingProgress::where('user_id', Auth::id())
                         ->where('training_lesson_id', $lesson->id)
                         ->first();
+                    $isCompleted = $userProgress && $userProgress->completed;
                 }
 
                 return [
@@ -107,6 +129,7 @@ class TrainingController extends Controller
                     'type_icon' => $lesson->type_icon,
                     'duration' => $lesson->duration,
                     'order' => $lesson->order,
+                    'is_completed' => $isCompleted,
                     'user_progress' => $userProgress ? [
                         'completed' => $userProgress->completed,
                         'completed_at' => $userProgress->completed_at?->format('d M Y')

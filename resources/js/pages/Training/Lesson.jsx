@@ -98,9 +98,26 @@ export default function Lesson({ course, lesson, progress, allLessons, nextLesso
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* Breadcrumb */}
                     <nav className="flex items-center gap-2 text-sm text-gray-600 mb-6">
-                        <a href="/pelatihan" className="hover:text-[#BA682A] transition-colors">Pelatihan</a>
+                        <button 
+                            onClick={() => router.visit('/')}
+                            className="hover:text-[#BA682A] transition-colors cursor-pointer"
+                        >
+                            Home
+                        </button>
                         <ChevronRight className="w-4 h-4" />
-                        <a href={`/pelatihan/${course.slug}`} className="hover:text-[#BA682A] transition-colors">{course.title}</a>
+                        <button 
+                            onClick={() => router.visit('/pelatihan')}
+                            className="hover:text-[#BA682A] transition-colors cursor-pointer"
+                        >
+                            Pelatihan
+                        </button>
+                        <ChevronRight className="w-4 h-4" />
+                        <button 
+                            onClick={() => router.visit(`/pelatihan/${course.slug}`)}
+                            className="hover:text-[#BA682A] transition-colors cursor-pointer"
+                        >
+                            {course.title}
+                        </button>
                         <ChevronRight className="w-4 h-4" />
                         <span className="text-[#BA682A] font-semibold">{lesson.title}</span>
                     </nav>
@@ -223,10 +240,25 @@ export default function Lesson({ course, lesson, progress, allLessons, nextLesso
 
                             {/* Save Success Message */}
                             {saveSuccess && (
-                                <div className="fixed bottom-8 right-8 bg-green-500 text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3 animate-bounce">
-                                    <CheckCircle2 className="w-6 h-6" />
-                                    <span className="font-semibold">Progress berhasil disimpan!</span>
-                                </div>
+                                <>
+                                    {/* Backdrop Overlay */}
+                                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998]" />
+                                    
+                                    {/* Success Popup - Perfectly Centered */}
+                                    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+                                        <div className="bg-white rounded-2xl shadow-2xl border-4 border-green-500 p-8 max-w-md w-full animate-bounce">
+                                            <div className="flex flex-col items-center gap-4">
+                                                <div className="p-4 bg-green-500 rounded-full">
+                                                    <CheckCircle2 className="w-12 h-12 text-white" />
+                                                </div>
+                                                <div className="text-center">
+                                                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Progress Berhasil Disimpan!</h3>
+                                                    <p className="text-gray-600">Materi ini telah ditandai selesai</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </>
                             )}
                         </div>
 
@@ -236,12 +268,13 @@ export default function Lesson({ course, lesson, progress, allLessons, nextLesso
                                 <h3 className="text-xl font-bold text-gray-900 mb-6">Daftar Materi</h3>
                                 
                                 <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
-                                    {allLessons.map((l) => {
+                                    {allLessons.map((l, index) => {
                                         const lTypeConfig = getLessonTypeConfig(l.type);
                                         const LIcon = lTypeConfig.icon;
                                         const isActive = l.id === lesson.id;
                                         const isCompleted = l.user_progress?.completed;
-                                        const isLocked = l.order > 1 && !allLessons.find(prev => prev.order === l.order - 1)?.user_progress?.completed;
+                                        // Materi pertama selalu terbuka, materi selanjutnya terbuka jika materi sebelumnya sudah selesai
+                                        const isLocked = index > 0 && !allLessons[index - 1].user_progress?.completed;
 
                                         return (
                                             <button

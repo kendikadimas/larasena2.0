@@ -83,11 +83,17 @@ export default function TrainingDetail({ course, lessons, user_progress, certifi
                         <div className="px-8 py-4 bg-gradient-to-r from-gray-50 to-white border-b">
                             <div className="flex items-center justify-between mb-2">
                                 <span className="text-sm font-semibold text-gray-700">Progress Course</span>
-                                <span className="text-sm font-bold text-[#BA682A]">{user_progress.progress_percentage}%</span>
+                                <span className={`text-sm font-bold ${user_progress.progress_percentage >= 100 ? 'text-green-600' : 'text-[#dc213e]'}`}>
+                                    {user_progress.progress_percentage}%
+                                </span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                                 <div
-                                    className={`h-full rounded-full bg-gradient-to-r ${colors.gradient} transition-all duration-500`}
+                                    className={`h-full rounded-full transition-all duration-500 ${
+                                        user_progress.progress_percentage >= 100
+                                            ? 'bg-gradient-to-r from-green-400 to-emerald-500'
+                                            : 'bg-gradient-to-r from-[#dc213e] to-rose-600'
+                                    }`}
                                     style={{ width: `${user_progress.progress_percentage}%` }}
                                 />
                             </div>
@@ -226,7 +232,7 @@ export default function TrainingDetail({ course, lessons, user_progress, certifi
                                         </div>
 
                                         {/* Action Button */}
-                                        {isAccessible && (
+                                        {isAccessible ? (
                                             <button
                                                 onClick={() => handleStartLesson(lesson.slug)}
                                                 className={`flex-shrink-0 px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
@@ -238,6 +244,11 @@ export default function TrainingDetail({ course, lessons, user_progress, certifi
                                                 <Play className="w-4 h-4" />
                                                 {isCompleted ? 'Review' : 'Mulai'}
                                             </button>
+                                        ) : (
+                                            <div className="flex-shrink-0 px-6 py-3 rounded-xl bg-gray-200 text-gray-500 font-semibold flex items-center gap-2">
+                                                <Lock className="w-4 h-4" />
+                                                Terkunci
+                                            </div>
                                         )}
                                     </div>
                                 </div>

@@ -416,6 +416,35 @@ const handleUploadMotif = async (file) => {
         }
     };
 
+    // Layer management functions
+    const handleMoveLayerUp = (id) => {
+        const index = canvasObjects.findIndex(obj => obj.id === id);
+        if (index < canvasObjects.length - 1) {
+            const newObjects = [...canvasObjects];
+            [newObjects[index], newObjects[index + 1]] = [newObjects[index + 1], newObjects[index]];
+            setCanvasObjects(newObjects);
+        }
+    };
+
+    const handleMoveLayerDown = (id) => {
+        const index = canvasObjects.findIndex(obj => obj.id === id);
+        if (index > 0) {
+            const newObjects = [...canvasObjects];
+            [newObjects[index], newObjects[index - 1]] = [newObjects[index - 1], newObjects[index]];
+            setCanvasObjects(newObjects);
+        }
+    };
+
+    const handleBringToFront = (id) => {
+        const index = canvasObjects.findIndex(obj => obj.id === id);
+        if (index !== -1 && index < canvasObjects.length - 1) {
+            const newObjects = [...canvasObjects];
+            const [item] = newObjects.splice(index, 1);
+            newObjects.push(item);
+            setCanvasObjects(newObjects);
+        }
+    };
+
     // Tambahkan state
     const [exporting3D, setExporting3D] = useState(false);
 
@@ -885,6 +914,9 @@ useEffect(() => {
                                     selectedId={selectedId}
                                     onSelect={setSelectedId}
                                     onClear={handleClearCanvas}
+                                    onMoveUp={handleMoveLayerUp}
+                                    onMoveDown={handleMoveLayerDown}
+                                    onBringToFront={handleBringToFront}
                                 />
                             </div>
                         </div>

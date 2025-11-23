@@ -19,6 +19,23 @@ class DesignController extends Controller
                 if (is_string($design->canvas_data)) {
                     $design->canvas_data = json_decode($design->canvas_data, true);
                 }
+                // Check if design is published (before transforming URL)
+                // Match by full path or just filename
+                $publishedMotif = \App\Models\PublishedMotif::where('user_id', $design->user_id)
+                    ->where(function($query) use ($design) {
+                        if ($design->image_url) {
+                            $filename = basename($design->image_url);
+                            $query->where('image_path', 'LIKE', '%' . $filename)
+                                  ->orWhere('image_path', $design->image_url);
+                        }
+                        // Also try to match by design_data if stored
+                        $query->orWhereRaw("JSON_UNQUOTE(JSON_EXTRACT(design_data, '$.design_id')) = ?", [(string)$design->id]);
+                    })
+                    ->first();
+                
+                $design->published_status = $publishedMotif ? $publishedMotif->status : null;
+                $design->published_motif_id = $publishedMotif ? $publishedMotif->id : null;
+
                 $design->image_url = $design->image_url
                     ? Storage::url($design->image_url)
                     : null;

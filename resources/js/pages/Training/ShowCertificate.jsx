@@ -1,32 +1,29 @@
 import { Head } from '@inertiajs/react';
-import { Award, Download, Calendar, User, CheckCircle2, Share2, ExternalLink } from 'lucide-react';
+import { Award, Download, Calendar, CheckCircle2 } from 'lucide-react';
 
 export default function ShowCertificate({ certificate, auth }) {
     const handleDownload = () => {
         window.open(`/sertifikat/${certificate.id}/download`, '_blank');
     };
 
-    const handleShare = () => {
-        const shareUrl = window.location.href;
-        const shareText = `Saya telah menyelesaikan kursus "${certificate.course.title}" di Larasena! 🎉`;
-
-        if (navigator.share) {
-            navigator.share({
-                title: `Sertifikat ${certificate.course.title}`,
-                text: shareText,
-                url: shareUrl
-            });
-        } else {
-            navigator.clipboard.writeText(shareUrl);
-            alert('Link sertifikat berhasil disalin!');
-        }
+    const handleShareLinkedIn = () => {
+        const certUrl = window.location.href;
+        const courseName = certificate.course.title;
+        const orgName = 'Larasena';
+        const issueYear = new Date(certificate.issued_at).getFullYear();
+        const issueMonth = new Date(certificate.issued_at).getMonth() + 1;
+        
+        // LinkedIn Add to Profile URL
+        const linkedInUrl = `https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(courseName)}&organizationName=${encodeURIComponent(orgName)}&issueYear=${issueYear}&issueMonth=${issueMonth}&certUrl=${encodeURIComponent(certUrl)}&certId=${encodeURIComponent(certificate.certificate_number)}`;
+        
+        window.open(linkedInUrl, '_blank');
     };
 
     const getLevelConfig = (level) => {
         const configs = {
-            dasar: { color: 'from-green-500 to-emerald-600', text: 'Dasar', emoji: '🌱' },
-            menengah: { color: 'from-amber-500 to-orange-600', text: 'Menengah', emoji: '🔥' },
-            lanjutan: { color: 'from-red-500 to-rose-600', text: 'Lanjutan', emoji: '⚡' }
+            dasar: { color: 'from-green-500 to-emerald-600', text: 'Dasar' },
+            menengah: { color: 'from-amber-500 to-orange-600', text: 'Menengah' },
+            lanjutan: { color: 'from-red-500 to-rose-600', text: 'Lanjutan' }
         };
         return configs[level] || configs.dasar;
     };
@@ -50,56 +47,33 @@ export default function ShowCertificate({ certificate, auth }) {
                     )}
 
                     {/* Certificate Card */}
-                    <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
-                        {/* Header with Batik Pattern Background */}
-                        <div className={`bg-gradient-to-r ${levelConfig.color} p-12 text-white relative overflow-hidden`}>
-                            {/* Decorative Elements */}
-                            <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full -mr-48 -mt-48"></div>
-                            <div className="absolute bottom-0 left-0 w-64 h-64 bg-white opacity-5 rounded-full -ml-32 -mb-32"></div>
-                            
-                            {/* Corner Decorations */}
-                            <div className="absolute top-8 left-8 w-16 h-16 border-t-4 border-l-4 border-white/30 rounded-tl-3xl"></div>
-                            <div className="absolute top-8 right-8 w-16 h-16 border-t-4 border-r-4 border-white/30 rounded-tr-3xl"></div>
-                            <div className="absolute bottom-8 left-8 w-16 h-16 border-b-4 border-l-4 border-white/30 rounded-bl-3xl"></div>
-                            <div className="absolute bottom-8 right-8 w-16 h-16 border-b-4 border-r-4 border-white/30 rounded-br-3xl"></div>
-
-                            <div className="relative z-10 text-center">
-                                <div className="mb-8">
-                                    <div className="inline-flex items-center justify-center w-24 h-24 bg-white/20 backdrop-blur-sm rounded-full mb-4">
-                                        <Award className="w-12 h-12" />
-                                    </div>
-                                    <h1 className="text-4xl md:text-5xl font-bold mb-2">Sertifikat Kompetensi</h1>
-                                    <p className="text-xl text-white/90">Pelatihan Batik Tradisional Indonesia</p>
+                    <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+                        {/* Header */}
+                        <div className={`bg-gradient-to-r ${levelConfig.color} p-8 text-white relative`}>
+                            <div className="text-center">
+                                <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full mb-4">
+                                    <Award className="w-10 h-10" />
                                 </div>
+                                <h1 className="text-3xl font-bold mb-2">{certificate.course.title}</h1>
+                                <p className="text-lg text-white/90">Level {levelConfig.text}</p>
                             </div>
                         </div>
 
                         {/* Certificate Body */}
-                        <div className="p-12">
+                        <div className="p-8">
                             {/* Certificate Text */}
-                            <div className="text-center mb-12">
-                                <p className="text-gray-600 mb-4">Dengan bangga diberikan kepada</p>
-                                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                                    {certificate.user.name}
-                                </h2>
-                                <p className="text-lg text-gray-600 mb-8">
-                                    Yang telah berhasil menyelesaikan pelatihan
-                                </p>
-                                <div className={`inline-block bg-gradient-to-r ${levelConfig.color} text-white px-8 py-4 rounded-2xl mb-4`}>
-                                    <h3 className="text-2xl md:text-3xl font-bold mb-1">{certificate.course.title}</h3>
-                                    <p className="text-lg">Level {levelConfig.text} {levelConfig.emoji}</p>
-                                </div>
-                                <p className="text-gray-600 mt-8">
+                            <div className="text-center mb-8">
+                                <p className="text-gray-600 mb-6">
                                     dengan menunjukkan dedikasi dan kemampuan dalam menguasai teknik seni batik tradisional Indonesia
                                 </p>
                             </div>
 
                             {/* Certificate Details */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                                <div className="bg-gray-50 rounded-2xl p-6 text-center">
-                                    <Calendar className="w-8 h-8 text-[#BA682A] mx-auto mb-3" />
-                                    <p className="text-sm text-gray-500 mb-2">Tanggal Penyelesaian</p>
-                                    <p className="font-bold text-gray-900">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                                <div className="bg-gray-50 rounded-xl p-4 text-center">
+                                    <Calendar className="w-6 h-6 text-[#BA682A] mx-auto mb-2" />
+                                    <p className="text-xs text-gray-500 mb-1">Tanggal Penyelesaian</p>
+                                    <p className="font-semibold text-gray-900 text-sm">
                                         {new Date(certificate.issued_at).toLocaleDateString('id-ID', {
                                             day: 'numeric',
                                             month: 'long',
@@ -107,65 +81,61 @@ export default function ShowCertificate({ certificate, auth }) {
                                         })}
                                     </p>
                                 </div>
-                                <div className="bg-gray-50 rounded-2xl p-6 text-center">
-                                    <CheckCircle2 className="w-8 h-8 text-[#BA682A] mx-auto mb-3" />
-                                    <p className="text-sm text-gray-500 mb-2">Total Materi</p>
-                                    <p className="font-bold text-gray-900">{certificate.course.lessons_count || 0} Lesson</p>
+                                <div className="bg-gray-50 rounded-xl p-4 text-center">
+                                    <CheckCircle2 className="w-6 h-6 text-[#BA682A] mx-auto mb-2" />
+                                    <p className="text-xs text-gray-500 mb-1">Total Materi</p>
+                                    <p className="font-semibold text-gray-900 text-sm">{certificate.course.lessons_count || 4} Lesson</p>
                                 </div>
-                                <div className="bg-gray-50 rounded-2xl p-6 text-center">
-                                    <User className="w-8 h-8 text-[#BA682A] mx-auto mb-3" />
-                                    <p className="text-sm text-gray-500 mb-2">Nomor Sertifikat</p>
-                                    <p className="font-mono text-sm font-bold text-gray-900 break-all">
+                                <div className="bg-gray-50 rounded-xl p-4 text-center">
+                                    <Award className="w-6 h-6 text-[#BA682A] mx-auto mb-2" />
+                                    <p className="text-xs text-gray-500 mb-1">Nomor Sertifikat</p>
+                                    <p className="font-mono text-xs font-semibold text-gray-900 break-all">
                                         {certificate.certificate_number}
                                     </p>
                                 </div>
                             </div>
 
                             {/* Signature Section */}
-                            <div className="border-t pt-12">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div className="border-t pt-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="text-center">
-                                        <div className="mb-4">
-                                            <div className="h-px bg-gray-300 w-48 mx-auto mb-2"></div>
-                                            <p className="font-bold text-gray-900">Platform Larasena</p>
-                                            <p className="text-sm text-gray-500">Sistem Pelatihan Digital</p>
-                                        </div>
+                                        <p className="font-semibold text-gray-900">Platform Larasena</p>
+                                        <p className="text-xs text-gray-500">Sistem Pelatihan Digital</p>
                                     </div>
                                     <div className="text-center">
-                                        <div className="mb-4">
-                                            <div className="h-px bg-gray-300 w-48 mx-auto mb-2"></div>
-                                            <p className="font-bold text-gray-900">Instruktur Batik</p>
-                                            <p className="text-sm text-gray-500">Ahli Batik Tradisional</p>
-                                        </div>
+                                        <p className="font-semibold text-gray-900">Instruktur Batik</p>
+                                        <p className="text-xs text-gray-500">Ahli Batik Tradisional</p>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Verification Info */}
-                            <div className="mt-12 bg-blue-50 border border-blue-200 rounded-2xl p-6 text-center">
-                                <p className="text-sm text-blue-800">
+                            <div className="mt-6 bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+                                <p className="text-xs text-blue-800">
                                     <strong>Verifikasi Sertifikat:</strong> Sertifikat ini dapat diverifikasi dengan mengunjungi{' '}
-                                    <span className="font-mono bg-white px-2 py-1 rounded">
+                                    <span className="font-mono bg-white px-2 py-1 rounded text-xs">
                                         larasena.id/sertifikat/{certificate.id}
                                     </span>
                                 </p>
                             </div>
 
                             {/* Action Buttons */}
-                            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
                                 <button
                                     onClick={handleDownload}
-                                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#BA682A] to-[#D2691E] text-white font-semibold px-8 py-4 rounded-xl hover:shadow-lg transition-all"
+                                    className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#BA682A] to-[#D2691E] text-white font-semibold px-6 py-3 rounded-xl hover:shadow-lg transition-all"
                                 >
                                     <Download className="w-5 h-5" />
                                     Download PDF
                                 </button>
                                 <button
-                                    onClick={handleShare}
-                                    className="flex items-center justify-center gap-2 bg-blue-600 text-white font-semibold px-8 py-4 rounded-xl hover:shadow-lg transition-all"
+                                    onClick={handleShareLinkedIn}
+                                    className="flex items-center justify-center gap-2 bg-[#0A66C2] text-white font-semibold px-6 py-3 rounded-xl hover:shadow-lg transition-all hover:bg-[#004182]"
                                 >
-                                    <Share2 className="w-5 h-5" />
-                                    Bagikan
+                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                    </svg>
+                                    Tambahkan ke LinkedIn
                                 </button>
                             </div>
                         </div>

@@ -10,7 +10,8 @@ import {
   Trash2,
   Wand2,
   Paintbrush,
-  X
+  X,
+  Upload
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
@@ -21,6 +22,10 @@ export default function Dashboard({ designs = [] }) {
   const [showCanvasModal, setShowCanvasModal] = useState(false);
   const [customSize, setCustomSize] = useState({ width: 800, height: 600 });
   const [fabOpen, setFabOpen] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
+  const [selectedDesign, setSelectedDesign] = useState(null);
+  const [publishData, setPublishData] = useState({ title: '', philosophy: '' });
+  const [publishLoading, setPublishLoading] = useState(false);
   const user = auth.user;
 
   const filterItems = ['Semua', 'Terbaru', 'Favorit', 'Draft'];
@@ -75,6 +80,62 @@ export default function Dashboard({ designs = [] }) {
   const openEditor = (width, height) => {
     setShowCanvasModal(false);
     router.visit(`/editor?width=${width}&height=${height}`);
+  };
+
+  const handlePublishClick = (design) => {
+    setSelectedDesign(design);
+    setPublishData({ title: design.title || '', philosophy: '' });
+    setShowPublishModal(true);
+  };
+
+  const handlePublishSubmit = () => {
+    if (!publishData.title.trim() || !publishData.philosophy.trim()) {
+      alert('Mohon isi nama motif dan filosofi');
+      return;
+    }
+
+    setPublishLoading(true);
+
+    // Convert design image to blob and upload
+    const formData = new FormData();
+    formData.append('title', publishData.title);
+    formData.append('philosophy', publishData.philosophy);
+    formData.append('design_id', selectedDesign.id);
+    
+    // Add design_data as JSON string
+    const designData = {
+      design_id: selectedDesign.id,
+      title: selectedDesign.title,
+      original_path: selectedDesign.image_url
+    };
+    formData.append('design_data', JSON.stringify(designData));
+    
+    // Fetch image and convert to file
+    fetch(selectedDesign.image_url)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], `${selectedDesign.title}.png`, { type: 'image/png' });
+        formData.append('image', file);
+
+        router.post('/motif/publish', formData, {
+          onSuccess: () => {
+            setShowPublishModal(false);
+            setPublishLoading(false);
+            setPublishData({ title: '', philosophy: '' });
+            alert('Motif berhasil disubmit untuk review!');
+          },
+          onError: (errors) => {
+            setPublishLoading(false);
+            console.error(errors);
+            alert('Gagal submit motif. Silakan coba lagi.');
+          }
+        });
+      })
+      .catch(err => {
+        setPublishLoading(false);
+        console.error(err);
+        alert('Gagal mengambil gambar. Silakan coba lagi.');
+      });
   };
 
   return (
@@ -224,10 +285,24 @@ export default function Dashboard({ designs = [] }) {
                   </span>
                 </div>
 
-                <div className="absolute top-3 right-3">
+                <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
                   <span className="bg-white/90 backdrop-blur-sm text-gray-600 text-xs px-2 py-1 rounded-md font-medium">
                     {new Date(design.updated_at).toLocaleDateString('id-ID')}
                   </span>
+                  
+                  {design.published_status && (
+                    <span className={`backdrop-blur-sm text-xs px-2 py-1 rounded-md font-medium ${
+                      design.published_status === 'approved' 
+                        ? 'bg-green-500/90 text-white' 
+                        : design.published_status === 'pending'
+                        ? 'bg-yellow-500/90 text-white'
+                        : 'bg-red-500/90 text-white'
+                    }`}>
+                      {design.published_status === 'approved' ? '✓ Terpublish' : 
+                       design.published_status === 'pending' ? '⏳ Menunggu' : 
+                       '✗ Ditolak'}
+                    </span>
+                  )}
                 </div>
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -237,13 +312,23 @@ export default function Dashboard({ designs = [] }) {
                     <Link
                       href={`/designs/${design.id}`}
                       className="p-2 bg-white/90 backdrop-blur-sm rounded-lg text-gray-700 hover:bg-blue-500 hover:text-white transition-colors"
+                      title="Edit"
                     >
                       <Edit3 className="w-4 h-4" />
                     </Link>
 
                     <button
+                      onClick={() => handlePublishClick(design)}
+                      className="p-2 bg-white/90 backdrop-blur-sm rounded-lg text-gray-700 hover:bg-amber-500 hover:text-white transition-colors"
+                      title="Publish ke Galeri"
+                    >
+                      <Upload className="w-4 h-4" />
+                    </button>
+
+                    <button
                       onClick={() => handleDownload(design)}
                       className="p-2 bg-white/90 backdrop-blur-sm rounded-lg text-gray-700 hover:bg-[#D2691E] hover:text-white transition-colors"
+                      title="Download"
                     >
                       <Download className="w-4 h-4" />
                     </button>
@@ -251,6 +336,7 @@ export default function Dashboard({ designs = [] }) {
                     <button
                       onClick={() => handleDelete(design.id)}
                       className="p-2 bg-white/90 backdrop-blur-sm rounded-lg text-gray-700 hover:bg-red-500 hover:text-white transition-colors"
+                      title="Hapus"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -259,9 +345,24 @@ export default function Dashboard({ designs = [] }) {
               </div>
 
               <div className="p-4">
-                <h3 className="font-semibold text-gray-800 text-sm mb-2 group-hover:text-[#D2691E] transition-colors">
-                  {design.title}
-                </h3>
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <h3 className="font-semibold text-gray-800 text-sm flex-1 group-hover:text-[#D2691E] transition-colors">
+                    {design.title}
+                  </h3>
+                  {design.published_status && (
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${
+                      design.published_status === 'approved' 
+                        ? 'bg-green-100 text-green-700 border border-green-300' 
+                        : design.published_status === 'pending'
+                        ? 'bg-yellow-100 text-yellow-700 border border-yellow-300'
+                        : 'bg-red-100 text-red-700 border border-red-300'
+                    }`}>
+                      {design.published_status === 'approved' ? '✓ Published' : 
+                       design.published_status === 'pending' ? '⏳ Pending' : 
+                       '✗ Rejected'}
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-gray-500">
                   Terakhir diubah · {new Date(design.updated_at).toLocaleDateString('id-ID')}
                 </p>
@@ -401,6 +502,103 @@ export default function Dashboard({ designs = [] }) {
             >
               Batal
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Publish Modal */}
+      {showPublishModal && selectedDesign && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden my-8">
+            <div className="bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-4">
+              <h2 className="text-2xl font-bold text-white">Publish Motif ke Galeri</h2>
+              <p className="text-amber-50 text-sm mt-1">Bagikan karya batik Anda dengan komunitas</p>
+            </div>
+
+            <div className="p-6 space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+              {/* Preview Image */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Preview Motif</label>
+                <div className="relative h-48 rounded-xl overflow-hidden bg-gray-100 border-2 border-gray-200">
+                  <img
+                    src={selectedDesign.image_url}
+                    alt={selectedDesign.title}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              </div>
+
+              {/* Title Input */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Nama Motif *
+                </label>
+                <input
+                  type="text"
+                  value={publishData.title}
+                  onChange={(e) => setPublishData({ ...publishData, title: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  placeholder="Contoh: Batik Parang Kombinasi Modern"
+                  maxLength={255}
+                />
+              </div>
+
+              {/* Philosophy Textarea */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Filosofi Motif *
+                </label>
+                <textarea
+                  value={publishData.philosophy}
+                  onChange={(e) => setPublishData({ ...publishData, philosophy: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 resize-none"
+                  rows={4}
+                  placeholder="Ceritakan makna dan filosofi di balik motif batik Anda..."
+                  maxLength={1000}
+                />
+                <div className="text-xs text-gray-500 mt-1 text-right">
+                  {publishData.philosophy.length}/1000 karakter
+                </div>
+              </div>
+
+              {/* Info Box */}
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                <div className="flex gap-3">
+                  <div className="text-amber-600 mt-0.5">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-amber-900 text-sm mb-1">Proses Review</h4>
+                    <p className="text-amber-800 text-xs leading-relaxed">
+                      Motif yang Anda submit akan direview oleh admin. Jika disetujui, motif akan tampil di galeri publik dan Anda akan mendapatkan badge!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="bg-gray-50 px-6 py-4 flex gap-3">
+              <button
+                onClick={() => {
+                  setShowPublishModal(false);
+                  setPublishData({ title: '', philosophy: '' });
+                }}
+                disabled={publishLoading}
+                className="flex-1 px-4 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handlePublishSubmit}
+                disabled={publishLoading || !publishData.title.trim() || !publishData.philosophy.trim()}
+                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-semibold hover:from-amber-600 hover:to-amber-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {publishLoading ? 'Mengirim...' : 'Submit untuk Review'}
+              </button>
+            </div>
           </div>
         </div>
       )}

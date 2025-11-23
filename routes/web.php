@@ -46,6 +46,10 @@ Route::get('/', function () {
     return Inertia::render('LandingPage');
 })->name('landing');
 
+// Public Motif Gallery
+Route::get('/galeri-motif', [\App\Http\Controllers\PublishedMotifController::class, 'gallery'])->name('published-motifs.gallery');
+Route::get('/galeri-motif/{slug}', [\App\Http\Controllers\PublishedMotifController::class, 'show'])->name('published-motifs.show');
+
 // ============================================================================
 // 👤 ROUTE UNTUK GENERAL USER (role: General)
 // ============================================================================
@@ -87,6 +91,13 @@ Route::middleware(['auth', 'verified', 'role:General'])->group(function () {
     Route::get('/sertifikat', [TrainingCertificateController::class, 'index'])->name('training.certificates.index');
     Route::get('/sertifikat/{certificate}', [TrainingCertificateController::class, 'show'])->name('training.certificates.show');
     Route::get('/sertifikat/{certificate}/download', [TrainingCertificateController::class, 'download'])->name('training.certificates.download');
+
+    // Published Motifs (Submit from Dashboard)
+    Route::post('/motif/publish', [\App\Http\Controllers\PublishedMotifController::class, 'store'])->name('motif.published.store');
+    Route::delete('/motif/publish/{motif}', [\App\Http\Controllers\PublishedMotifController::class, 'destroy'])->name('motif.published.destroy');
+    
+    // Like motif
+    Route::post('/motif/{motif}/like', [\App\Http\Controllers\PublishedMotifController::class, 'toggleLike'])->name('motif.like');
 
     // Profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -154,6 +165,15 @@ Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
     Route::put('/admin-training/lessons/{lesson}', [AdminTrainingLessonController::class, 'update'])->name('admin.training.lessons.update');
     Route::delete('/admin-training/lessons/{lesson}', [AdminTrainingLessonController::class, 'destroy'])->name('admin.training.lessons.destroy');
     Route::put('/admin-training/lessons/{lesson}/toggle-publish', [AdminTrainingLessonController::class, 'togglePublish'])->name('admin.training.lessons.togglePublish');
+
+    // Published Motifs Management (Admin Moderation)
+    Route::prefix('admin-published-motifs')->name('admin.published-motifs.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\AdminPublishedMotifController::class, 'index'])->name('index');
+        Route::put('/{motif}/approve', [\App\Http\Controllers\Admin\AdminPublishedMotifController::class, 'approve'])->name('approve');
+        Route::put('/{motif}/reject', [\App\Http\Controllers\Admin\AdminPublishedMotifController::class, 'reject'])->name('reject');
+        Route::put('/{motif}/toggle-featured', [\App\Http\Controllers\Admin\AdminPublishedMotifController::class, 'toggleFeatured'])->name('toggle-featured');
+        Route::delete('/{motif}', [\App\Http\Controllers\Admin\AdminPublishedMotifController::class, 'destroy'])->name('destroy');
+    });
 });
 
 // ============================================================================
