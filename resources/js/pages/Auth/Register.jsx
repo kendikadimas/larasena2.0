@@ -37,7 +37,7 @@ export default function Register() {
                         <div className="mb-4">
                             <div className="w-16 h-16 mx-auto mb-4 overflow-hidde">
                                 <img 
-                                    src="/images/lolares.png" 
+                                    src="/images/Logo-Larasena.png" 
                                     alt="Larasena Logo" 
                                     className="w-full h-full object-contain"
                                 />

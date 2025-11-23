@@ -95,6 +95,7 @@ export default function Dashboard({ designs = [] }) {
      
         <div className="hidden md:flex gap-4">
           <button
+            id="create-batik-btn"
             onClick={() => setShowCanvasModal(true)}
             className="relative overflow-hidden rounded-2xl p-4 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer group h-16 w-48"
             style={{
@@ -278,6 +279,7 @@ export default function Dashboard({ designs = [] }) {
               {searchTerm ? 'Tidak ditemukan desain yang sesuai dengan pencarian' : 'Mulai buat desain batik pertama Anda'}
             </p>
             <button
+              id="create-batik-btn"
               onClick={() => setShowCanvasModal(true)}
               className="inline-flex items-center px-4 py-2 bg-[#D2691E] hover:bg-[#A0522D] text-white rounded-lg transition-colors"
             >
@@ -342,19 +344,19 @@ export default function Dashboard({ designs = [] }) {
 
    
       {showCanvasModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4">
-            <h2 className="text-xl font-bold text-gray-800">Pilih Ukuran Canvas</h2>
-            <p className="text-sm text-gray-600">Pilih ukuran canvas untuk desain batik Anda</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-sm">
+          <div className="bg-[#CFA97A] w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4">
+            <h2 className="text-xl font-bold text-white">Pilih Ukuran Canvas</h2>
+            <p className="text-sm text-white/90">Pilih ukuran canvas untuk desain batik Anda</p>
 
             <div className="space-y-2">
               {canvasPresets.map((preset) => (
                 <button
                   key={preset.label}
                   onClick={() => openEditor(preset.width, preset.height)}
-                  className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 hover:border-[#D2691E] hover:bg-[#FFF7ED] transition-all text-left group"
+                  className="w-full px-4 py-3 rounded-lg border-2 border-white/30 hover:border-[#A0522D] hover:bg-white/10 transition-all text-left group"
                 >
-                  <span className="font-medium text-gray-800 group-hover:text-[#D2691E]">
+                  <span className="font-medium text-white group-hover:text-[#FFEBDD]">
                     {preset.label}
                   </span>
                 </button>
@@ -389,15 +391,14 @@ export default function Dashboard({ designs = [] }) {
               </div>
               <button
                 onClick={() => openEditor(customSize.width, customSize.height)}
-                className="mt-3 w-full px-4 py-2 bg-[#D2691E] text-white rounded-lg hover:bg-[#A0522D] transition font-medium"
+                className="mt-3 w-full px-4 py-2 bg-[#A0522D] text-white rounded-lg hover:bg-[#8a3f14] transition font-medium"
               >
                 Gunakan ukuran custom
               </button>
             </div>
-
             <button
               onClick={() => setShowCanvasModal(false)}
-              className="w-full px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition"
+              className="w-full px-4 py-2 text-sm text-white bg-white/10 hover:bg-white/20 rounded-lg transition font-medium"
             >
               Batal
             </button>

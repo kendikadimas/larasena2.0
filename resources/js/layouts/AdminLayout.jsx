@@ -96,7 +96,7 @@ export default function AdminLayout({ children }) {
                     </button>
                     <div className="flex items-center gap-2">
                         <img 
-                            src="/images/logo.png" 
+                            src="/images/LOGO.png" 
                             alt="Larasena" 
                             className="h-8 w-auto"
                         />

@@ -29,10 +29,26 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+
+        $userData = null;
+        if ($user) {
+            $isNew = false;
+            try {
+                if ($user->created_at) {
+                    $isNew = $user->created_at->diffInDays(now()) < 7;
+                }
+            } catch (\Throwable $e) {
+                $isNew = false;
+            }
+
+            $userData = array_merge($user->toArray(), ['is_new' => $isNew]);
+        }
+
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $userData,
             ],
         ];
     }

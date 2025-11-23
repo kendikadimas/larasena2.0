@@ -1,4 +1,5 @@
 import Sidebar from './Sidebar';
+import Onboarding from '@/components/Onboarding';
 import { Head, Link, usePage } from '@inertiajs/react';
 import { Bell, Settings, User, LogOut, ChevronDown, ChevronsRight } from 'lucide-react';
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
@@ -47,6 +48,7 @@ export default function UserLayout({ children, title }) {
   return (
     <>
       <Head title={title} />
+      <Onboarding forceShow={auth && auth.user && auth.user.is_new} />
       <div className="flex h-screen bg-gray-50">
         <Sidebar />
         <main className="flex-1 flex flex-col overflow-hidden min-h-screen">
@@ -69,7 +71,7 @@ export default function UserLayout({ children, title }) {
             <div className="flex items-center gap-4">
              
               <Menu as="div" className="relative z-10">
-                <MenuButton className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg transition-colors">
+                <MenuButton id="profile-menu-button" className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg transition-colors">
                   <img 
                     src={`https://ui-avatars.com/api/?name=${user.name}&background=BA682A&color=fff`} 
                     alt="Avatar" 

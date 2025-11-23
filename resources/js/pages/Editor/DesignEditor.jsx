@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight, Download } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Download, HelpCircle } from 'lucide-react';
 import MockupViewer3D from '@/components/Editor/MockupViewer3D';
 import MotifLibrary from '@/components/Editor/MotifLibrary';
 import CanvasArea from '@/components/Editor/CanvasArea';
 import PropertiesToolbar from '@/components/Editor/PropertiesToolbar';
 import LayerPanel from '@/components/Editor/LayerPanel';
+import Onboarding from '@/components/Onboarding';
 import { nanoid } from 'nanoid';
+// FloatingTour removed — using native Onboarding
 import { debounce } from 'lodash';
 
 function downloadURI(uri, name) {
@@ -136,6 +138,8 @@ export default function DesignEditor({ initialDesign }) {
     const stageRef = useRef();
     const [show3DModal, setShow3DModal] = useState(false);
     const [patternFor3D, setPatternFor3D] = useState('');
+    const [onboardingForce, setOnboardingForce] = useState(false);
+    // experimental overlay/controller removed to restore original onboarding behavior
 
     // Load motifs dari API saat komponen mount
     useEffect(() => {
@@ -723,6 +727,19 @@ useEffect(() => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
 }, [showDownloadMenu]);
 
+    // Onboarding steps for the editor — define here so we can reuse content
+    const editorOnboardingSteps = [
+        { target: '#design-name-input', placement: 'right', content: 'Ganti nama batik di sini. Nama ini akan tersimpan saat Anda klik "Simpan Desain".' },
+        { target: '#motif-library', placement: 'right', content: 'Pustaka motif: tarik motif ke canvas untuk menambah elemen desain Anda.' },
+        { target: '#canvas-area', placement: 'right', content: 'Area canvas: gunakan mouse untuk memindahkan, mengubah ukuran, dan memutar motif.' },
+        { target: '#properties-toolbar', placement: 'right', content: 'Toolbar properti: di sini Anda dapat memilih brush, eraser, mengubah ukuran dan warna.' },
+        { target: '#layers-panel', placement: 'right', content: 'Panel Layers: atur urutan motif, pilih layer, atau bersihkan canvas dari sini.' },
+        { target: '#preview-3d-btn', placement: 'right', content: 'Gunakan tombol ini untuk melihat preview 3D dari desain Anda sebelum mengekspor.' },
+        { target: '#canvas-size-display', placement: 'right', content: 'Ini adalah ukuran canvas (px). Untuk zoom dan presentase, gunakan kontrol di area canvas (jika tersedia).' }
+    ];
+
+    // removed experimental step-change handler — rely on Onboarding/Joyride default behavior
+
     return (
         <>
             <Head title="Editor Desain Batik" />
@@ -740,13 +757,14 @@ useEffect(() => {
                         <span className="ml-4 px-3 py-1 rounded-full bg-[#FFF7ED] text-[#BA682A] font-bold text-lg tracking-tight shadow">
                             Canvas Batik Editor
                         </span>
-                        <span className="ml-2 px-3 py-1 rounded-lg bg-gray-100 text-gray-600 text-sm font-medium">
+                        <span id="canvas-size-display" className="ml-2 px-3 py-1 rounded-lg bg-gray-100 text-gray-600 text-sm font-medium">
                             {defaultSize.width} × {defaultSize.height} px
                         </span>
                     </div>
                     <div className="flex items-center gap-4">
                         <input 
                             type="text" 
+                            id="design-name-input"
                             value={designName} 
                             onChange={(e) => setDesignName(e.target.value)}
                             className="border border-[#D2691E] rounded-lg px-4 py-2 text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#D2691E] w-56 shadow"
@@ -788,6 +806,7 @@ useEffect(() => {
                         </div>
 
                         <button 
+                            id="preview-3d-btn"
                             onClick={handleShow3D}
                             disabled={exporting3D}
                             className={`px-4 py-2 rounded-lg transition flex items-center gap-2 font-semibold shadow ${
@@ -808,6 +827,15 @@ useEffect(() => {
                                 </>
                             )}
                         </button>
+                        <button
+                            id="onboarding-trigger-btn"
+                            title="Panduan Editor"
+                            onClick={() => setOnboardingForce(true)}
+                            className="p-2 rounded-full hover:bg-gray-100 transition text-[#6B4A2A]"
+                        >
+                            <HelpCircle className="w-5 h-5" />
+                        </button>
+
                         <button 
                             onClick={handleSave}
                             disabled={isSaving}
@@ -822,8 +850,8 @@ useEffect(() => {
                 
                 {/* Main Content - 3 kolom: Motif | Canvas | Properties */}
                 <div className="flex-1 flex overflow-hidden">
-                    {/* LEFT SIDEBAR - Pustaka Motif */}
-                    <aside className="w-64 bg-[#FAFAFA] border-r flex flex-col overflow-hidden">
+                    {/* LEFT SIDEBAR - Pustaka Motif (moved back to left) */}
+                    <aside id="motif-library" className="w-64 bg-[#FAFAFA] border-r flex flex-col overflow-hidden">
                         <div className="p-4 flex-1 overflow-y-auto">
                             <MotifLibrary 
                                 motifs={motifs} 
@@ -838,7 +866,11 @@ useEffect(() => {
                     {/* CENTER - Canvas Area dengan Toolbar */}
                     <div className="flex-1 flex flex-col bg-gray-50">
                         {/* Canvas Container */}
-                        <div className="flex-1 p-4">
+                        <div id="canvas-area" className="flex-1 p-4 relative">
+                            {/* Anchor for floating tour (right edge) */}
+                            <div id="canvas-area-anchor" style={{ position: 'absolute', right: 20, top: '50%', width: 16, height: 16, transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 9999 }} />
+                            {/* Anchor for onboarding targeting the canvas toolbar (top-left) */}
+                            <div id="canvas-area-anchor-top" style={{ position: 'absolute', left: 20, top: 20, width: 56, height: 56, transform: 'translateY(0)', pointerEvents: 'none', zIndex: 9999 }} />
                             <CanvasArea 
                                 canvasObjects={canvasObjects || []}
                                 setCanvasObjects={setCanvasObjects}
@@ -867,11 +899,11 @@ useEffect(() => {
                         </div>
                     </div>
                     
-                    {/* RIGHT SIDEBAR - Properties & Layers */}
+                    {/* RIGHT SIDEBAR - Properties & Layers (moved back to right) */}
                     <aside className="w-72 bg-white border-l flex flex-col overflow-hidden">
                         <div className="p-4 flex-1 overflow-y-auto space-y-6">
                             {/* Properties Section */}
-                            <div className="bg-[#FAFAFA] rounded-lg p-4 border">
+                            <div id="properties-toolbar" className="bg-[#FAFAFA] rounded-lg p-4 border">
                                 <PropertiesToolbar 
                                     selectedObject={selectedObject}
                                     onUpdate={updateObjectProperties}
@@ -879,7 +911,7 @@ useEffect(() => {
                             </div>
                             
                             {/* Layers Section */}
-                            <div className="bg-[#FAFAFA] rounded-lg p-4 border">
+                            <div id="layers-panel" className="bg-[#FAFAFA] rounded-lg p-4 border">
                                 <LayerPanel 
                                     objects={canvasObjects}
                                     selectedId={selectedId}
@@ -891,6 +923,22 @@ useEffect(() => {
                     </aside>
                 </div>
                 
+                {/* Persistent Onboarding (Joyride) for Editor - triggered by help button */}
+                <Onboarding
+                    storageKey="larasena_onboarding_canvas_shown"
+                    forceShow={onboardingForce}
+                    onClose={() => setOnboardingForce(false)}
+                    waitForTargets={true}
+                    maxWait={4000}
+                    disableFlip={true}
+                    steps={editorOnboardingSteps}
+                />
+
+                {/* Centered custom overlay shown only for canvas step (uses same text as the step) */}
+                {/* Restored to Joyride's native tooltips — custom overlay removed */}
+
+                {/* Floating tour retained but not used by default (kept for quick demos) */}
+                {/* FloatingTour removed — not used */}
                 {/* 3D Preview Modal - tetap sama */}
                 {show3DModal && (
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

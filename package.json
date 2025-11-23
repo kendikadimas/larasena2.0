@@ -74,6 +74,7 @@
         "three": "^0.179.1",
         "use-image": "^1.1.4",
         "vite": "^7.0.4"
+        ,"react-joyride": "^2.4.0"
     },
     "optionalDependencies": {
         "@rollup/rollup-linux-x64-gnu": "4.9.5",

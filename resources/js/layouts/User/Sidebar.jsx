@@ -192,9 +192,10 @@ export default function Sidebar() {
                       const isActive = url.startsWith(item.href) && item.href !== '#';
                       const Icon = item.icon;
                       
-                      return (
+                        return (
                         <Link
                           key={item.name}
+                          id={item.href === '/produksi' ? 'sidebar-produksi' : undefined}
                           href={item.href}
                           className={`flex items-center gap-3 rounded-xl font-medium transition-all duration-200 group relative
                             ${isCollapsed ? 'justify-center px-3 py-3' : 'px-4 py-3'}

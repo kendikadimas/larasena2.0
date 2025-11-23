@@ -4,7 +4,7 @@ export default function SEO({
     title = 'Larasena', 
     description = 'Platform desain dan produksi batik berbasis AI', 
     keywords = 'batik, desain batik, AI batik generator, motif batik',
-    image = '/images/Logo.svg',
+    image = '/images/LOGO.png',
     url = null 
 }) {
     const fullTitle = title === 'Larasena' ? title : `${title} Larasena`;
