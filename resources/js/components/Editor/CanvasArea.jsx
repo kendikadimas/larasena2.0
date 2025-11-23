@@ -28,20 +28,6 @@ const PenToolIcon = () => (
     </svg>
 );
 
-const UndoIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M9 14L4 9L9 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M20 20V13C20 11.9391 19.5786 10.9217 18.8284 10.1716C18.0783 9.42143 17.0609 9 16 9H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-);
-
-const RedoIcon = () => (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M15 14L20 9L15 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M4 20V13C4 11.9391 4.42143 10.9217 5.17157 10.1716C5.92172 9.42143 6.93913 9 8 9H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-);
-
 const EraserIcon = () => (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M16.24 3.56L20.44 7.76C21.22 8.54 21.22 9.81 20.44 10.59L12 19.03L5.56 12.59L14.04 4.11C14.82 3.32 16.09 3.32 16.87 4.11L16.24 3.56ZM14.12 14.17L9.88 9.93L4.22 15.59C3.44 16.37 3.44 17.64 4.22 18.42L7.05 21.25C7.83 22.03 9.1 22.03 9.88 21.25L14.12 17.01L14.12 14.17Z" 
@@ -273,10 +259,6 @@ export default function CanvasArea({
     const [penOpacity, setPenOpacity] = useState(1); // Opacity 0-1
     const [penFillMode, setPenFillMode] = useState('fill'); // 'fill' or 'outline'
     
-    // History management for Undo/Redo
-    const [history, setHistory] = useState([]);
-    const [historyStep, setHistoryStep] = useState(-1);
-    
     // Shape Tool states (Rectangle, Circle, Triangle, Pentagon, Line)
     const [shapeStart, setShapeStart] = useState(null);
     const [shapePreview, setShapePreview] = useState(null);
@@ -304,59 +286,6 @@ export default function CanvasArea({
     
     const gridSize = 40;
 
-    // Save to history when canvasObjects change
-    const saveToHistory = (newObjects) => {
-        const newHistory = history.slice(0, historyStep + 1);
-        newHistory.push(JSON.parse(JSON.stringify(newObjects)));
-        setHistory(newHistory);
-        setHistoryStep(newHistory.length - 1);
-    };
-    
-    // Undo function
-    const handleUndo = () => {
-        if (historyStep > 0) {
-            const newStep = historyStep - 1;
-            setHistoryStep(newStep);
-            setCanvasObjects(JSON.parse(JSON.stringify(history[newStep])));
-        }
-    };
-    
-    // Redo function
-    const handleRedo = () => {
-        if (historyStep < history.length - 1) {
-            const newStep = historyStep + 1;
-            setHistoryStep(newStep);
-            setCanvasObjects(JSON.parse(JSON.stringify(history[newStep])));
-        }
-    };
-    
-    // Keyboard shortcuts for Undo/Redo
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            // Ctrl+Z or Cmd+Z for Undo
-            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
-                e.preventDefault();
-                handleUndo();
-            }
-            // Ctrl+Y or Cmd+Shift+Z for Redo
-            if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
-                e.preventDefault();
-                handleRedo();
-            }
-        };
-        
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [historyStep, history]);
-
-    // Initialize history with initial canvasObjects
-    useEffect(() => {
-        if (history.length === 0) {
-            setHistory([JSON.parse(JSON.stringify(canvasObjects))]);
-            setHistoryStep(0);
-        }
-    }, []);
-
     // Layer management functions
     const moveLayerUp = (id) => {
         const index = canvasObjects.findIndex(obj => obj.id === id);
@@ -364,7 +293,6 @@ export default function CanvasArea({
             const newObjects = [...canvasObjects];
             [newObjects[index], newObjects[index + 1]] = [newObjects[index + 1], newObjects[index]];
             setCanvasObjects(newObjects);
-            saveToHistory(newObjects);
         }
     };
 
@@ -374,7 +302,6 @@ export default function CanvasArea({
             const newObjects = [...canvasObjects];
             [newObjects[index], newObjects[index - 1]] = [newObjects[index - 1], newObjects[index]];
             setCanvasObjects(newObjects);
-            saveToHistory(newObjects);
         }
     };
 
@@ -385,7 +312,6 @@ export default function CanvasArea({
             const [item] = newObjects.splice(index, 1);
             newObjects.push(item);
             setCanvasObjects(newObjects);
-            saveToHistory(newObjects);
         }
     };
 
@@ -520,9 +446,7 @@ export default function CanvasArea({
                         opacity: penOpacity,
                     };
                     
-                    const newObjects = [...canvasObjects, closedPath];
-                    setCanvasObjects(newObjects);
-                    saveToHistory(newObjects);
+                    setCanvasObjects(prev => [...prev, closedPath]);
                     setPenPoints([]);
                     setPenPath(null);
                     setIsPathClosed(false);
@@ -650,9 +574,7 @@ export default function CanvasArea({
                     newShape.y2 = shapePreview.endY;
                 }
                 
-                const newObjects = [...canvasObjects, newShape];
-                setCanvasObjects(newObjects);
-                saveToHistory(newObjects);
+                setCanvasObjects(prev => [...prev, newShape]);
             }
             
             // Reset shape states
@@ -677,14 +599,12 @@ export default function CanvasArea({
                     type: 'line',
                     id: 'stroke-' + Date.now(),
                 };
-                const newObjects = [...canvasObjects, finalShape];
-                setCanvasObjects(newObjects);
-                saveToHistory(newObjects);
+                setCanvasObjects(prev => [...prev, finalShape]); // ✅ Ubah setObjects jadi setCanvasObjects
             }
         } else if (activeTool === 'eraser' && currentShape.points) {
             const eraserRadius = eraserWidth / 2;
             
-            setCanvasObjects(prev => {
+            setCanvasObjects(prev => { // ✅ Ubah setObjects jadi setCanvasObjects
                 const newObjects = [];
                 
                 prev.forEach(obj => {
@@ -710,7 +630,6 @@ export default function CanvasArea({
                     }
                 });
                 
-                saveToHistory(newObjects);
                 return newObjects;
             });
         }
@@ -760,9 +679,7 @@ export default function CanvasArea({
                 scaleY: 1,
             };
             
-            const newObjects = [...canvasObjects, newObject];
-            setCanvasObjects(newObjects);
-            saveToHistory(newObjects);
+            setCanvasObjects(prev => [...prev, newObject]); // ✅ Ubah setObjects jadi setCanvasObjects
             setSelectedId(newObject.id);
             setActiveTool('move');
         } catch (error) {
@@ -804,37 +721,6 @@ export default function CanvasArea({
                     boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
                 }}
             >
-                {/* Undo Button */}
-                <button
-                    onClick={handleUndo}
-                    disabled={historyStep <= 0}
-                    className={`w-10 h-10 flex items-center justify-center rounded-lg transition-all ${
-                        historyStep <= 0
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-[#BA682A]'
-                    }`}
-                    title="Undo (Ctrl+Z)"
-                >
-                    <UndoIcon />
-                </button>
-                
-                {/* Redo Button */}
-                <button
-                    onClick={handleRedo}
-                    disabled={historyStep >= history.length - 1}
-                    className={`w-10 h-10 flex items-center justify-center rounded-lg transition-all ${
-                        historyStep >= history.length - 1
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                            : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-[#BA682A]'
-                    }`}
-                    title="Redo (Ctrl+Y)"
-                >
-                    <RedoIcon />
-                </button>
-                
-                {/* Divider */}
-                <div className="w-px h-8 bg-gray-300 mx-1"></div>
-                
                 {TOOL_LIST.map(tool => {
                     // For shape tools with dropdown
                     if (tool.hasDropdown) {
@@ -1013,9 +899,7 @@ export default function CanvasArea({
                                                 closed: false,
                                                 opacity: penOpacity,
                                             };
-                                            const newObjects = [...canvasObjects, openPath];
-                                            setCanvasObjects(newObjects);
-                                            saveToHistory(newObjects);
+                                            setCanvasObjects(prev => [...prev, openPath]);
                                             setPenPoints([]);
                                             setPenPath(null);
                                         }
