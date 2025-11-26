@@ -9,6 +9,8 @@ use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserMotifController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\GoogleSearchConsoleController;
+use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\TrainingLessonController;
 use App\Http\Controllers\TrainingCertificateController;
@@ -204,9 +206,23 @@ Route::prefix('api')->group(function () {
 });
 
 // ============================================================================
-// �️ SITEMAP
+// 📡 SITEMAP & SEO
 // ============================================================================
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/robots.txt', [RobotsController::class, 'index'])->name('robots');
+
+// Google Search Console Verification
+Route::get('/{filename}', [GoogleSearchConsoleController::class, 'verifyHtml'])
+    ->where('filename', 'google[a-f0-9]+\.html')
+    ->name('google.verify');
+
+// Optional: Meta tag endpoint
+Route::get('/api/google-meta-verification', [GoogleSearchConsoleController::class, 'getMetaTag'])
+    ->name('google.meta-verification');
+
+// Optional: Sitemap submission info
+Route::post('/api/google-submit-sitemap', [GoogleSearchConsoleController::class, 'submitSitemap'])
+    ->name('google.submit-sitemap');
 
 // ============================================================================
 // �🔑 AUTH ROUTES
