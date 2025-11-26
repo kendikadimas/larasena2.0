@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, Head } from '@inertiajs/react';
 import SEO from '@/components/SEO';
 import GalleryCTA from '@/components/GalleryCTA';
 
@@ -143,6 +143,7 @@ export default function LandingPage() {
     : '/dashboard';
 
   return (
+  
     <div className="min-h-screen flex flex-col bg-white overflow-x-hidden relative">
       {/* Custom CSS untuk animasi */}
       <style jsx>{`
@@ -232,95 +233,86 @@ export default function LandingPage() {
         }
       `}</style>
 
+
       {/* ===== NAVBAR ELEGAN DENGAN LOGO ASLI ===== */}
-      <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-        isScrolled 
-          ? 'bg-white/97 backdrop-blur-md nav-shadow py-3' 
-          : 'bg-transparent py-4'
-      }`}>
-        <div className="px-8 md:px-16 lg:px-24">
-          {/* PENYESUAIAN PADDING: px-10 diubah menjadi responsif */}
-          <div className={`flex justify-between items-center px-4 sm:px-6 md:px-10 py-2 rounded-2xl transition-all duration-300 ${
-            isScrolled 
-              ? 'bg-white/90 backdrop-blur-lg border border-amber-100 traditional-border' 
-              : 'bg-white/85 backdrop-blur-lg border border-amber-50/30 traditional-border'
-          }`}>
-            
-            {/* Logo dengan gambar asli dari local */}
-            <a href="/" className="flex-shrink-0 flex items-center transform hover:scale-105 transition-transform duration-300 group">
-              <img 
-                src="/images/logolarasena.png" 
-                alt="Larasena Logo" 
-                className="h-12 w-auto"
-              />
-            </a>
-
-            {/* Navigation Links (Desktop) */}
-            <div className="hidden md:flex items-center gap-10">
-              <a href="#tentang" className="text-gray-700 hover:text-amber-700 font-medium transition-all duration-300 relative group text-lg group-hover:-translate-y-0.5 transform transition-transform duration-300">
-                Tentang
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <Link href="/galeri-motif" className="text-gray-700 hover:text-amber-700 font-medium transition-all duration-300 relative group text-lg group-hover:-translate-y-0.5 transform transition-transform duration-300">
-                Galeri
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <a href="#fitur" className="text-gray-700 hover:text-amber-700 font-medium transition-all duration-300 relative group text-lg group-hover:-translate-y-0.5 transform transition-transform duration-300">
-                Fitur
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <a href="#mitra" className="text-gray-700 hover:text-amber-700 font-medium transition-all duration-300 relative group text-lg group-hover:-translate-y-0.5 transform transition-transform duration-300">
-                Mitra
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-              <a href="#bantuan" className="text-gray-700 hover:text-amber-700 font-medium transition-all duration-300 relative group text-lg group-hover:-translate-y-0.5 transform transition-transform duration-300">
-                Bantuan
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
-              </a>
-            </div>
-
-            {/* Auth Buttons (Desktop) - TAMBAHKAN hidden md:flex */}
-            <div className="hidden md:flex items-center gap-4">
-              {user ? (
-                <a
-                  href={dashboardRoute}
-                  className="px-7 py-3 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                >
-                  Dashboard
-                </a>
-              ) : (
-                <>
-                  <a
-                    href="/login"
-                    className="px-6 py-3 rounded-xl border-2 border-amber-600 text-amber-600 font-semibold hover:bg-amber-600 hover:text-white transition-all duration-300 transform hover:scale-105"
-                  >
-                    Masuk
-                  </a>
-                  <a
-                    href="/register"
-                    className="px-7 py-3 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                  >
-                    Mulai Sekarang
-                  </a>
-                </>
-              )}
-            </div>
-
-            {/* ===== BARU: Tombol Hamburger Menu (Mobile) ===== */}
-            <div className="md:hidden flex items-center">
-              <button 
-                onClick={() => setIsMobileMenuOpen(true)}
-                className="text-gray-800 hover:text-amber-700 focus:outline-none"
-                aria-label="Buka menu"
+      {/* Logo & Auth Button - Not Fixed (Scrolls Away) */}
+      <div className="relative w-full py-4 bg-transparent">
+        <div className="px-8 md:px-16 lg:px-24 flex justify-between items-center">
+          <a href="/" className="flex-shrink-0 flex items-center transform hover:scale-105 transition-transform duration-300">
+            <img 
+              src="/images/logolarasena.png" 
+              alt="Larasena Logo" 
+              className="h-12 w-auto"
+            />
+          </a>
+          
+          {/* Auth Button - Desktop (Scrolls Away) */}
+          <div className="hidden md:flex items-center gap-3">
+            {user ? (
+              <a
+                href={dashboardRoute}
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
-                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+                Dashboard
+              </a>
+            ) : (
+              <a
+                href="/login"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              >
+                Masuk
+              </a>
+            )}
+          </div>
+
+          {/* Hamburger Menu - Mobile */}
+          <div className="md:hidden flex items-center">
+            <button 
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="text-white hover:text-amber-200 focus:outline-none"
+              aria-label="Buka menu"
+            >
+              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Navigation Menu - Fixed (Always Visible) */}
+      <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+        <div className={`hidden md:flex items-center gap-8 px-8 py-3 rounded-3xl transition-all duration-300 ${
+          isScrolled 
+            ? 'bg-white/90 backdrop-blur-lg border border-amber-100 traditional-border' 
+            : 'bg-white/70 backdrop-blur-md border border-white/50'
+        }`}>
+          <a href="#hero" className={`font-medium transition-all duration-300 relative group text-base ${
+            isScrolled ? 'text-gray-700 hover:text-amber-700' : 'text-gray-700 hover:text-amber-700'
+          }`}>
+            Beranda
+            <span className={`absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${
+              isScrolled ? 'bg-amber-600' : 'bg-amber-600'
+            }`}></span>
+          </a>
+          <Link href="/galeri-motif" className={`font-medium transition-all duration-300 relative group text-base ${
+            isScrolled ? 'text-gray-700 hover:text-amber-700' : 'text-gray-700 hover:text-amber-700'
+          }`}>
+            Batikpedia
+            <span className={`absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${
+              isScrolled ? 'bg-amber-600' : 'bg-amber-600'
+            }`}></span>
+          </Link>
+          <a href="#bantuan" className={`font-medium transition-all duration-300 relative group text-base ${
+            isScrolled ? 'text-gray-700 hover:text-amber-700' : 'text-gray-700 hover:text-amber-700'
+          }`}>
+            Bantuan
+            <span className={`absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${
+              isScrolled ? 'bg-amber-600' : 'bg-amber-600'
+            }`}></span>
+          </a>
+        </div>
+      </nav>
 
       {/* ===== BARU: Panel Menu Mobile ===== */}
       <div
@@ -349,10 +341,8 @@ export default function LandingPage() {
         
         {/* Konten Menu Mobile */}
         <div className="flex flex-col items-center justify-center h-full space-y-8 -mt-20">
-          <a href="#tentang" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Tentang</a>
-          <Link href="/galeri-motif" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Galeri</Link>
-          <a href="#fitur" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Fitur</a>
-          <a href="#mitra" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Mitra</a>
+          <a href="#hero" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Beranda</a>
+          <Link href="/galeri-motif" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Batikpedia</Link>
           <a href="#bantuan" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Bantuan</a>
           
           {/* Garis pemisah */}
@@ -1196,6 +1186,6 @@ className={`block group relative overflow-hidden rounded-2xl
   {/* Ornamen bawah */}
   <div className="absolute -bottom-10 right-10 w-60 h-60 bg-gradient-to-tr from-orange-200/40 to-amber-100/30 rounded-full blur-3xl opacity-60"></div>
 </footer>
-    </div>
-  );
+    </div>
+  );
 }
