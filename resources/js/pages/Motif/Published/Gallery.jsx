@@ -200,49 +200,45 @@ export default function Gallery({ motifs, user }) {
                     </div>
                 </div>
 
-                {/* Category Pills - Horizontal Scroll */}
-                <div className="mb-8 -mx-4 px-4">
-                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                        {categories.map((category) => (
-                            <button
-                                key={category.id}
-                                onClick={() => handleCategoryChange(category.id)}
-                                className={`flex-shrink-0 flex items-center gap-2 px-4 py-1 rounded-full font-medium transition-all ${
-                                    activeCategory === category.id
-                                        ? 'bg-[#BA682A] text-white shadow-[#BA682A]/25'
-                                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-                                }`}
+                {/* Sort Dropdown & Category Pills */}
+                <div className="mb-8">
+                    <div className="flex items-center justify-between gap-4">
+                        {/* Sort Dropdown - Paling Kiri */}
+                        <div className="flex-shrink-0 relative">
+                            <select
+                                value={sortBy}
+                                onChange={(e) => handleSort(e.target.value)}
+                                className="appearance-none pl-4 pr-10 py-2 rounded-lg font-medium text-sm bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#BA682A]/20 focus:border-[#BA682A]"
                             >
-                                <span className="text-lg">{category.icon}</span>
-                                <span className="text-sm">{category.name}</span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Sort Options - Minimal */}
-                <div className="mb-6 flex items-center justify-between">
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => handleSort('latest')}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                sortBy === 'latest'
-                                    ? 'bg-gray-900 text-white'
-                                    : 'text-gray-600 hover:text-gray-900'
-                            }`}
-                        >
-                            Terbaru
-                        </button>
-                        <button
-                            onClick={() => handleSort('popular')}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                                sortBy === 'popular'
-                                    ? 'bg-gray-900 text-white'
-                                    : 'text-gray-600 hover:text-gray-900'
-                            }`}
-                        >
-                            Terpopuler
-                        </button>
+                                <option value="latest">Terbaru</option>
+                                <option value="popular">Terpopuler</option>
+                            </select>
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        {/* Category Pills - Paling Kanan dengan Scroll */}
+                        <div className="-mx-4 px-4 flex-1 overflow-hidden">
+                            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide justify-end">
+                                {categories.map((category) => (
+                                    <button
+                                        key={category.id}
+                                        onClick={() => handleCategoryChange(category.id)}
+                                        className={`flex-shrink-0 flex items-center gap-2 px-4 py-1 rounded-full font-medium transition-all ${
+                                            activeCategory === category.id
+                                                ? 'bg-[#BA682A] text-white shadow-[#BA682A]/25'
+                                                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                                        }`}
+                                    >
+                                        <span className="text-lg">{category.icon}</span>
+                                        <span className="text-sm">{category.name}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
