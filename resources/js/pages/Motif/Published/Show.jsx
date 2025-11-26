@@ -127,59 +127,67 @@ export default function Show({ motif, relatedMotifs, user }) {
                 </Link>
 
                 {/* Title & Profile Creator */}
-                <div className="flex items-center justify-between mb-8">
-                    {/* Title */}
-                    <div>
-                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">{motif.title}</h1>
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#BA682A] to-[#D2691E] flex items-center justify-center text-white font-bold overflow-hidden ring-2 ring-gray-100">
-                                    {motif.user.profile_photo_url ? (
-                                        <img
-                                            src={motif.user.profile_photo_url}
-                                            alt={motif.user.name}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <span className="text-sm">{motif.user.name.charAt(0).toUpperCase()}</span>
-                                    )}
-                                </div>
-                                <div>
-                                    <div className="text-sm font-semibold text-gray-900">
-                                        {motif.user.name}
-                                    </div>
-                                    <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                                        <Calendar className="w-3 h-3" />
-                                        <span>{motif.published_at}</span>
-                                    </div>
-                                </div>
-                            </div>
+                <div className="mb-8">
+                    {/* Title & Origin Badge */}
+                    <div className="mb-4 flex items-start justify-between">
+                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{motif.title}</h1>
+                        <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#BA682A]/10 to-[#D2691E]/10 border border-[#BA682A]/20 rounded-xl">
+                            <MapPin className="w-5 h-5 text-[#BA682A]" />
+                            <span className="text-base font-semibold text-gray-900">
+                                {motif.origin || 'Indonesia'}
+                            </span>
                         </div>
                     </div>
 
-                    {/* Stats & Like Button */}
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-4 text-gray-600">
-                            <div className="flex items-center gap-1.5">
-                                <Eye className="w-5 h-5" />
-                                <span className="font-semibold">{motif.views_count}</span>
+                    {/* Profile & Stats Section */}
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#BA682A] to-[#D2691E] flex items-center justify-center text-white font-bold overflow-hidden ring-2 ring-gray-100">
+                                {motif.user.profile_photo_url ? (
+                                    <img
+                                        src={motif.user.profile_photo_url}
+                                        alt={motif.user.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-sm">{motif.user.name.charAt(0).toUpperCase()}</span>
+                                )}
                             </div>
-                            <div className="flex items-center gap-1.5">
-                                <Heart className={`w-5 h-5 ${motif.is_liked_by_user ? 'fill-current text-red-500' : ''}`} />
-                                <span className="font-semibold">{motif.likes_count}</span>
+                            <div>
+                                <div className="text-sm font-semibold text-gray-900">
+                                    {motif.user.name}
+                                </div>
+                                <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                                    <Calendar className="w-3 h-3" />
+                                    <span>{motif.published_at}</span>
+                                </div>
                             </div>
                         </div>
-                        <button
-                            onClick={handleLike}
-                            className={`px-5 py-2.5 rounded-xl font-semibold transition-all flex items-center gap-2 ${
-                                motif.is_liked_by_user
-                                    ? 'bg-red-500 text-white hover:bg-red-600'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
-                        >
-                            <Heart className={`w-4 h-4 ${motif.is_liked_by_user ? 'fill-current' : ''}`} />
-                            {motif.is_liked_by_user ? 'Disukai' : 'Suka'}
-                        </button>
+
+                        {/* Stats & Like Button */}
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-4 text-gray-600">
+                                <div className="flex items-center gap-1.5">
+                                    <Eye className="w-5 h-5" />
+                                    <span className="font-semibold">{motif.views_count}</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <Heart className={`w-5 h-5 ${motif.is_liked_by_user ? 'fill-current text-red-500' : ''}`} />
+                                    <span className="font-semibold">{motif.likes_count}</span>
+                                </div>
+                            </div>
+                            <button
+                                onClick={handleLike}
+                                className={`px-5 py-2.5 rounded-xl font-semibold transition-all flex items-center gap-2 ${
+                                    motif.is_liked_by_user
+                                        ? 'bg-red-500 text-white hover:bg-red-600'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                }`}
+                            >
+                                <Heart className={`w-4 h-4 ${motif.is_liked_by_user ? 'fill-current' : ''}`} />
+                                {motif.is_liked_by_user ? 'Disukai' : 'Suka'}
+                            </button>
+                        </div>
                     </div>
                 </div>
 

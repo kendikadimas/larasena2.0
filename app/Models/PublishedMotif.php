@@ -15,6 +15,7 @@ class PublishedMotif extends Model
         'title',
         'slug',
         'philosophy',
+        'origin',
         'image_path',
         'design_data',
         'status',

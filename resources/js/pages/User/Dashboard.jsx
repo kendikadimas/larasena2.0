@@ -24,7 +24,7 @@ export default function Dashboard({ designs = [] }) {
   const [fabOpen, setFabOpen] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [selectedDesign, setSelectedDesign] = useState(null);
-  const [publishData, setPublishData] = useState({ title: '', philosophy: '' });
+  const [publishData, setPublishData] = useState({ title: '', philosophy: '', origin: '' });
   const [publishLoading, setPublishLoading] = useState(false);
   const user = auth.user;
 
@@ -84,13 +84,13 @@ export default function Dashboard({ designs = [] }) {
 
   const handlePublishClick = (design) => {
     setSelectedDesign(design);
-    setPublishData({ title: design.title || '', philosophy: '' });
+    setPublishData({ title: design.title || '', philosophy: '', origin: '' });
     setShowPublishModal(true);
   };
 
   const handlePublishSubmit = () => {
-    if (!publishData.title.trim() || !publishData.philosophy.trim()) {
-      alert('Mohon isi nama motif dan filosofi');
+    if (!publishData.title.trim() || !publishData.philosophy.trim() || !publishData.origin.trim()) {
+      alert('Mohon isi nama motif, asal daerah, dan filosofi');
       return;
     }
 
@@ -100,6 +100,7 @@ export default function Dashboard({ designs = [] }) {
     const formData = new FormData();
     formData.append('title', publishData.title);
     formData.append('philosophy', publishData.philosophy);
+    formData.append('origin', publishData.origin);
     formData.append('design_id', selectedDesign.id);
     
     // Add design_data as JSON string
@@ -121,7 +122,7 @@ export default function Dashboard({ designs = [] }) {
           onSuccess: () => {
             setShowPublishModal(false);
             setPublishLoading(false);
-            setPublishData({ title: '', philosophy: '' });
+            setPublishData({ title: '', philosophy: '', origin: '' });
             alert('Motif berhasil disubmit untuk review!');
           },
           onError: (errors) => {
@@ -543,6 +544,22 @@ export default function Dashboard({ designs = [] }) {
                 />
               </div>
 
+              {/* Origin Input */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Asal Daerah Motif *
+                </label>
+                <input
+                  type="text"
+                  value={publishData.origin}
+                  onChange={(e) => setPublishData({ ...publishData, origin: e.target.value })}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                  placeholder="Contoh: Solo, Yogyakarta, Pekalongan, dll."
+                  maxLength={100}
+                />
+                <p className="text-xs text-gray-500 mt-1">Nama daerah/kota asal motif batik ini berasal</p>
+              </div>
+
               {/* Philosophy Textarea */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -584,7 +601,7 @@ export default function Dashboard({ designs = [] }) {
               <button
                 onClick={() => {
                   setShowPublishModal(false);
-                  setPublishData({ title: '', philosophy: '' });
+                  setPublishData({ title: '', philosophy: '', origin: '' });
                 }}
                 disabled={publishLoading}
                 className="flex-1 px-4 py-2.5 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50"
@@ -593,7 +610,7 @@ export default function Dashboard({ designs = [] }) {
               </button>
               <button
                 onClick={handlePublishSubmit}
-                disabled={publishLoading || !publishData.title.trim() || !publishData.philosophy.trim()}
+                disabled={publishLoading || !publishData.title.trim() || !publishData.origin.trim() || !publishData.philosophy.trim()}
                 className="flex-1 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-xl font-semibold hover:from-amber-600 hover:to-amber-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {publishLoading ? 'Mengirim...' : 'Submit untuk Review'}
