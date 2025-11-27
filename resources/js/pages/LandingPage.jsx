@@ -303,14 +303,14 @@ export default function LandingPage() {
               isScrolled ? 'bg-amber-600' : 'bg-amber-600'
             }`}></span>
           </Link>
-          <a href="#bantuan" className={`font-medium transition-all duration-300 relative group text-base ${
+          <Link href="/layanan" className={`font-medium transition-all duration-300 relative group text-base ${
             isScrolled ? 'text-gray-700 hover:text-amber-700' : 'text-gray-700 hover:text-amber-700'
           }`}>
-            Bantuan
+            Layanan
             <span className={`absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${
               isScrolled ? 'bg-amber-600' : 'bg-amber-600'
             }`}></span>
-          </a>
+          </Link>
         </div>
       </nav>
 
@@ -341,9 +341,9 @@ export default function LandingPage() {
         
         {/* Konten Menu Mobile */}
         <div className="flex flex-col items-center justify-center h-full space-y-8 -mt-20">
-          <a href="#hero" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Beranda</a>
+          <a href="/beranda" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Beranda</a>
           <Link href="/galeri-motif" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Batikpedia</Link>
-          <a href="#bantuan" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Bantuan</a>
+          <Link href="/layanan" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Layanan</Link>
           
           {/* Garis pemisah */}
           <div className="border-t border-gray-200 w-3/4 pt-8 mt-8 flex flex-col items-center gap-5">
@@ -561,7 +561,7 @@ export default function LandingPage() {
                     transition: "all 0.5s ease-out", // Transisi dinamis
                   }}
                 >
-                  {/* !!! INI PERBAIKAN ERROR UTAMA KAMU !!! */}
+                  
                   <a
                     href="#"
 className={`block group relative overflow-hidden rounded-2xl
@@ -807,22 +807,76 @@ className={`block group relative overflow-hidden rounded-2xl
   }
 `}</style>
 
-     {/* ===== MITRA KONVEKSI (VERSI STATIS 2 LOGO) ===== */}
+     {/* ===== INSTANSI SECTION ===== */}
+<section className="py-16 bg-white">
+  <div className={`text-center mb-12 px-8 md:px-16 lg:px-24 fade-in-up ${isVisible ? 'visible' : ''}`}>
+    
+    <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-serif">
+      Didukung <span className="gallery-gradient-text"> Oleh </span>
+    </h3>
+  </div>
+  
+  {/* Logo Container - 2 Rows */}
+  <div className="px-8 md:px-16 lg:px-24">
+    {/* Baris 1 - Logo Kemendikbud */}
+    <div 
+      className={`flex justify-center items-center mb-8 gap-8 md:gap-12 lg:gap-16 fade-in-up ${isVisible ? 'visible' : ''}`}
+      style={{ transitionDelay: '0.1s' }}
+    >
+      <img 
+        src="/images/instansi/kemenbud-removebg-preview.png" 
+        alt="Kemendikbud"
+        className="h-20 md:h-24 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 hover:scale-110"
+      />
+      <img 
+        src="/images/instansi/Belmawa Bersinergi.png" 
+        alt="Belmawa Bersinergi"
+        className="h-24 md:h-48 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 hover:scale-110"
+      />
+      <img 
+        src="/images/instansi/Diksaintek Berdampak.png" 
+        alt="Diksaintek Berdampak"
+        className="h-16 md:h-20 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 hover:scale-110"
+      />
+    </div>
+
+    {/* Baris 2 - Logo Lainnya */}
+    <div 
+      className={`flex flex-wrap justify-center items-center gap-8 md:gap-12 lg:gap-16 fade-in-up ${isVisible ? 'visible' : ''}`}
+      style={{ transitionDelay: '0.2s' }}
+    >
+      <img 
+        src="/images/instansi/Kemendiktisaintek.png" 
+        alt="Kemendikti Saintek"
+        className="h-16 md:h-20 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 hover:scale-110"
+      />
+      <img 
+        src="/images/instansi/Logo-Resmi-Unsoed.png" 
+        alt="Unsoed"
+        className="h-16 md:h-20 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 hover:scale-110"
+      />
+      
+      <img 
+        src="/images/instansi/Gemastik18-removebg-preview.png" 
+        alt="Gemastik 18"
+        className="h-16 md:h-28 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 hover:scale-110"
+      />
+    </div>
+  </div>
+</section>
+
+     {/* ===== MITRA KONVEKSI (VERSI STATIS 2 LOGO) ===== */}
 <section id="mitra" className="py-20 bg-gradient-to-b from-white to-gray-50 overflow-hidden">
   {/* Header (Tidak berubah) */}
   <div className={`text-center mb-12 px-8 md:px-16 lg:px-24 fade-in-up ${isVisible ? 'visible' : ''}`}>
-    <p className="text-sm font-semibold text-amber-600 tracking-wider uppercase mb-3">
-      TERPERCAYA
-    </p>
+    
     <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 font-serif">
-      Berbagai <span className="gallery-gradient-text"> Mitra </span> Konveksi
+      Berbagai <span className="gallery-gradient-text"> Mitra </span> Pengrajin
     </h3>
     <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-      Bergabung dengan jaringan konveksi profesional yang tersebar di seluruh Indonesia
+      Bergabung dengan jaringan pengrajin profesional yang tersebar di seluruh Indonesia
     </p>
-  </div>
-  
-  {/* === PERUBAHAN UTAMA DI SINI === */}
+  </div>  
   {/* Logo Container (Menggantikan <div className="relative">) */}
   <div 
     className={`flex justify-center items-center gap-12 md:gap-20 lg:gap-24 px-8 fade-in-up ${isVisible ? 'visible' : ''}`}
@@ -1024,98 +1078,7 @@ className={`block group relative overflow-hidden rounded-2xl
     }
   `}</style>
 </section>
-      {/* --- BATAS AKHIR SECTION TESTIMONI --- */}
 
-{/* ===== FAQ SECTION (BERDASARKAN PROPOSAL) ===== */}
-<section id="bantuan" className="px-8 md:px-16 lg:px-24 py-20 bg-gradient-to-b from-gray-50 to-amber-50/30 relative overflow-hidden">
-  
-  {/* Dekorasi background senada tema */}
-  <div className="absolute top-0 left-0 w-80 h-80 bg-amber-200/20 rounded-full blur-3xl opacity-50 -z-0"></div>
-  <div className="absolute bottom-0 right-0 w-72 h-72 bg-orange-100/20 rounded-full blur-3xl opacity-50 -z-0"></div>
-  {/* Header Section */}
-  <div className={`text-center mb-16 fade-in-up relative z-10 ${isVisible ? 'visible' : ''}`}>
-    <p className="text-sm font-semibold text-amber-600 tracking-wider uppercase mb-3">
-      BANTUAN
-    </p>
-    <h3 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6 font-serif">
-      Pertanyaan yang <span className="gallery-gradient-text">Sering Diajukan</span>
-    </h3>
-    <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-      Menemukan jawaban yang Anda butuhkan tentang platform Larasena, dari AI hingga produksi.
-    </p>
-  </div>
-  {/* Data FAQ */}
-  {(() => {
-    const faqData = [
-      {
-        q: "Apa itu Larasena?",
-        a: "Larasena adalah sebuah platform digital yang memanfaatkan teknologi 3D modelling dan kecerdasan buatan (AI) untuk mendigitalisasi, memodelkan, dan mengoptimalkan produksi batik Nusantara. Kami hadir sebagai jembatan antara pelestarian budaya dan efisiensi industri tekstil lokal."
-      },
-      {
-        q: "Apa masalah utama yang ingin diselesaikan Larasena?",
-        a: "Kami fokus mengatasi krisis regenerasi pengrajin batik. Data APPBI menunjukkan jumlah pengrajin nasional menyusut drastis dari 151.565 orang pada 2020 menjadi 37.914 pada 2023. Larasena bertujuan menarik generasi muda (yang saat ini hanya 12%) untuk terlibat melalui teknologi yang modern."
-      },
-      {
-        q: "Bagaimana cara kerja fitur AI Generator Batik?",
-        a: "Anda dapat membuat desain batik menggunakan generator AI yang terintegrasi dengan Hugging Face API. Fitur ini memanfaatkan kecerdasan buatan untuk menghasilkan motif batik otomatis berdasarkan parameter atau deskripsi yang Anda tentukan."
-      },
-      {
-        q: "Apakah saya bisa melihat desain saya di produk jadi?",
-        a: "Ya. Platform kami dilengkapi fitur 3D Modelling Products menggunakan Three.js. Setelah Anda selesai mendesain di kanvas, Anda bisa melihat preview desain Anda secara langsung pada model 3D seperti kemeja, kaos, atau gaun."
-      },
-      {
-        q: "Apakah Larasena yang akan mencetak kain batik saya?",
-        a: "Tidak secara langsung. Larasena adalah platform untuk perencanaan dan desain produksi. Namun, kami memiliki fitur 'Konveksi Bermitra' yang memungkinkan Anda terhubung dan membuat pesanan produksi langsung ke mitra konveksi terverifikasi yang ada di platform kami."
-      },
-      {
-        q: "Saya tidak tahu banyak tentang batik. Bisakah saya belajar di sini?",
-        a: "Tentu. Kami memiliki fitur 'Galeri Nusantara' yang merupakan repositori untuk Anda menjelajahi koleksi motif batik dari berbagai daerah. Anda bisa mempelajari sejarah, filosofi, dan makna di balik setiap motif sebagai inspirasi desain Anda."
-      }
-    ];
-    return (
-      <div className={`max-w-7xl mx-auto space-y-5 relative z-10 fade-in-up ${isVisible ? 'visible' : ''}`} style={{transitionDelay: '0.2s'}}>
-        {faqData.map((item, index) => (
-          <div 
-            key={index} 
-            className="bg-white rounded-2xl border border-amber-100/70 overflow-hidden transition-all duration-300"
-          >
-            
-            {/* Tombol Pertanyaan */}
-            <button
-              onClick={() => setOpenFaq(openFaq === index ? null : index)}
-              className="flex justify-between items-center w-full p-6 text-left"
-            >
-              <span className="text-base md:text-lg font-semibold text-gray-900">
-                {item.q}
-              </span>
-              
-              {/* Ikon Chevron */}
-              <div className="w-6 h-6 flex-shrink-0 flex items-center justify-center text-amber-600">
-                <svg
-                  className={`w-5 h-5 transition-transform duration-300 ${openFaq === index ? 'transform rotate-180' : ''}`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </button>
-            {/* Area Jawaban */}
-            <div
-              className={`overflow-hidden transition-all duration-500 ease-in-out ${openFaq === index ? 'max-h-screen' : 'max-h-0'}`}
-            >
-              <div className="p-6 pt-0 prose prose-sm md:prose-base text-gray-600 leading-relaxed">
-                <p>{item.a}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  })()}
-</section>
-{/* --- BATAS AKHIR SECTION FAQ --- */}
 
       {/* ===== FOOTER MODERN & HANGAT ===== */}
 <footer className="bg-gradient-to-br from-amber-50 via-orange-50/40 to-white text-gray-800 px-8 md:px-16 lg:px-24 py-16 relative overflow-hidden">

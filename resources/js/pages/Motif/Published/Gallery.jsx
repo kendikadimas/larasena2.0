@@ -118,8 +118,8 @@ export default function Gallery({ motifs, user }) {
                         Batikpedia
                         <span className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-600"></span>
                     </Link>
-                    <Link href="/#bantuan" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
-                        Bantuan
+                    <Link href="/layanan" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
+                        Layanan
                         <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
                     </Link>
                 </div>

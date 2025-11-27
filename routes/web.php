@@ -50,6 +50,13 @@ Route::get('/', function () {
 Route::get('/galeri-motif', [\App\Http\Controllers\PublishedMotifController::class, 'gallery'])->name('published-motifs.gallery');
 Route::get('/galeri-motif/{slug}', [\App\Http\Controllers\PublishedMotifController::class, 'show'])->name('published-motifs.show');
 
+// Layanan Page
+Route::get('/layanan', function () {
+    return Inertia::render('Layanan', [
+        'user' => Auth::user()
+    ]);
+})->name('layanan');
+
 // ============================================================================
 // 👤 ROUTE UNTUK GENERAL USER (role: General)
 // ============================================================================
