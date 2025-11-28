@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight, Download } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Download, Menu, X, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, Save, Eye, ChevronDown, Undo, Redo, Shirt, ImagePlus } from 'lucide-react';
 import MockupViewer3D from '@/components/Editor/MockupViewer3D';
 import MotifLibrary from '@/components/Editor/MotifLibrary';
 import CanvasArea from '@/components/Editor/CanvasArea';
@@ -21,6 +21,11 @@ function downloadURI(uri, name) {
 export default function DesignEditor({ initialDesign }) {
     const { url } = usePage();
     
+    // UI State
+    const [showLeftPanel, setShowLeftPanel] = useState(true);
+    const [showRightPanel, setShowRightPanel] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
+    
     // ✅ FIX: Parse initialDesign dengan benar
     useEffect(() => {
         console.log('========== DEBUG INITIAL DESIGN ==========');
@@ -31,14 +36,38 @@ export default function DesignEditor({ initialDesign }) {
         console.log('==========================================');
     }, [initialDesign]);
 
+    // Detect mobile screen
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+            if (window.innerWidth < 768) {
+                setShowLeftPanel(false);
+                setShowRightPanel(false);
+            }
+        };
+        
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
     const urlParams = new URLSearchParams(url.split('?')[1]);
     
-    // ✅ FIX: Jangan gunakan useMemo, langsung compute
+    // ✅ FIX: Responsive canvas size untuk mobile
     const defaultSize = (() => {
+        const isMobileView = window.innerWidth < 768;
+        
         // Mode EDIT - Ambil dari initialDesign
         if (initialDesign && initialDesign.id) {
-            const width = parseInt(initialDesign.canvas_width) || 800;
-            const height = parseInt(initialDesign.canvas_height) || 600;
+            let width = parseInt(initialDesign.canvas_width) || 800;
+            let height = parseInt(initialDesign.canvas_height) || 600;
+            
+            // Scale down untuk mobile
+            if (isMobileView && width > 600) {
+                const scale = 600 / width;
+                width = 600;
+                height = Math.round(height * scale);
+            }
             
             console.log('🔵 EDIT MODE - Loading existing design');
             console.log('Design ID:', initialDesign.id);
@@ -49,12 +78,20 @@ export default function DesignEditor({ initialDesign }) {
         }
         
         // Mode CREATE - Ambil dari URL params
-        const width = parseInt(urlParams.get('width')) || 800;
-        const height = parseInt(urlParams.get('height')) || 600;
+        let width = parseInt(urlParams.get('width')) || 800;
+        let height = parseInt(urlParams.get('height')) || 600;
+        
+        // Scale down untuk mobile
+        if (isMobileView && width > 600) {
+            const scale = 600 / width;
+            width = 600;
+            height = Math.round(height * scale);
+        }
         
         console.log('🟢 CREATE MODE - New design');
         console.log('Canvas Width (URL):', urlParams.get('width'), '→', width);
         console.log('Canvas Height (URL):', urlParams.get('height'), '→', height);
+        console.log('Mobile View:', isMobileView);
         
         return { width, height };
     })();
@@ -103,6 +140,11 @@ export default function DesignEditor({ initialDesign }) {
         return Array.isArray(parsed) ? parsed : []; // ✅ Pastikan selalu array
     });
     
+    // Undo/Redo History
+    const [history, setHistory] = useState([]);
+    const [historyStep, setHistoryStep] = useState(-1);
+    const [isLoadingCanvas, setIsLoadingCanvas] = useState(true);
+    
     const [selectedId, setSelectedId] = useState(null);
     const [designName, setDesignName] = useState(initialDesign?.title || 'Desain Batik Baru');
     const [isSaving, setIsSaving] = useState(false);
@@ -137,10 +179,15 @@ export default function DesignEditor({ initialDesign }) {
     const [show3DModal, setShow3DModal] = useState(false);
     const [patternFor3D, setPatternFor3D] = useState('');
 
-    // Load motifs dari API saat komponen mount
+    // Load motifs dari API saat komponen mount (dengan delay untuk mobile)
     useEffect(() => {
-        fetchMotifs();
-    }, []);
+        // Delay fetching di mobile untuk prioritaskan render canvas
+        const timeoutId = setTimeout(() => {
+            fetchMotifs();
+        }, isMobile ? 1000 : 0);
+        
+        return () => clearTimeout(timeoutId);
+    }, [isMobile]);
 
     // Fetch motifs dari server
     const fetchMotifs = async () => {
@@ -551,7 +598,7 @@ const handleUploadMotif = async (file) => {
         const objIndex = newObjects.findIndex(obj => obj.id === id);
         if (objIndex !== -1) {
             newObjects[objIndex] = { ...newObjects[objIndex], ...newAttrs };
-            setCanvasObjects(newObjects);
+            updateCanvasObjects(newObjects);
         }
     };
 
@@ -591,11 +638,64 @@ const handleUploadMotif = async (file) => {
                 draggable: true,
             };
 
-            setCanvasObjects((prev) => [...prev, newObject]);
+            updateCanvasObjects((prev) => [...prev, newObject]);
             setSelectedId(newObject.id);
         },
         [pointer, canvasObjects]
     );
+
+    // Initialize history with initial canvas state
+    useEffect(() => {
+        if (canvasObjects.length >= 0 && history.length === 0) {
+            setHistory([canvasObjects]);
+            setHistoryStep(0);
+        }
+        
+        // Canvas loaded
+        setTimeout(() => setIsLoadingCanvas(false), 500);
+    }, []);
+
+    // Save to history when canvas changes
+    const saveToHistory = useCallback((newObjects) => {
+        setHistory(prev => {
+            const newHistory = prev.slice(0, historyStep + 1);
+            newHistory.push(newObjects);
+            // Limit history to 50 steps
+            if (newHistory.length > 50) {
+                newHistory.shift();
+                return newHistory;
+            }
+            return newHistory;
+        });
+        setHistoryStep(prev => Math.min(prev + 1, 49));
+    }, [historyStep]);
+
+    // Undo function
+    const handleUndo = useCallback(() => {
+        if (historyStep > 0) {
+            setHistoryStep(prev => prev - 1);
+            setCanvasObjects(history[historyStep - 1]);
+            setSelectedId(null);
+        }
+    }, [historyStep, history]);
+
+    // Redo function
+    const handleRedo = useCallback(() => {
+        if (historyStep < history.length - 1) {
+            setHistoryStep(prev => prev + 1);
+            setCanvasObjects(history[historyStep + 1]);
+            setSelectedId(null);
+        }
+    }, [historyStep, history]);
+
+    // Wrapper untuk setCanvasObjects yang auto-save ke history
+    const updateCanvasObjects = useCallback((updater) => {
+        setCanvasObjects(prev => {
+            const newObjects = typeof updater === 'function' ? updater(prev) : updater;
+            saveToHistory(newObjects);
+            return newObjects;
+        });
+    }, [saveToHistory]);
 
     // Hook untuk menangani semua shortcut keyboard
     useEffect(() => {
@@ -604,9 +704,23 @@ const handleUploadMotif = async (file) => {
                 return;
             }
 
+            // Undo
+            if (e.ctrlKey && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                handleUndo();
+                return;
+            }
+
+            // Redo
+            if (e.ctrlKey && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+                e.preventDefault();
+                handleRedo();
+                return;
+            }
+
             // Hapus Motif
             if ((e.key === 'Delete' || e.key === 'Backspace') && selectedId) {
-                setCanvasObjects(canvasObjects.filter(obj => obj.id !== selectedId));
+                updateCanvasObjects(canvasObjects.filter(obj => obj.id !== selectedId));
                 setSelectedId(null);
             }
             
@@ -630,7 +744,7 @@ const handleUploadMotif = async (file) => {
                     x: selectedObject.x + 15,
                     y: selectedObject.y + 15,
                 };
-                setCanvasObjects(prev => [...prev, newObject]);
+                updateCanvasObjects(prev => [...prev, newObject]);
                 setSelectedId(newObject.id);
             }
 
@@ -641,19 +755,19 @@ const handleUploadMotif = async (file) => {
                 
                 if (e.key === '[' && selectedIndex > 0) {
                     [newObjects[selectedIndex], newObjects[selectedIndex - 1]] = [newObjects[selectedIndex - 1], newObjects[selectedIndex]];
-                    setCanvasObjects(newObjects);
+                    updateCanvasObjects(newObjects);
                 }
 
                 if (e.key === ']' && selectedIndex < newObjects.length - 1) {
                     [newObjects[selectedIndex], newObjects[selectedIndex + 1]] = [newObjects[selectedIndex + 1], newObjects[selectedIndex]];
-                    setCanvasObjects(newObjects);
+                    updateCanvasObjects(newObjects);
                 }
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [canvasObjects, selectedId]);
+    }, [canvasObjects, selectedId, handleUndo, handleRedo, updateCanvasObjects]);
 
     // Mendapatkan objek yang dipilih berdasarkan ID
     const selectedObject = canvasObjects.find(obj => obj.id === selectedId);
@@ -755,119 +869,299 @@ useEffect(() => {
     return (
         <>
             <Head title="Editor Desain Batik" />
-            <div className="flex flex-col h-screen bg-white font-sans">
-                {/* Header - tetap sama */}
-                <header className="flex items-center justify-between px-8 py-5 bg-white border b rounded-b-xl">
-                    <div className="flex items-center gap-3">
-                        <Link 
-                            href="/dashboard"
-                            className="flex items-center gap-2 bg-[#F8F5F2] hover:bg-[#F3EDE7] text-[#BA682A] px-3 py-2 rounded-lg transition font-semibold shadow"
-                        >
-                            <ArrowLeft className="w-5 h-5" />
-                            <span>Kembali</span>
-                        </Link>
-                        <span className="ml-4 px-3 py-1 rounded-full bg-[#FFF7ED] text-[#BA682A] font-bold text-lg tracking-tight shadow">
-                            Canvas Batik Editor
-                        </span>
-                        <span className="ml-2 px-3 py-1 rounded-lg bg-gray-100 text-gray-600 text-sm font-medium">
-                            {defaultSize.width} × {defaultSize.height} px
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <input 
-                            type="text" 
-                            value={designName} 
-                            onChange={(e) => setDesignName(e.target.value)}
-                            className="border border-[#D2691E] rounded-lg px-4 py-2 text-base text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#D2691E] w-56 shadow"
-                            placeholder="Nama desain"
-                        />
-                        
-                        {/* Tombol Download dengan Dropdown */}
-                        <div className="relative">
-                            <button 
-                                onClick={() => setShowDownloadMenu(!showDownloadMenu)}
-                                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition flex items-center gap-2 font-semibold shadow"
+            <div className="flex flex-col h-screen bg-gray-50 font-sans">
+                {/* Modern Header */}
+                <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+                    <div className="flex items-center justify-between px-3 md:px-6 py-3">
+                        {/* Left Section */}
+                        <div className="flex items-center gap-2 md:gap-3">
+                            <Link 
+                                href="/dashboard"
+                                className="flex items-center justify-center w-9 h-9 hover:bg-gray-100 rounded-lg transition"
+                                title="Kembali"
                             >
-                                <Download className="w-5 h-5" />
-                                Unduh
-                            </button>
+                                <ArrowLeft className="w-5 h-5 text-gray-700" />
+                            </Link>
                             
-                            {showDownloadMenu && (
-                                <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                                    <button
-                                        onClick={() => handleDownload('png')}
-                                        className="w-full text-left px-4 py-3 hover:bg-gray-100 transition rounded-t-lg"
-                                    >
-                                        <div className="font-semibold text-gray-700">PNG</div>
-                                        <div className="text-xs text-gray-500 mt-1">
-                                            Kualitas tinggi, support transparansi (Recommended)
-                                        </div>
-                                    </button>
-                                    <button
-                                        onClick={() => handleDownload('jpg')}
-                                        className="w-full text-left px-4 py-3 hover:bg-gray-100 transition rounded-b-lg"
-                                    >
-                                        <div className="font-semibold text-gray-700">JPG</div>
-                                        <div className="text-xs text-gray-500 mt-1">
-                                            File lebih kecil, background putih
-                                        </div>
-                                    </button>
-                                </div>
-                            )}
+                            <div className="hidden md:flex items-center gap-2 pl-2 border-l">
+                                <input
+                                    type="text"
+                                    value={designName}
+                                    onChange={(e) => setDesignName(e.target.value)}
+                                    className="text-sm font-semibold text-gray-900 bg-transparent border-none outline-none focus:bg-gray-50 px-2 py-1 rounded transition max-w-[200px]"
+                                    placeholder="Nama desain"
+                                />
+                                <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded">
+                                    {defaultSize.width} × {defaultSize.height}
+                                </span>
+                            </div>
                         </div>
 
-                        <button 
-                            onClick={handleShow3D}
-                            disabled={exporting3D}
-                            className={`px-4 py-2 rounded-lg transition flex items-center gap-2 font-semibold shadow ${
-                                exporting3D 
-                                    ? 'bg-gray-400 cursor-not-allowed' 
-                                    : 'bg-blue-600 hover:bg-blue-700 text-white'
-                            }`}
-                        >
-                            {exporting3D ? (
-                                <>
-                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    Exporting...
-                                </>
-                            ) : (
-                                <>
-                                    Preview 3D
-                                    <ArrowRight className="w-5 h-5" />
-                                </>
-                            )}
-                        </button>
+                        {/* Center Section - Mobile Title */}
+                        <div className="md:hidden flex-1 text-center">
+                            <input
+                                type="text"
+                                value={designName}
+                                onChange={(e) => setDesignName(e.target.value)}
+                                className="text-sm font-semibold text-gray-900 bg-transparent border-none outline-none focus:bg-gray-50 px-2 py-1 rounded transition text-center w-full"
+                                placeholder="Nama desain"
+                            />
+                        </div>
+
+                        {/* Right Section */}
+                        <div className="flex items-center gap-1 md:gap-2">
+                            {/* Panel Toggles - Desktop Only */}
+                            <div className="hidden lg:flex items-center gap-1 mr-2">
+                                <button
+                                    onClick={() => setShowLeftPanel(!showLeftPanel)}
+                                    className="p-2 hover:bg-gray-100 rounded-lg transition"
+                                    title={showLeftPanel ? "Sembunyikan Panel Motif" : "Tampilkan Panel Motif"}
+                                >
+                                    {showLeftPanel ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
+                                </button>
+                                <button
+                                    onClick={() => setShowRightPanel(!showRightPanel)}
+                                    className="p-2 hover:bg-gray-100 rounded-lg transition"
+                                    title={showRightPanel ? "Sembunyikan Panel Properties" : "Tampilkan Panel Properties"}
+                                >
+                                    {showRightPanel ? <PanelRightClose className="w-4 h-4" /> : <PanelRightOpen className="w-4 h-4" />}
+                                </button>
+                            </div>
+
+                            {/* Undo/Redo Buttons */}
+                            <div className="hidden md:flex items-center gap-1 mr-2 border-r pr-2">
+                                <button
+                                    onClick={handleUndo}
+                                    disabled={historyStep <= 0}
+                                    className={`p-2 rounded-lg transition ${
+                                        historyStep <= 0 
+                                            ? 'text-gray-300 cursor-not-allowed' 
+                                            : 'text-gray-700 hover:bg-gray-100'
+                                    }`}
+                                    title="Undo (Ctrl+Z)"
+                                >
+                                    <Undo className="w-4 h-4" />
+                                </button>
+                                <button
+                                    onClick={handleRedo}
+                                    disabled={historyStep >= history.length - 1}
+                                    className={`p-2 rounded-lg transition ${
+                                        historyStep >= history.length - 1
+                                            ? 'text-gray-300 cursor-not-allowed' 
+                                            : 'text-gray-700 hover:bg-gray-100'
+                                    }`}
+                                    title="Redo (Ctrl+Y)"
+                                >
+                                    <Redo className="w-4 h-4" />
+                                </button>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="hidden md:flex items-center gap-2">
+                                {/* Download Dropdown */}
+                                <div className="relative">
+                                    <button 
+                                        onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+                                        className="flex items-center gap-1.5 px-3 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition text-sm font-medium"
+                                    >
+                                        <Download className="w-4 h-4" />
+                                        <span className="hidden lg:inline">Unduh</span>
+                                        <ChevronDown className="w-3 h-3" />
+                                    </button>
+                                    
+                                    {showDownloadMenu && (
+                                        <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                                            <button
+                                                onClick={() => handleDownload('png')}
+                                                className="w-full text-left px-4 py-3 hover:bg-gray-50 transition rounded-t-lg"
+                                            >
+                                                <div className="font-semibold text-gray-800 text-sm">PNG</div>
+                                                <div className="text-xs text-gray-500 mt-0.5">
+                                                    Kualitas tinggi, transparansi
+                                                </div>
+                                            </button>
+                                            <button
+                                                onClick={() => handleDownload('jpg')}
+                                                className="w-full text-left px-4 py-3 hover:bg-gray-50 transition rounded-b-lg border-t"
+                                            >
+                                                <div className="font-semibold text-gray-800 text-sm">JPG</div>
+                                                <div className="text-xs text-gray-500 mt-0.5">
+                                                    File lebih kecil
+                                                </div>
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <button 
+                                    onClick={handleShow3D}
+                                    disabled={exporting3D}
+                                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition text-sm font-medium ${
+                                        exporting3D 
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                                    }`}
+                                    title="Preview pada Produk 3D"
+                                >
+                                    {exporting3D ? (
+                                        <>
+                                            <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                                            <span className="hidden lg:inline">Loading...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Shirt className="w-4 h-4" />
+                                            <span className="hidden lg:inline">Preview</span>
+                                        </>
+                                    )}
+                                </button>
+                                
+                                <button 
+                                    onClick={handleSave}
+                                    disabled={isSaving}
+                                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition text-sm font-medium ${
+                                        isSaving ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-[#D2691E] hover:bg-[#BA682A] text-white'
+                                    }`}
+                                >
+                                    <Save className="w-4 h-4" />
+                                    <span className="hidden lg:inline">{isSaving ? 'Menyimpan...' : 'Simpan'}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </header>
+
+                {/* Mobile Info Bar - Fixed below header, above sidebar/tools */}
+                {isMobile && (
+                    <div className="fixed top-16 left-0 right-0 z-50 bg-white border-b border-gray-200 px-3 py-2 flex items-center justify-between text-xs">
+                        <span className="text-gray-600 font-medium">{defaultSize.width} × {defaultSize.height}px</span>
                         <button 
                             onClick={handleSave}
                             disabled={isSaving}
-                            className={`px-4 py-2 rounded-lg transition font-semibold shadow ${
-                                isSaving ? 'bg-gray-300 cursor-not-allowed' : 'bg-[#D2691E] hover:bg-[#BA682A] text-white'
+                            className={`px-3 py-1.5 rounded-lg font-medium transition ${
+                                isSaving 
+                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                    : 'bg-[#D2691E] text-white hover:bg-[#BA682A]'
                             }`}
                         >
-                            {isSaving ? 'Menyimpan...' : 'Simpan Desain'}
+                            {isSaving ? 'Menyimpan...' : 'Simpan'}
                         </button>
                     </div>
-                </header>
-                
-                {/* Main Content - 3 kolom: Motif | Canvas | Properties */}
-                <div className="flex-1 flex overflow-hidden">
-                    {/* LEFT SIDEBAR - Pustaka Motif */}
-                    <aside className="w-64 bg-[#FAFAFA] border-r flex flex-col overflow-hidden">
-                        <div className="p-4 flex-1 overflow-y-auto">
-                            <MotifLibrary 
-                                motifs={motifs} 
-                                loading={loadingMotifs}
-                                uploading={uploadingMotif}
-                                onRefresh={fetchMotifs}
-                                onUpload={handleUploadMotif}
-                            />
+                )}
+
+                {/* Loading Screen for Mobile */}
+                {isLoadingCanvas && isMobile && (
+                    <div className="fixed inset-0 bg-white z-50 flex items-center justify-center">
+                        <div className="text-center">
+                            <div className="w-16 h-16 border-4 border-[#D2691E] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                            <p className="text-gray-600 font-medium">Memuat Canvas...</p>
+                            <p className="text-sm text-gray-400 mt-1">Mohon tunggu sebentar</p>
                         </div>
-                    </aside>
+                    </div>
+                )}
+                
+                {/* Main Content - Responsive Layout */}
+                <div className="flex-1 flex overflow-hidden relative">
+                    {/* Mobile Sidebar - Always Visible on Left */}
+                    {isMobile ? (
+                        <aside className="fixed left-0 bottom-0 w-16 bg-white border-r border-gray-200 flex flex-col items-center py-3 gap-3 z-40" style={{ top: '104px' }}>
+                            {/* Tab Buttons */}
+                            <button
+                                onClick={() => {
+                                    if (showLeftPanel) {
+                                        setShowLeftPanel(false);
+                                    } else {
+                                        setShowLeftPanel(true);
+                                        setShowRightPanel(false);
+                                    }
+                                }}
+                                className={`w-12 h-12 flex flex-col items-center justify-center rounded-lg transition ${
+                                    showLeftPanel ? 'bg-[#D2691E] text-white' : 'text-gray-600 hover:bg-gray-100'
+                                }`}
+                                title="Motif"
+                            >
+                                <ImagePlus className="w-5 h-5" />
+                                <span className="text-[9px] mt-0.5">Motif</span>
+                            </button>
+                            
+                            <button
+                                onClick={() => {
+                                    if (showRightPanel) {
+                                        setShowRightPanel(false);
+                                    } else {
+                                        setShowRightPanel(true);
+                                        setShowLeftPanel(false);
+                                    }
+                                }}
+                                className={`w-12 h-12 flex flex-col items-center justify-center rounded-lg transition ${
+                                    showRightPanel ? 'bg-[#D2691E] text-white' : 'text-gray-600 hover:bg-gray-100'
+                                }`}
+                                title="Posisi"
+                            >
+                                <Menu className="w-5 h-5" />
+                                <span className="text-[9px] mt-0.5">Posisi</span>
+                            </button>
+                        </aside>
+                    ) : null}
+
+                    {/* Desktop LEFT SIDEBAR - Pustaka Motif */}
+                    {!isMobile && (
+                        <aside className={`
+                            ${showLeftPanel ? 'translate-x-0' : '-translate-x-full'}
+                            relative w-64 lg:w-72 bg-white border-r border-gray-200 flex flex-col overflow-hidden transition-transform duration-300
+                        `}>
+                            {/* Panel Header */}
+                            <div className="flex items-center justify-between p-3 border-b bg-gray-50">
+                                <h3 className="text-sm font-semibold text-gray-900">Pustaka Motif</h3>
+                                <button
+                                    onClick={() => setShowLeftPanel(false)}
+                                    className="p-1.5 hover:bg-gray-200 rounded-lg transition"
+                                >
+                                    <X className="w-4 h-4 text-gray-600" />
+                                </button>
+                            </div>
+                            
+                            <div className="p-3 flex-1 overflow-y-auto">
+                                <MotifLibrary 
+                                    motifs={motifs} 
+                                    loading={loadingMotifs}
+                                    uploading={uploadingMotif}
+                                    onRefresh={fetchMotifs}
+                                    onUpload={handleUploadMotif}
+                                />
+                            </div>
+                        </aside>
+                    )}
+
+                    {/* Mobile Panel - Motif Library */}
+                    {isMobile && showLeftPanel && (
+                        <aside className="fixed left-16 bottom-0 w-64 bg-white border-r border-gray-200 flex flex-col overflow-hidden z-30 shadow-xl transition-transform duration-300" style={{ top: '104px' }}>
+                            <div className="flex items-center justify-between p-3 border-b bg-gray-50">
+                                <h3 className="text-sm font-semibold text-gray-900">Pustaka Motif</h3>
+                                <button
+                                    onClick={() => setShowLeftPanel(false)}
+                                    className="p-1.5 hover:bg-gray-200 rounded-lg transition"
+                                >
+                                    <X className="w-4 h-4 text-gray-600" />
+                                </button>
+                            </div>
+                            
+                            <div className="p-3 flex-1 overflow-y-auto">
+                                <MotifLibrary 
+                                    motifs={motifs} 
+                                    loading={loadingMotifs}
+                                    uploading={uploadingMotif}
+                                    onRefresh={fetchMotifs}
+                                    onUpload={handleUploadMotif}
+                                />
+                            </div>
+                        </aside>
+                    )}
                     
-                    {/* CENTER - Canvas Area dengan Toolbar */}
-                    <div className="flex-1 flex flex-col bg-gray-50">
-                        {/* Canvas Container */}
-                        <div className="flex-1 p-4">
+                    {/* CENTER - Canvas Area */}
+                    <div className={`flex-1 flex flex-col bg-gray-50 min-w-0 ${isMobile ? 'ml-16' : ''}`}>
+                        <div className="flex-1 p-2 md:p-4 overflow-auto">
                             <CanvasArea 
                                 canvasObjects={canvasObjects || []}
                                 setCanvasObjects={setCanvasObjects}
@@ -892,35 +1186,101 @@ useEffect(() => {
                                 setEraserWidth={setEraserWidth}
                                 activeTool={activeTool}
                                 setActiveTool={setActiveTool}
+                                isMobile={isMobile}
+                                handleUndo={handleUndo}
+                                handleRedo={handleRedo}
+                                historyStep={historyStep}
+                                historyLength={history.length}
                             />
                         </div>
                     </div>
                     
-                    {/* RIGHT SIDEBAR - Properties & Layers */}
-                    <aside className="w-72 bg-white border-l flex flex-col overflow-hidden">
-                        <div className="p-4 flex-1 overflow-y-auto space-y-6">
-                            {/* Properties Section */}
-                            <div className="bg-[#FAFAFA] rounded-lg p-4 border">
-                                <PropertiesToolbar 
-                                    selectedObject={selectedObject}
-                                    onUpdate={updateObjectProperties}
-                                />
-                            </div>
-                            
-                            {/* Layers Section */}
-                            <div className="bg-[#FAFAFA] rounded-lg p-4 border">
-                                <LayerPanel 
-                                    objects={canvasObjects}
-                                    selectedId={selectedId}
-                                    onSelect={setSelectedId}
-                                    onClear={handleClearCanvas}
-                                    onMoveUp={handleMoveLayerUp}
-                                    onMoveDown={handleMoveLayerDown}
-                                    onBringToFront={handleBringToFront}
-                                />
-                            </div>
-                        </div>
-                    </aside>
+                    {/* RIGHT SIDEBAR - Properties & Layers (Collapsible on Desktop, Side Panel on Mobile) */}
+                    {isMobile ? (
+                        /* Mobile: Side Panel from Left */
+                        showRightPanel && (
+                            <aside className="fixed left-16 bottom-0 w-64 bg-white border-r border-gray-200 flex flex-col overflow-hidden z-30 shadow-xl transition-transform duration-300" style={{ top: '104px' }}>
+                                <div className="flex items-center justify-between p-3 border-b bg-gray-50">
+                                    <h3 className="text-sm font-semibold text-gray-900">Posisi & Layer</h3>
+                                    <button
+                                        onClick={() => setShowRightPanel(false)}
+                                        className="p-1.5 hover:bg-gray-200 rounded-lg transition"
+                                    >
+                                        <X className="w-4 h-4" />
+                                    </button>
+                                </div>
+                                <div className="p-3 flex-1 overflow-y-auto space-y-4">
+                                    <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                                        <PropertiesToolbar 
+                                            selectedObject={selectedObject}
+                                            onUpdate={updateObjectProperties}
+                                        />
+                                    </div>
+                                    <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                                        <LayerPanel 
+                                            objects={canvasObjects}
+                                            selectedId={selectedId}
+                                            onSelect={setSelectedId}
+                                            onClear={handleClearCanvas}
+                                            onMoveUp={handleMoveLayerUp}
+                                            onMoveDown={handleMoveLayerDown}
+                                            onBringToFront={handleBringToFront}
+                                        />
+                                    </div>
+                                </div>
+                            </aside>
+                        )
+                    ) : (
+                        /* Desktop: Right Sidebar */
+                        <aside className={`
+                            ${showRightPanel ? 'translate-x-0 w-64 lg:w-72' : 'translate-x-full w-0'}
+                            bg-white border-l border-gray-200 flex flex-col overflow-hidden transition-all duration-300
+                        `}>
+                            {showRightPanel && (
+                                <>
+                                    <div className="flex items-center justify-between p-3 border-b bg-gray-50">
+                                        <h3 className="text-sm font-semibold text-gray-900">Properties</h3>
+                                        <button
+                                            onClick={() => setShowRightPanel(false)}
+                                            className="p-1.5 hover:bg-gray-200 rounded-lg transition"
+                                        >
+                                            <X className="w-4 h-4 text-gray-600" />
+                                        </button>
+                                    </div>
+                                    <div className="p-3 flex-1 overflow-y-auto space-y-4">
+                                        <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                                            <PropertiesToolbar 
+                                                selectedObject={selectedObject}
+                                                onUpdate={updateObjectProperties}
+                                            />
+                                        </div>
+                                        
+                                        <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                                            <LayerPanel 
+                                                objects={canvasObjects}
+                                                selectedId={selectedId}
+                                                onSelect={setSelectedId}
+                                                onClear={handleClearCanvas}
+                                                onMoveUp={handleMoveLayerUp}
+                                                onMoveDown={handleMoveLayerDown}
+                                                onBringToFront={handleBringToFront}
+                                            />
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </aside>
+                    )}
+
+                    {/* Mobile FAB - Toggle Right Panel */}
+                    {isMobile && selectedObject && !showRightPanel && (
+                        <button
+                            onClick={() => setShowRightPanel(true)}
+                            className="fixed right-4 bottom-4 z-20 w-12 h-12 bg-[#D2691E] text-white rounded-full shadow-lg flex items-center justify-center hover:bg-[#BA682A] transition"
+                        >
+                            <Menu className="w-5 h-5" />
+                        </button>
+                    )}
                 </div>
                 
                 {/* 3D Preview Modal - tetap sama */}
@@ -928,7 +1288,7 @@ useEffect(() => {
                     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
                         <div className="bg-white rounded-lg shadow-2xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-2xl font-bold text-[#BA682A]">Preview 3D Desain</h3>
+                                <h3 className="text-2xl font-bold text-[#BA682A]">3D Product Preview</h3>
                                 <button
                                     onClick={() => setShow3DModal(false)}
                                     className="p-2 hover:bg-gray-100 rounded-full transition"

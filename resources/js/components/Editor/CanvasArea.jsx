@@ -150,6 +150,9 @@ const MotifImage = ({ shapeProps, isSelected, onSelect, onChange, trRef, activeT
     );
 };
 
+// Import icons untuk Undo/Redo dari lucide-react
+import { Undo, Redo } from 'lucide-react';
+
 const TOOL_LIST = [
     { label: 'Move', value: 'move', icon: <MoveIcon /> },
     { label: 'Canting', value: 'brush', icon: <CantingIcon /> },
@@ -228,7 +231,12 @@ export default function CanvasArea({
     showGrid,
     snapToGrid,
     onDrop,
-    defaultSize = { width: 800, height: 800 } // ✅ Terima dari parent dengan default
+    defaultSize = { width: 800, height: 800 }, // ✅ Terima dari parent dengan default
+    isMobile = false, // ✅ Prop baru untuk mobile detection
+    handleUndo,
+    handleRedo,
+    historyStep,
+    historyLength
 }) {
     // ✅ Destructure defaultSize
     const canvasWidth = defaultSize.width;
@@ -711,14 +719,19 @@ export default function CanvasArea({
                 </div>
             )}
 
-            {/* Toolbar */}
+            {/* Toolbar - Fixed Position (Left on Mobile, Centered on Desktop) */}
             <div
-                className="absolute top-4 left-4 z-20 flex gap-2 items-center rounded-lg shadow-lg p-2"
+                className={`fixed z-50 flex gap-2 items-center rounded-lg shadow-lg p-2 ${
+                    isMobile 
+                        ? 'left-20 flex-col' 
+                        : 'top-20 left-1/2 transform -translate-x-1/2'
+                }`}
                 style={{
-                    background: "rgba(255,255,255,0.95)",
-                    backdropFilter: "blur(4px)",
+                    ...(isMobile ? { top: '108px' } : {}),
+                    background: "rgba(255,255,255,0.98)",
+                    backdropFilter: "blur(8px)",
                     border: "1px solid #e5e7eb",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
                 }}
             >
                 {TOOL_LIST.map(tool => {
@@ -810,6 +823,35 @@ export default function CanvasArea({
                         </button>
                     );
                 })}
+
+                {/* Undo/Redo Buttons */}
+                <div className={`${isMobile ? 'w-full' : ''} flex ${isMobile ? 'flex-col' : 'flex-row'} gap-2`}>
+                    <div className={`${isMobile ? 'w-full' : 'w-px'} ${isMobile ? 'h-px' : 'h-8'} bg-gray-300 ${isMobile ? 'my-1' : 'mx-1'}`}></div>
+                    <button
+                        onClick={handleUndo}
+                        disabled={historyStep <= 0}
+                        className={`w-10 h-10 flex items-center justify-center rounded-lg transition-all ${
+                            historyStep <= 0 
+                                ? 'bg-gray-100 text-gray-300 cursor-not-allowed' 
+                                : 'bg-white text-gray-700 hover:bg-gray-50'
+                        }`}
+                        title="Undo (Ctrl+Z)"
+                    >
+                        <Undo className="w-5 h-5" />
+                    </button>
+                    <button
+                        onClick={handleRedo}
+                        disabled={historyStep >= historyLength - 1}
+                        className={`w-10 h-10 flex items-center justify-center rounded-lg transition-all ${
+                            historyStep >= historyLength - 1
+                                ? 'bg-gray-100 text-gray-300 cursor-not-allowed' 
+                                : 'bg-white text-gray-700 hover:bg-gray-50'
+                        }`}
+                        title="Redo (Ctrl+Y)"
+                    >
+                        <Redo className="w-5 h-5" />
+                    </button>
+                </div>
                 
                 {(activeTool === 'brush') && (
                     <>
@@ -1008,8 +1050,8 @@ export default function CanvasArea({
                 )}
             </div>
 
-            {/* Zoom Control */}
-            <div className="absolute bottom-4 right-4 z-20 flex gap-2 items-center bg-white rounded-lg shadow-lg p-2 border">
+            {/* Zoom Control - Fixed Position */}
+            <div className="fixed bottom-6 right-6 z-50 flex gap-2 items-center bg-white/98 rounded-lg shadow-lg p-2 border border-gray-200">
                 <button
                     onClick={() => {
                         const newScale = Math.max(0.1, stageScale - 0.1);
@@ -1085,6 +1127,7 @@ export default function CanvasArea({
                         y={stagePos.y}
                         onWheel={handleWheel}
                         draggable={false}
+                        dragBoundFunc={() => stagePos}
                     >
                         <Layer ref={layerRef}>
                             <Rect
