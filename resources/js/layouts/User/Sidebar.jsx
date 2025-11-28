@@ -1,6 +1,6 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import { Menu, X, ChevronLeft, ChevronRight, ChevronDown, Home, Palette, ShoppingBag, Package, GraduationCap, Award, HelpCircle, Upload } from 'lucide-react';
+import { Menu, X, ChevronLeft, ChevronRight, ChevronDown, Home, ImagePlus, Landmark, Store, Package, GraduationCap, Award, HelpCircle } from 'lucide-react';
 
 export default function Sidebar() {
   const { url } = usePage();
@@ -30,9 +30,16 @@ export default function Sidebar() {
           hoverColor: 'hover:bg-orange-50'
         },
         {
+          name: 'Galeri Saya',
+          href: '/upload',
+          icon: ImagePlus,
+          activeColor: 'bg-gradient-to-r from-[#BA682A] to-[#D2691E]',
+          hoverColor: 'hover:bg-orange-50'
+        },
+        {
           name: 'Batikpedia',
           href: '/galeri-motif',
-          icon: Palette,
+          icon: Landmark,
           activeColor: 'bg-gradient-to-r from-[#BA682A] to-[#D2691E]',
           hoverColor: 'hover:bg-orange-50'
         }
@@ -67,9 +74,9 @@ export default function Sidebar() {
       hoverColor: 'hover:text-[#3B82F6]',
       items: [
         {
-          name: 'Galeri',
+          name: 'Pengrajin',
           href: '/konveksi',
-          icon: ShoppingBag,
+          icon: Store,
           activeColor: 'bg-gradient-to-r from-[#3B82F6] to-[#2563EB]',
           hoverColor: 'hover:bg-blue-50'
         },

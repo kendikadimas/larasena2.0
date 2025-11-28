@@ -12,6 +12,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\TrainingLessonController;
 use App\Http\Controllers\TrainingCertificateController;
+use App\Http\Controllers\UploadMotifController;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -103,6 +104,12 @@ Route::middleware(['auth', 'verified', 'role:General'])->group(function () {
     // Published Motifs (Submit from Dashboard)
     Route::post('/motif/publish', [\App\Http\Controllers\PublishedMotifController::class, 'store'])->name('motif.published.store');
     Route::delete('/motif/publish/{motif}', [\App\Http\Controllers\PublishedMotifController::class, 'destroy'])->name('motif.published.destroy');
+    
+    // Upload Motif (New Feature - Separate Menu)
+    Route::get('/upload', [\App\Http\Controllers\UploadMotifController::class, 'index'])->name('motif.upload.index');
+    Route::get('/upload/create', [\App\Http\Controllers\UploadMotifController::class, 'create'])->name('motif.upload.create');
+    Route::post('/upload', [\App\Http\Controllers\UploadMotifController::class, 'store'])->name('motif.upload.store');
+    Route::delete('/upload/{motif}', [\App\Http\Controllers\UploadMotifController::class, 'destroy'])->name('motif.upload.destroy');
     
     // Like motif
     Route::post('/motif/{motif}/like', [\App\Http\Controllers\PublishedMotifController::class, 'toggleLike'])->name('motif.like');
