@@ -1,8 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, Head } from '@inertiajs/react';
 
 export default function Layanan({ user }) {
     const [openFaq, setOpenFaq] = useState(null);
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setIsScrolled(window.scrollY > 50);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const faqData = [
         {
@@ -62,6 +71,7 @@ export default function Layanan({ user }) {
                         />
                     </Link>
                     
+                    {/* Auth Button - Desktop & Mobile (Scrolls Away) */}
                     <div className="flex items-center gap-3">
                         {user ? (
                             <Link
@@ -71,29 +81,39 @@ export default function Layanan({ user }) {
                                 Dashboard
                             </Link>
                         ) : (
-                            <Link
-                                href={route('login')}
-                                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                            >
-                                Masuk
-                            </Link>
+                            <>
+                                <Link
+                                    href={route('login')}
+                                    className="px-4 py-2 md:px-6 md:py-2.5 rounded-xl border-2 border-amber-600 text-amber-600 font-semibold hover:bg-amber-50 transition-all duration-300"
+                                >
+                                    Masuk
+                                </Link>
+                                <Link
+                                    href={route('register')}
+                                    className="px-4 py-2 md:px-6 md:py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                                >
+                                    Daftar
+                                </Link>
+                            </>
                         )}
                     </div>
                 </div>
             </div>
 
-            {/* Navigation Menu - Fixed Centered */}
-            <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+            {/* Navigation Menu - Fixed (Muncul saat scroll) */}
+            <nav className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ${
+                isScrolled ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0 pointer-events-none'
+            }`}>
                 <div className="flex items-center gap-8 px-8 py-3 rounded-3xl bg-white/90 backdrop-blur-lg border border-amber-100 shadow-lg">
                     <Link href="/" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
                         Beranda
                         <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
                     </Link>
-                    <Link href={route('published-motifs.gallery')} className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
+                    <Link href="/galeri-motif" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
                         Batikpedia
                         <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
                     </Link>
-                    <Link href={route('layanan')} className="font-medium transition-all duration-300 relative group text-base text-amber-700">
+                    <Link href="/layanan" className="font-medium transition-all duration-300 relative group text-base text-amber-700">
                         Layanan
                         <span className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-600"></span>
                     </Link>

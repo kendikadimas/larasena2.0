@@ -205,7 +205,7 @@ export default function UploadMotifIndex({ motifs }) {
                 <button
                     onClick={() => router.visit('/upload/create')}
                     aria-label="Upload Motif Baru"
-                    className="fixed right-4 bottom-6 z-50 w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white transition-transform active:scale-95"
+                    className="fixed right-4 bottom-20 z-50 w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white transition-transform active:scale-95"
                     style={{
                         background: 'linear-gradient(135deg, #B45309 0%, #92400E 100%)',
                     }}

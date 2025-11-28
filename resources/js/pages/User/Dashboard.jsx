@@ -400,7 +400,7 @@ export default function Dashboard({ designs = [] }) {
           />
         )}
 
-        <div className="fixed right-4 bottom-24 z-50 flex flex-col items-end gap-3 pointer-events-none">
+        <div className="fixed right-4 bottom-32 z-50 flex flex-col items-end gap-3 pointer-events-none">
           {fabOpen && (
             <>
               <button
@@ -431,7 +431,7 @@ export default function Dashboard({ designs = [] }) {
         <button
           onClick={() => setFabOpen((s) => !s)}
           aria-label="Buka tindakan cepat"
-          className="fixed right-4 bottom-6 z-50 w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white transition-transform active:scale-95"
+          className="fixed right-4 bottom-20 z-50 w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white transition-transform active:scale-95"
           style={{
             background: fabOpen
               ? 'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)'

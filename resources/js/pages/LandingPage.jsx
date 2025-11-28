@@ -67,16 +67,11 @@ const CantingIcon = () => (
 );
 
 export default function LandingPage() {
-  // --- STATE LAMA KAMU ---
-  const [user] = useState(null);
-  const [isVisible, setIsVisible] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [openFaq, setOpenFaq] = useState(null);
-  
-  // --- BARU: STATE UNTUK MENU MOBILE ---
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  // --- BARU: STATE & DATA UNTUK GALERI INTERAKTIF ---
+  // --- STATE LAMA KAMU ---
+  const [user] = useState(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [openFaq, setOpenFaq] = useState(null);  // --- BARU: STATE & DATA UNTUK GALERI INTERAKTIF ---
   const galleryItems = [
     { name: "Batik Parang", img: "/images/kategori/parang.jpg" },
     { name: "Batik Kawung", img: "/images/kategori/kawung.jpg" },
@@ -115,26 +110,15 @@ export default function LandingPage() {
     setFeaturedIndex(index); // Ini kuncinya: set gambar di tengah
   };
 
-  // --- useEffect LAMA KAMU ---
-  useEffect(() => {
-    setIsVisible(true);
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // --- useEffect BARU: Mencegah scroll body saat menu mobile terbuka ---
+  // --- useEffect LAMA KAMU ---
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-  }, [isMobileMenuOpen]);
-
-
+    setIsVisible(true);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   // --- dashboardRoute LAMA KAMU ---
   const dashboardRoute = user?.role === 'Admin' 
     ? '/admin/dashboard' 
@@ -234,7 +218,7 @@ export default function LandingPage() {
       `}</style>
 
 
-      {/* ===== NAVBAR ELEGAN DENGAN LOGO ASLI ===== */}
+      {/* ===== NAVBAR ELEGAN DENGAN LOGO ASLI ===== */}
       {/* Logo & Auth Button - Not Fixed (Scrolls Away) */}
       <div className="relative w-full py-4 bg-transparent">
         <div className="px-8 md:px-16 lg:px-24 flex justify-between items-center">
@@ -246,112 +230,12 @@ export default function LandingPage() {
             />
           </a>
           
-          {/* Auth Button - Desktop (Scrolls Away) */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* Auth Button - Desktop & Mobile (Scrolls Away) */}
+          <div className="flex items-center gap-3">
             {user ? (
               <a
                 href={dashboardRoute}
                 className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-              >
-                Dashboard
-              </a>
-            ) : (
-              <a
-                href="/login"
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-              >
-                Masuk
-              </a>
-            )}
-          </div>
-
-          {/* Hamburger Menu - Mobile */}
-          <div className="md:hidden flex items-center">
-            <button 
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="p-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 hover:bg-white/20 focus:outline-none transition-all"
-              aria-label="Buka menu"
-            >
-              <svg className="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation Menu - Fixed (Always Visible) */}
-      <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
-        <div className={`hidden md:flex items-center gap-8 px-8 py-3 rounded-3xl transition-all duration-300 ${
-          isScrolled 
-            ? 'bg-white/90 backdrop-blur-lg border border-amber-100 traditional-border' 
-            : 'bg-white/70 backdrop-blur-md border border-white/50'
-        }`}>
-          <a href="#hero" className={`font-medium transition-all duration-300 relative group text-base ${
-            isScrolled ? 'text-gray-700 hover:text-amber-700' : 'text-gray-700 hover:text-amber-700'
-          }`}>
-            Beranda
-            <span className={`absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${
-              isScrolled ? 'bg-amber-600' : 'bg-amber-600'
-            }`}></span>
-          </a>
-          <Link href="/galeri-motif" className={`font-medium transition-all duration-300 relative group text-base ${
-            isScrolled ? 'text-gray-700 hover:text-amber-700' : 'text-gray-700 hover:text-amber-700'
-          }`}>
-            Batikpedia
-            <span className={`absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${
-              isScrolled ? 'bg-amber-600' : 'bg-amber-600'
-            }`}></span>
-          </Link>
-          <Link href="/layanan" className={`font-medium transition-all duration-300 relative group text-base ${
-            isScrolled ? 'text-gray-700 hover:text-amber-700' : 'text-gray-700 hover:text-amber-700'
-          }`}>
-            Layanan
-            <span className={`absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full ${
-              isScrolled ? 'bg-amber-600' : 'bg-amber-600'
-            }`}></span>
-          </Link>
-        </div>
-      </nav>
-
-      {/* ===== BARU: Panel Menu Mobile ===== */}
-      <div
-        className={`fixed inset-0 z-[60] bg-white transform ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} 
-                    transition-transform duration-300 ease-in-out md:hidden`}
-      >
-        {/* Header Menu Mobile */}
-        <div className="flex justify-between items-center p-8 border-b border-gray-200">
-          <a href="/" className="flex items-center">
-            <img 
-              src="/images/logolarasena.png" 
-              alt="Larasena Logo" 
-              className="h-10 w-auto"
-            />
-          </a>
-          <button 
-            onClick={() => setIsMobileMenuOpen(false)} 
-            className="text-gray-800 hover:text-amber-700 focus:outline-none"
-            aria-label="Tutup menu"
-          >
-            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        
-        {/* Konten Menu Mobile */}
-        <div className="flex flex-col items-center justify-center h-full space-y-8 -mt-20">
-          <a href="/beranda" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Beranda</a>
-          <Link href="/galeri-motif" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Batikpedia</Link>
-          <Link href="/layanan" onClick={() => setIsMobileMenuOpen(false)} className="text-2xl font-medium text-gray-700 hover:text-amber-700 transition-colors">Layanan</Link>
-          
-          {/* Garis pemisah */}
-          <div className="border-t border-gray-200 w-3/4 pt-8 mt-8 flex flex-col items-center gap-5">
-            {user ? (
-              <a
-                href={dashboardRoute}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full text-center px-7 py-3 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold transition-all duration-300"
               >
                 Dashboard
               </a>
@@ -359,23 +243,41 @@ export default function LandingPage() {
               <>
                 <a
                   href="/login"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full text-center px-6 py-3 rounded-xl border-2 border-amber-600 text-amber-600 font-semibold transition-all duration-300"
+                  className="px-4 py-2 md:px-6 md:py-2.5 rounded-xl border-2 border-amber-600 text-amber-600 font-semibold hover:bg-amber-50 transition-all duration-300"
                 >
                   Masuk
                 </a>
                 <a
                   href="/register"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full text-center px-7 py-3 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold transition-all duration-300"
+                  className="px-4 py-2 md:px-6 md:py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
-                  Mulai Sekarang
+                  Daftar
                 </a>
               </>
             )}
           </div>
         </div>
       </div>
+
+      {/* Navigation Menu - Fixed (Muncul saat scroll) */}
+      <nav className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ${
+        isScrolled ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0 pointer-events-none'
+      }`}>
+        <div className="flex items-center gap-8 px-8 py-3 rounded-3xl bg-white/90 backdrop-blur-lg border border-amber-100 shadow-lg">
+          <a href="#hero" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
+            Beranda
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full bg-amber-600"></span>
+          </a>
+          <Link href="/galeri-motif" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
+            Batikpedia
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full bg-amber-600"></span>
+          </Link>
+          <Link href="/layanan" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
+            Layanan
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full bg-amber-600"></span>
+          </Link>
+        </div>
+      </nav>
 
 
       {/* ===== HERO SECTION YANG LEBIH ORGANIK DAN ALAMI ===== */}
