@@ -70,11 +70,17 @@ export default function UserLayout({ children, title }) {
              
               <Menu as="div" className="relative z-10">
                 <MenuButton className="flex items-center gap-2 hover:bg-gray-100 p-2 rounded-lg transition-colors">
-                  <img 
-                    src={`https://ui-avatars.com/api/?name=${user.name}&background=BA682A&color=fff`} 
-                    alt="Avatar" 
-                    className="rounded-full w-8 h-8" 
-                  />
+                  {user.profile_photo_url ? (
+                    <img 
+                      src={user.profile_photo_url} 
+                      alt={user.name} 
+                      className="rounded-full w-8 h-8 object-cover border-2 border-[#BA682A]" 
+                    />
+                  ) : (
+                    <div className="rounded-full w-8 h-8 bg-gradient-to-br from-[#BA682A] to-[#8B4513] flex items-center justify-center text-white font-bold text-sm">
+                      {user.name?.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                   <div className="text-left hidden md:block">
                       <p className="text-sm font-semibold text-gray-800">{user.name}</p>
                       <p className="text-xs text-gray-500">{user.email}</p>
@@ -141,7 +147,7 @@ export default function UserLayout({ children, title }) {
           </div>
       
           {/* Main Content Area */}
-          <div className="flex-1 overflow-y-auto p-4 md:p-6">
+          <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-20 md:pb-6">
               {children}
           </div>
 

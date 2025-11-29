@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, router, Head } from '@inertiajs/react';
-import { Heart, Eye, User, Share2, Facebook, Twitter, Copy, Check, Calendar, ArrowLeft } from 'lucide-react';
+import { Heart, Eye, User, Share2, Facebook, Twitter, Copy, Check, Calendar, ArrowLeft, MapPin } from 'lucide-react';
 
 export default function Show({ motif, relatedMotifs, user }) {
     const [copied, setCopied] = useState(false);
@@ -54,158 +54,203 @@ export default function Show({ motif, relatedMotifs, user }) {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <Head title={motif.title} />
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-orange-50/30 to-gray-50">
+            <Head title={motif.title}>
+                <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
+            </Head>
             
-            {/* Header */}
-            <div className="bg-gradient-to-r from-[#BA682A] via-[#D2691E] to-[#F4A460] text-white py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <Link
-                        href="/galeri-motif"
-                        className="inline-flex items-center gap-2 text-white/90 hover:text-white mb-4 transition-colors"
-                    >
-                        <ArrowLeft className="w-5 h-5" />
-                        <span>Kembali ke Galeri</span>
+            <style jsx>{`
+                * {
+                    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                }
+            `}</style>
+            
+            {/* ===== NAVBAR - Same as Gallery ===== */}
+            {/* Logo & Auth Button - Scrolls Away */}
+            <div className="relative w-full py-4 bg-transparent">
+                <div className="px-8 md:px-16 lg:px-24 flex justify-between items-center">
+                    <Link href="/" className="flex-shrink-0 flex items-center transform hover:scale-105 transition-transform duration-300">
+                        <img 
+                            src="/images/logolarasena.png" 
+                            alt="Larasena Logo" 
+                            className="h-12 w-auto"
+                        />
                     </Link>
-                    <h1 className="text-4xl font-bold">{motif.title}</h1>
+                    
+                    {/* Auth Button - Desktop (Scrolls Away) */}
+                    <div className="flex items-center gap-3">
+                        {user ? (
+                            <Link
+                                href={route('dashboard')}
+                                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                            >
+                                Dashboard
+                            </Link>
+                        ) : (
+                            <Link
+                                href={route('login')}
+                                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                            >
+                                Masuk
+                            </Link>
+                        )}
+                    </div>
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-                    {/* Image */}
-                    <div className="relative">
-                        <div className="sticky top-8">
-                            <div className="aspect-square rounded-2xl overflow-hidden shadow-2xl bg-gray-100">
-                                <img
-                                    src={motif.image_url}
-                                    alt={motif.title}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            
-                            {/* Stats */}
-                            <div className="mt-6 flex items-center justify-between bg-white rounded-xl p-4 shadow-lg">
-                                <div className="flex items-center gap-4">
-                                    <div className="flex items-center gap-2 text-gray-700">
-                                        <Eye className="w-5 h-5 text-blue-500" />
-                                        <span className="font-semibold">{motif.views_count}</span>
-                                        <span className="text-sm text-gray-500">views</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-gray-700">
-                                        <Heart className={`w-5 h-5 ${motif.is_liked_by_user ? 'text-red-500 fill-current' : 'text-red-500'}`} />
-                                        <span className="font-semibold">{motif.likes_count}</span>
-                                        <span className="text-sm text-gray-500">likes</span>
-                                    </div>
-                                </div>
-                                
-                                <button
-                                    onClick={handleLike}
-                                    className={`px-6 py-2 rounded-xl font-semibold transition-all ${
-                                        motif.is_liked_by_user
-                                            ? 'bg-red-500 text-white hover:bg-red-600'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    }`}
-                                >
-                                    <Heart className={`w-5 h-5 inline mr-2 ${motif.is_liked_by_user ? 'fill-current' : ''}`} />
-                                    {motif.is_liked_by_user ? 'Disukai' : 'Suka'}
-                                </button>
-                            </div>
+            {/* Navigation Menu - Fixed Centered */}
+            <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
+                <div className="flex items-center gap-8 px-8 py-3 rounded-3xl bg-white/90 backdrop-blur-lg border border-amber-100 shadow-lg">
+                    <Link href="/" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
+                        Beranda
+                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
+                    </Link>
+                    <Link href={route('published-motifs.gallery')} className="font-medium transition-all duration-300 relative group text-base text-amber-700">
+                        Batikpedia
+                        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-600"></span>
+                    </Link>
+                    <Link href="/layanan" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
+                        Layanan
+                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
+                    </Link>
+                </div>
+            </nav>
+
+            <div className="px-8 md:px-16 lg:px-24 py-8">
+                {/* Back Button */}
+                <Link
+                    href="/galeri-motif"
+                    className="inline-flex items-center gap-2 text-gray-600 hover:text-[#BA682A] mb-8 transition-colors"
+                >
+                    <ArrowLeft className="w-5 h-5" />
+                    <span className="font-medium">Kembali ke Galeri</span>
+                </Link>
+
+                {/* Title & Profile Creator */}
+                <div className="mb-8">
+                    {/* Title & Origin Badge */}
+                    <div className="mb-4 flex items-start justify-between">
+                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{motif.title}</h1>
+                        <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#BA682A]/10 to-[#D2691E]/10 border border-[#BA682A]/20 rounded-xl">
+                            <MapPin className="w-5 h-5 text-[#BA682A]" />
+                            <span className="text-base font-semibold text-gray-900">
+                                {motif.origin || 'Indonesia'}
+                            </span>
                         </div>
                     </div>
 
-                    {/* Content */}
-                    <div>
-                        {/* Publisher */}
-                        <div className="bg-white rounded-2xl p-6 shadow-lg mb-6">
-                            <h3 className="text-sm font-semibold text-gray-500 uppercase mb-3">Dibuat Oleh</h3>
-                            <div className="flex items-center gap-4">
-                                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#BA682A] to-[#D2691E] flex items-center justify-center text-white font-bold text-xl overflow-hidden">
-                                    {motif.user.profile_photo_url ? (
-                                        <img
-                                            src={motif.user.profile_photo_url}
-                                            alt={motif.user.name}
-                                            className="w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        motif.user.name.charAt(0).toUpperCase()
-                                    )}
-                                </div>
-                                <div className="flex-1">
-                                    <div className="text-xl font-bold text-gray-800">
-                                        {motif.user.name}
-                                    </div>
-                                    {motif.user.badges && motif.user.badges.length > 0 && (
-                                        <div className="flex gap-2 mt-1">
-                                            {motif.user.badges.map((badge, idx) => (
-                                                <span
-                                                    key={idx}
-                                                    className="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full font-semibold"
-                                                >
-                                                    {badge.badge_icon} {badge.badge_name}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
+                    {/* Profile & Stats Section */}
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#BA682A] to-[#D2691E] flex items-center justify-center text-white font-bold overflow-hidden ring-2 ring-gray-100">
+                                {motif.user.profile_photo_url ? (
+                                    <img
+                                        src={motif.user.profile_photo_url}
+                                        alt={motif.user.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-sm">{motif.user.name.charAt(0).toUpperCase()}</span>
+                                )}
                             </div>
-                            <div className="mt-4 flex items-center gap-2 text-gray-600 text-sm">
-                                <Calendar className="w-4 h-4" />
-                                <span>Dipublikasikan {motif.published_at}</span>
+                            <div>
+                                <div className="text-sm font-semibold text-gray-900">
+                                    {motif.user.name}
+                                </div>
+                                <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                                    <Calendar className="w-3 h-3" />
+                                    <span>{motif.published_at}</span>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Philosophy */}
-                        <div className="bg-white rounded-2xl p-6 shadow-lg mb-6">
-                            <h3 className="text-sm font-semibold text-gray-500 uppercase mb-3">Filosofi Motif</h3>
-                            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-                                {motif.philosophy}
-                            </p>
-                        </div>
-
-                        {/* Share */}
-                        <div className="bg-white rounded-2xl p-6 shadow-lg">
-                            <h3 className="text-sm font-semibold text-gray-500 uppercase mb-4">Bagikan Motif</h3>
-                            <div className="flex flex-wrap gap-3">
-                                <button
-                                    onClick={() => handleShare('facebook')}
-                                    className="flex-1 min-w-[140px] px-4 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-                                >
-                                    <Facebook className="w-5 h-5" />
-                                    Facebook
-                                </button>
-                                <button
-                                    onClick={() => handleShare('twitter')}
-                                    className="flex-1 min-w-[140px] px-4 py-3 bg-sky-500 text-white rounded-xl font-semibold hover:bg-sky-600 transition-colors flex items-center justify-center gap-2"
-                                >
-                                    <Twitter className="w-5 h-5" />
-                                    Twitter
-                                </button>
-                                <button
-                                    onClick={() => handleShare('whatsapp')}
-                                    className="flex-1 min-w-[140px] px-4 py-3 bg-green-500 text-white rounded-xl font-semibold hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
-                                >
-                                    <Share2 className="w-5 h-5" />
-                                    WhatsApp
-                                </button>
-                                <button
-                                    onClick={handleCopyLink}
-                                    className="flex-1 min-w-[140px] px-4 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
-                                >
-                                    {copied ? (
-                                        <>
-                                            <Check className="w-5 h-5 text-green-600" />
-                                            Tersalin!
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Copy className="w-5 h-5" />
-                                            Copy Link
-                                        </>
-                                    )}
-                                </button>
+                        {/* Stats & Like Button */}
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-4 text-gray-600">
+                                <div className="flex items-center gap-1.5">
+                                    <Eye className="w-5 h-5" />
+                                    <span className="font-semibold">{motif.views_count}</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <Heart className={`w-5 h-5 ${motif.is_liked_by_user ? 'fill-current text-red-500' : ''}`} />
+                                    <span className="font-semibold">{motif.likes_count}</span>
+                                </div>
                             </div>
+                            <button
+                                onClick={handleLike}
+                                className={`px-5 py-2.5 rounded-xl font-semibold transition-all flex items-center gap-2 ${
+                                    motif.is_liked_by_user
+                                        ? 'bg-red-500 text-white hover:bg-red-600'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                }`}
+                            >
+                                <Heart className={`w-4 h-4 ${motif.is_liked_by_user ? 'fill-current' : ''}`} />
+                                {motif.is_liked_by_user ? 'Disukai' : 'Suka'}
+                            </button>
                         </div>
+                    </div>
+                </div>
+
+                {/* Main Image - Full Width */}
+                <div className="mb-8">
+                    <div className="aspect-[16/10] rounded-2xl overflow-hidden bg-gray-50">
+                        <img
+                            src={motif.image_url}
+                            alt={motif.title}
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                </div>
+
+                {/* Philosophy - Below Image */}
+                <div className=" mb-12">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Filosofi Motif</h2>
+                    <p className="text-gray-700 leading-relaxed text-center text-lg whitespace-pre-wrap">
+                        {motif.philosophy}
+                    </p>
+                </div>
+
+                {/* Share Section - Minimal */}
+                <div className="mb-16 pb-16 border-b border-gray-200">
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Bagikan Motif</h3>
+                    <div className="flex flex-wrap gap-3">
+                        <button
+                            onClick={() => handleShare('facebook')}
+                            className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+                        >
+                            <Facebook className="w-4 h-4" />
+                            Facebook
+                        </button>
+                        <button
+                            onClick={() => handleShare('twitter')}
+                            className="px-5 py-2.5 bg-sky-500 text-white rounded-xl font-medium hover:bg-sky-600 transition-colors flex items-center gap-2"
+                        >
+                            <Twitter className="w-4 h-4" />
+                            Twitter
+                        </button>
+                        <button
+                            onClick={() => handleShare('whatsapp')}
+                            className="px-5 py-2.5 bg-green-500 text-white rounded-xl font-medium hover:bg-green-600 transition-colors flex items-center gap-2"
+                        >
+                            <Share2 className="w-4 h-4" />
+                            WhatsApp
+                        </button>
+                        <button
+                            onClick={handleCopyLink}
+                            className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors flex items-center gap-2"
+                        >
+                            {copied ? (
+                                <>
+                                    <Check className="w-4 h-4 text-green-600" />
+                                    Tersalin!
+                                </>
+                            ) : (
+                                <>
+                                    <Copy className="w-4 h-4" />
+                                    Copy Link
+                                </>
+                            )}
+                        </button>
                     </div>
                 </div>
 
@@ -213,36 +258,51 @@ export default function Show({ motif, relatedMotifs, user }) {
                 {relatedMotifs && relatedMotifs.length > 0 && (
                     <div>
                         <h2 className="text-2xl font-bold text-gray-800 mb-6">Motif Lainnya</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {relatedMotifs.map((related) => (
-                                <Link
-                                    key={related.id}
-                                    href={route('published-motifs.show', related.slug)}
-                                    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-                                >
-                                    <div className="aspect-square overflow-hidden bg-gray-100">
-                                        <img
-                                            src={related.image_url}
-                                            alt={related.title}
-                                            className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                                        />
-                                    </div>
-                                    <div className="p-4">
-                                        <h3 className="font-bold text-gray-800 mb-2 line-clamp-1">
-                                            {related.title}
-                                        </h3>
-                                        <div className="flex items-center gap-3 text-sm text-gray-600">
-                                            <div className="flex items-center gap-1">
-                                                <Heart className="w-4 h-4" />
-                                                <span>{related.likes_count}</span>
+                                <div key={related.id} className="group">
+                                    <Link href={route('published-motifs.show', related.slug)}>
+                                        <div className="relative rounded-2xl overflow-hidden transition-all duration-300">
+                                            {/* Image Container */}
+                                            <div className="relative aspect-[4/3] overflow-hidden bg-gray-50">
+                                                <img
+                                                    src={related.image_url}
+                                                    alt={related.title}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                                />
+                                                
+                                                {/* Origin Badge - Top Left */}
+                                                <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full shadow-lg">
+                                                    <MapPin className="w-3.5 h-3.5 text-[#BA682A]" />
+                                                    <span className="text-xs font-semibold text-gray-700">
+                                                        {related.origin || 'Indonesia'}
+                                                    </span>
+                                                </div>
+
+                                                {/* Nama Batik Overlay - Muncul on Hover */}
+                                                <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 via-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                    <h3 className="text-white font-bold text-base line-clamp-2">
+                                                        {related.title}
+                                                    </h3>
+                                                </div>
                                             </div>
-                                            <div className="flex items-center gap-1">
-                                                <Eye className="w-4 h-4" />
-                                                <span>{related.views_count}</span>
+
+                                            {/* Card Footer - Stats Only */}
+                                            <div className="pt-3">
+                                                <div className="flex items-center gap-4 text-gray-600">
+                                                    <div className="flex items-center gap-1">
+                                                        <Eye className="w-4 h-4" />
+                                                        <span className="text-xs font-medium">{related.views_count}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <Heart className="w-4 h-4" />
+                                                        <span className="text-xs font-medium">{related.likes_count}</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </Link>
+                                    </Link>
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -250,8 +310,8 @@ export default function Show({ motif, relatedMotifs, user }) {
             </div>
 
             {/* Footer */}
-            <footer className="bg-white border-t mt-16">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <footer className="bg-white border-t mt-20">
+                <div className="px-8 md:px-16 lg:px-24 py-12">
                     <div className="text-center text-gray-600">
                         <p className="mb-2">© 2025 Larasena. Platform Desain Batik Indonesia</p>
                         <div className="flex justify-center gap-6 mt-4">

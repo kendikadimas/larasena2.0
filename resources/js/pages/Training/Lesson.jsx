@@ -224,19 +224,63 @@ export default function Lesson({ course, lesson, progress, allLessons, nextLesso
                                     initialCanvasWork={canvasWork}
                                 />
                             )}
-
+                            
                             {/* Quiz Content */}
-                            {lesson.type === 'quiz' && (
-                                <div className="bg-white rounded-2xl shadow-lg p-8">
-                                    <div className="text-center py-12">
-                                        <div className="bg-purple-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                                            <CheckCircle2 className="w-10 h-10 text-purple-600" />
+                            {lesson.type === 'quiz' && lesson.quiz_data && (
+                            <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
+
+                                <h2 className="text-2xl font-bold text-gray-900 mb-4">Kuis: {lesson.title}</h2>
+
+                                {lesson.quiz_data.questions?.map((q, index) => (
+                                    <div key={index} className="p-6 border rounded-xl bg-gray-50 space-y-4">
+
+                                        <div className="text-lg font-semibold text-gray-800">
+                                            {index + 1}. {q.question}
                                         </div>
-                                        <h3 className="text-2xl font-bold text-gray-900 mb-4">Kuis akan segera hadir</h3>
-                                        <p className="text-gray-600">Fitur kuis sedang dalam pengembangan</p>
+
+                                        {/* Multiple choice */}
+                                        {q.type === "multiple_choice" && (
+                                            <div className="space-y-2">
+                                                {q.options.map((opt, optIndex) => (
+                                                    <label
+                                                        key={optIndex}
+                                                        className="flex items-center gap-3 p-3 bg-white rounded-lg border hover:bg-gray-50 cursor-pointer"
+                                                    >
+                                                        <input
+                                                            type="radio"
+                                                            name={`q-${index}`}
+                                                            value={opt}
+                                                            className="w-4 h-4"
+                                                        />
+                                                        <span className="text-gray-700">{opt}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* Essay */}
+                                        {q.type === "essay" && (
+                                            <textarea
+                                                className="w-full border rounded-lg p-3 text-gray-700"
+                                                rows={4}
+                                                placeholder="Tulis jawaban Anda..."
+                                            />
+                                        )}
+
                                     </div>
-                                </div>
-                            )}
+                                ))}
+
+                                {/* Tombol Submit */}
+                                <button
+                                    onClick={() => handleSaveProgress()}
+                                    className="w-full bg-gradient-to-r from-[#BA682A] to-[#D2691E] text-white py-4 rounded-xl font-semibold hover:shadow-lg"
+                                >
+                                    Selesaikan Kuis
+                                </button>
+
+                            </div>
+                        )}
+
 
                             {/* Save Success Message */}
                             {saveSuccess && (

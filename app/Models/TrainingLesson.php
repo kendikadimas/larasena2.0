@@ -18,12 +18,14 @@ class TrainingLesson extends Model
         'video_url',
         'type',
         'canvas_data',
+        'quiz_data',
         'duration',
         'order',
         'is_published'
     ];
 
     protected $casts = [
+        'quiz_data' => 'array',
         'canvas_data' => 'array',
         'is_published' => 'boolean',
         'order' => 'integer'

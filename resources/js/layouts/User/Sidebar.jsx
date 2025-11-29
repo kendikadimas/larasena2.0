@@ -1,12 +1,59 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { Menu, X, ChevronLeft, ChevronRight, ChevronDown, Home, Palette, ShoppingBag, Package, GraduationCap, Award, HelpCircle, Upload } from 'lucide-react';
+import { Menu, X, ChevronLeft, ChevronRight, ChevronDown, Home, ImagePlus, Landmark, Store, Package, GraduationCap, Award, HelpCircle, MoreHorizontal, LogOut, User } from 'lucide-react';
+
+// Custom SVG Icon components - Define before use
+const NyantingIcon = ({ isActive = false, isMobile = false }) => (
+  <img 
+    src="/images/sideicon/nyanting-icon.svg" 
+    alt="Nyanting" 
+    className="w-5 h-5"
+    style={{ 
+      filter: isActive 
+        ? isMobile 
+          ? 'brightness(0) saturate(100%) invert(42%) sepia(54%) saturate(862%) hue-rotate(358deg) brightness(93%) contrast(90%)' 
+          : 'brightness(0) invert(1)'
+        : 'none' 
+    }}
+  />
+);
+
+const SanggarIcon = ({ isActive = false, isMobile = false }) => (
+  <img 
+    src="/images/sideicon/sanggar-icon.svg" 
+    alt="Sanggar" 
+    className="w-5 h-5"
+    style={{ 
+      filter: isActive 
+        ? isMobile 
+          ? 'brightness(0) saturate(100%) invert(42%) sepia(54%) saturate(862%) hue-rotate(358deg) brightness(93%) contrast(90%)' 
+          : 'brightness(0) invert(1)'
+        : 'none' 
+    }}
+  />
+);
+
+const BatikpediaIcon = ({ isActive = false, isMobile = false }) => (
+  <img 
+    src="/images/sideicon/batikpedia-icon.svg" 
+    alt="Batikpedia" 
+    className="w-5 h-5"
+    style={{ 
+      filter: isActive 
+        ? isMobile 
+          ? 'brightness(0) saturate(100%) invert(42%) sepia(54%) saturate(862%) hue-rotate(358deg) brightness(93%) contrast(90%)' 
+          : 'brightness(0) invert(1)'
+        : 'none' 
+    }}
+  />
+);
 
 export default function Sidebar() {
   const { url } = usePage();
   const [isOpen, setIsOpen] = useState(false); // For mobile
   const [isCollapsed, setIsCollapsed] = useState(false); // For desktop
   const [expandedGroups, setExpandedGroups] = useState(['batik', 'pelatihan', 'produksi']); // All expanded by default
+  const [showMoreMenu, setShowMoreMenu] = useState(false); // For "Lainnya" bottom sheet
 
   const toggleGroup = (groupName) => {
     if (isCollapsed) return; // Don't toggle when sidebar collapsed
@@ -23,16 +70,23 @@ export default function Sidebar() {
       label: null, // No header for main features
       items: [
         {
-          name: 'Batik Saya',
+          name: 'Nyanting',
           href: '/dashboard',
-          icon: Home,
+          icon: NyantingIcon,
+          activeColor: 'bg-gradient-to-r from-[#BA682A] to-[#D2691E]',
+          hoverColor: 'hover:bg-orange-50'
+        },
+        {
+          name: 'Sanggar',
+          href: '/upload',
+          icon: SanggarIcon,
           activeColor: 'bg-gradient-to-r from-[#BA682A] to-[#D2691E]',
           hoverColor: 'hover:bg-orange-50'
         },
         {
           name: 'Batikpedia',
           href: '/galeri-motif',
-          icon: Palette,
+          icon: BatikpediaIcon,
           activeColor: 'bg-gradient-to-r from-[#BA682A] to-[#D2691E]',
           hoverColor: 'hover:bg-orange-50'
         }
@@ -67,9 +121,9 @@ export default function Sidebar() {
       hoverColor: 'hover:text-[#3B82F6]',
       items: [
         {
-          name: 'Galeri',
+          name: 'Pengrajin',
           href: '/konveksi',
-          icon: ShoppingBag,
+          icon: Store,
           activeColor: 'bg-gradient-to-r from-[#3B82F6] to-[#2563EB]',
           hoverColor: 'hover:bg-blue-50'
         },
@@ -91,18 +145,29 @@ export default function Sidebar() {
     }
   ];
 
+  // Main bottom nav items for mobile
+  const mainBottomNavItems = [
+    { name: 'Nyanting', href: '/dashboard', icon: NyantingIcon },
+    { name: 'Sanggar', href: '/upload', icon: SanggarIcon },
+    { name: 'Batikpedia', href: '/galeri-motif', icon: BatikpediaIcon },
+    { name: 'Produksi', href: '/produksi', icon: Package }
+  ];
+
+  // Other menu items for "Lainnya"
+  const otherMenuItems = [
+    { name: 'Pelatihan', href: '/pelatihan', icon: GraduationCap, group: 'Pelatihan' },
+    { name: 'Sertifikat', href: '/sertifikat', icon: Award, group: 'Pelatihan' },
+    { name: 'Pengrajin', href: '/konveksi', icon: Store, group: 'Layanan' },
+    { name: 'Bantuan', href: '/bantuan', icon: HelpCircle, group: 'Layanan' },
+    { name: 'Pengaturan', href: '/profile', icon: User, group: 'Akun' },
+    { name: 'Logout', href: '/logout', icon: LogOut, group: 'Akun', isLogout: true }
+  ];
+
   return (
     <>
       {/* Mobile Header - Fixed at top with highest z-index */}
       <div className="md:hidden flex justify-between items-center bg-white border-b px-4 py-3 shadow-md fixed top-0 left-0 right-0 z-[60]">
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none transition"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
           <img
             src="/images/LARASENA.png"
             alt="Larasena Logo"
@@ -206,7 +271,7 @@ export default function Sidebar() {
                           onClick={() => setIsOpen(false)}
                           title={isCollapsed ? item.name : ''}
                         >
-                          <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? '' : ''}`} />
+                          <Icon isActive={isActive} className={`w-5 h-5 flex-shrink-0`} />
                           
                           <span className={`text-sm font-medium transition-all duration-300 ${
                             isCollapsed ? 'md:hidden' : 'md:inline'
@@ -251,6 +316,130 @@ export default function Sidebar() {
           onClick={() => setIsOpen(false)}
           aria-hidden="true"
         />
+      )}
+
+      {/* Mobile Bottom Navigation Bar */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-[60] shadow-lg">
+        <div className="flex items-center justify-around px-2 py-2">
+          {mainBottomNavItems.map((item) => {
+            const isActive = url.startsWith(item.href);
+            const Icon = item.icon;
+            
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`flex flex-col items-center justify-center px-3 py-2 rounded-xl transition-all duration-200 min-w-[60px] ${
+                  isActive 
+                    ? 'text-[#D2691E]' 
+                    : 'text-gray-600'
+                }`}
+              >
+                <Icon isActive={isActive} isMobile={true} className={`w-6 h-6 mb-1 ${isActive ? 'scale-110' : ''}`} />
+                <span className="text-[10px] font-medium text-center leading-tight">
+                  {item.name}
+                </span>
+              </Link>
+            );
+          })}
+          
+          {/* Lainnya Button */}
+          <button
+            onClick={() => setShowMoreMenu(true)}
+            className={`flex flex-col items-center justify-center px-3 py-2 rounded-xl transition-all duration-200 min-w-[60px] ${
+              showMoreMenu ? 'text-[#D2691E]' : 'text-gray-600'
+            }`}
+          >
+            <MoreHorizontal className={`w-6 h-6 mb-1 ${showMoreMenu ? 'scale-110' : ''}`} />
+            <span className="text-[10px] font-medium text-center leading-tight">
+              Lainnya
+            </span>
+          </button>
+        </div>
+      </nav>
+
+      {/* "Lainnya" Bottom Sheet Modal */}
+      {showMoreMenu && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[70] md:hidden"
+            onClick={() => setShowMoreMenu(false)}
+          />
+          <div className="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl z-[80] md:hidden transform transition-transform duration-300 ease-out">
+            {/* Handle Bar */}
+            <div className="flex justify-center pt-3 pb-2">
+              <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
+            </div>
+            
+            {/* Header */}
+            <div className="px-6 py-3 border-b border-gray-100">
+              <h3 className="text-lg font-bold text-gray-900">Lainnya</h3>
+            </div>
+            
+            {/* Menu Items */}
+            <div className="px-4 py-3 max-h-[60vh] overflow-y-auto">
+              {/* Group by category */}
+              {['Pelatihan', 'Layanan', 'Akun'].map((groupName) => (
+                <div key={groupName} className="mb-4">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 px-2 mb-2">
+                    {groupName}
+                  </h4>
+                  <div className="space-y-1">
+                    {otherMenuItems
+                      .filter(item => item.group === groupName)
+                      .map((item) => {
+                        const isActive = url.startsWith(item.href) && !item.isLogout;
+                        const Icon = item.icon;
+                        
+                        // Handle logout differently
+                        if (item.isLogout) {
+                          return (
+                            <button
+                              key={item.name}
+                              onClick={() => {
+                                setShowMoreMenu(false);
+                                router.post('/logout');
+                              }}
+                              className="w-full flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-200 text-red-600 hover:bg-red-50"
+                            >
+                              <Icon className="w-5 h-5 flex-shrink-0" />
+                              <span className="text-sm font-medium">{item.name}</span>
+                            </button>
+                          );
+                        }
+                        
+                        return (
+                          <Link
+                            key={item.name}
+                            href={item.href}
+                            onClick={() => setShowMoreMenu(false)}
+                            className={`flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-200 ${
+                              isActive
+                                ? 'bg-gradient-to-r from-[#BA682A] to-[#D2691E] text-white shadow-lg'
+                                : 'text-gray-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            <Icon className="w-5 h-5 flex-shrink-0" />
+                            <span className="text-sm font-medium">{item.name}</span>
+                          </Link>
+                        );
+                      })}
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Close Button */}
+            <div className="px-4 py-3 border-t border-gray-100">
+              <button
+                onClick={() => setShowMoreMenu(false)}
+                className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </>
   );

@@ -70,7 +70,7 @@ export default function Konveksi({ konveksis, stats, filters, locations }) {
   };
 
   return (
-    <UserLayout title="Konveksi">
+    <UserLayout title="Pengrajin Batik Terpercaya">
       <SEO 
         title="Daftar Konveksi Batik Terpercaya"
         description="Temukan partner konveksi batik terpercaya untuk memproduksi desain Anda. Pilihan konveksi terverifikasi dengan rating terbaik di seluruh Indonesia."

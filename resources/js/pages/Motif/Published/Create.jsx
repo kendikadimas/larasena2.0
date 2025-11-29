@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import UserLayout from '@/layouts/User/Layout';
 import { router } from '@inertiajs/react';
-import { Upload, Image as ImageIcon, FileText, Sparkles, Info, CheckCircle } from 'lucide-react';
+import { Upload, Image as ImageIcon, FileText, Sparkles, Info, CheckCircle, MapPin } from 'lucide-react';
 
 export default function CreatePublishedMotif() {
     const [formData, setFormData] = useState({
         title: '',
         philosophy: '',
+        origin: '',
         image: null,
         design_data: null
     });
@@ -40,6 +41,7 @@ export default function CreatePublishedMotif() {
         const data = new FormData();
         data.append('title', formData.title);
         data.append('philosophy', formData.philosophy);
+        data.append('origin', formData.origin);
         if (formData.image) {
             data.append('image', formData.image);
         }
@@ -164,6 +166,30 @@ export default function CreatePublishedMotif() {
                                 )}
                             </div>
 
+                            {/* Origin (Asal Kota) */}
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-3">
+                                    Asal Daerah Motif *
+                                </label>
+                                <div className="relative">
+                                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <input
+                                        type="text"
+                                        value={formData.origin}
+                                        onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
+                                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#BA682A] focus:border-[#BA682A] transition-all"
+                                        placeholder="Contoh: Solo, Yogyakarta, Pekalongan, dll."
+                                        required
+                                    />
+                                </div>
+                                {errors.origin && (
+                                    <p className="mt-2 text-sm text-red-600">{errors.origin}</p>
+                                )}
+                                <p className="mt-2 text-xs text-gray-500">
+                                    Nama daerah/kota asal motif batik ini berasal
+                                </p>
+                            </div>
+
                             {/* Philosophy */}
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-3">
@@ -204,7 +230,7 @@ export default function CreatePublishedMotif() {
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={submitting || !formData.image || !formData.title || !formData.philosophy}
+                                    disabled={submitting || !formData.image || !formData.title || !formData.origin || !formData.philosophy}
                                     className="flex-1 bg-gradient-to-r from-[#BA682A] to-[#D2691E] text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
                                 >
                                     {submitting ? (

@@ -14,6 +14,7 @@ use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\TrainingLessonController;
 use App\Http\Controllers\TrainingCertificateController;
+use App\Http\Controllers\UploadMotifController;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +53,13 @@ Route::get('/', function () {
 Route::get('/galeri-motif', [\App\Http\Controllers\PublishedMotifController::class, 'gallery'])->name('published-motifs.gallery');
 Route::get('/galeri-motif/{slug}', [\App\Http\Controllers\PublishedMotifController::class, 'show'])->name('published-motifs.show');
 
+// Layanan Page
+Route::get('/layanan', function () {
+    return Inertia::render('Layanan', [
+        'user' => Auth::user()
+    ]);
+})->name('layanan');
+
 // ============================================================================
 // 👤 ROUTE UNTUK GENERAL USER (role: General)
 // ============================================================================
@@ -88,6 +96,7 @@ Route::middleware(['auth', 'verified', 'role:General'])->group(function () {
     Route::get('/pelatihan/{course:slug}', [TrainingController::class, 'show'])->name('training.show');
     Route::get('/pelatihan/{course:slug}/lesson/{lesson:slug}', [TrainingLessonController::class, 'show'])->name('training.lesson.show');
     Route::post('/pelatihan/{course:slug}/lesson/{lesson:slug}/progress', [TrainingLessonController::class, 'saveProgress'])->name('training.lesson.progress');
+    Route::post('/pelatihan/{course:slug}/lesson/{lesson:slug}/quiz-submit',[TrainingLessonController::class, 'submitQuiz'])->name('training.lesson.quiz.submit');
     
     // Certificates
     Route::get('/sertifikat', [TrainingCertificateController::class, 'index'])->name('training.certificates.index');
@@ -97,6 +106,12 @@ Route::middleware(['auth', 'verified', 'role:General'])->group(function () {
     // Published Motifs (Submit from Dashboard)
     Route::post('/motif/publish', [\App\Http\Controllers\PublishedMotifController::class, 'store'])->name('motif.published.store');
     Route::delete('/motif/publish/{motif}', [\App\Http\Controllers\PublishedMotifController::class, 'destroy'])->name('motif.published.destroy');
+    
+    // Upload Motif (New Feature - Separate Menu)
+    Route::get('/upload', [\App\Http\Controllers\UploadMotifController::class, 'index'])->name('motif.upload.index');
+    Route::get('/upload/create', [\App\Http\Controllers\UploadMotifController::class, 'create'])->name('motif.upload.create');
+    Route::post('/upload', [\App\Http\Controllers\UploadMotifController::class, 'store'])->name('motif.upload.store');
+    Route::delete('/upload/{motif}', [\App\Http\Controllers\UploadMotifController::class, 'destroy'])->name('motif.upload.destroy');
     
     // Like motif
     Route::post('/motif/{motif}/like', [\App\Http\Controllers\PublishedMotifController::class, 'toggleLike'])->name('motif.like');

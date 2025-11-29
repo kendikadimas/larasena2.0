@@ -14,8 +14,8 @@ export default function BatikGeneratorPage({ auth }) {
     // Pattern options
     const [patternType, setPatternType] = useState('seamless');
     const [repeatCount, setRepeatCount] = useState(0); // 0 = default (no repeat)
-    const [colorScheme, setColorScheme] = useState('sogan');
-    const [style, setStyle] = useState('klasik');
+    const [colorScheme, setColorScheme] = useState('');
+    const [style, setStyle] = useState('');
 
    const promptTemplates = [
     // 🌧️ Cirebon
@@ -94,11 +94,19 @@ export default function BatikGeneratorPage({ auth }) {
                 : 'repeat'; // ceplok, lereng, nitik, isen, dll dianggap repeat
 
         try {
-            const response = await axios.post('/api/batik-generator', {
-                // Kirim prompt mentah (backend akan merangkai dengan style, warna, dll)
-                prompt: prompt,
-                pattern_type: apiPatternType,
-                repeat_count: repeatCount,
+            // Enhanced prompt with pattern options (optional)
+            let enhancedPrompt = prompt;
+            
+            // Add style and color scheme if they're selected (optional enhancement)
+            if (style || colorScheme) {
+                const additions = [];
+                if (style) additions.push(`${style} style`);
+                if (colorScheme) additions.push(`${colorScheme} color scheme`);
+                enhancedPrompt = `${prompt}, ${additions.join(', ')}`;
+            }
+            
+            const response = await axios.post('/api/batik-generator', { 
+                prompt: enhancedPrompt,
                 color_scheme: colorScheme,
                 style: style,
             });
@@ -221,35 +229,11 @@ export default function BatikGeneratorPage({ auth }) {
                             {/* Pattern Options Card */}
                             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
                                 <div className="flex items-center gap-2 mb-4">
-                                    <Grid3x3 className="w-5 h-5 text-[#BA682A]" />
-                                    <h2 className="text-lg font-semibold text-gray-800">Opsi Pola Batik</h2>
+                                    <Palette className="w-5 h-5 text-[#BA682A]" />
+                                    <h2 className="text-lg font-semibold text-gray-800">Opsi Tambahan (Opsional)</h2>
                                 </div>
                                 
                                 <div className="space-y-4">
-                                    {/* Repeat Count */}
-                                    <div>
-                                        <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                                            <Repeat className="w-4 h-4" />
-                                            Pengulangan Pola: {repeatCount === 0 ? 'Default (Tanpa Perulangan)' : `${repeatCount}x${repeatCount}`}
-                                        </label>
-                                        <input
-                                            type="range"
-                                            min="0"
-                                            max="4"
-                                            value={repeatCount}
-                                            onChange={(e) => setRepeatCount(parseInt(e.target.value))}
-                                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#BA682A]"
-                                            disabled={isLoading}
-                                        />
-                                        <div className="flex justify-between text-xs text-gray-500 mt-1">
-                                            <span>Default</span>
-                                            <span>1x1</span>
-                                            <span>2x2</span>
-                                            <span>3x3</span>
-                                            <span>4x4</span>
-                                        </div>
-                                    </div>
-
                                     {/* Style */}
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -261,6 +245,7 @@ export default function BatikGeneratorPage({ auth }) {
                                             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#BA682A] focus:border-transparent text-sm"
                                             disabled={isLoading}
                                         >
+                                            <option value="">Tidak Ada (Default)</option>
                                             <option value="klasik">Klasik Tradisional</option>
                                             <option value="modern">Modern Minimalis</option>
                                             <option value="kontemporer">Kontemporer</option>
@@ -425,37 +410,11 @@ export default function BatikGeneratorPage({ auth }) {
                                     
                                     {!isLoading && !error && resultImage && (
                                         <div className="w-full h-full p-4 relative">
-                                            {/* Pattern Display with Repeat */}
-                                            <div 
-                                                className="w-full h-full rounded-xl overflow-hidden shadow-lg"
-                                                style={{
-                                                    backgroundImage: `url(${resultImage})`,
-                                                    backgroundSize: repeatCount === 0 
-                                                        ? 'cover' 
-                                                        : patternType === 'centered' 
-                                                        ? 'contain' 
-                                                        : patternType === 'scattered'
-                                                        ? '30%'
-                                                        : `${100 / repeatCount}%`,
-                                                    backgroundRepeat: repeatCount === 0 ? 'no-repeat' : patternType === 'centered' ? 'no-repeat' : 'repeat',
-                                                    backgroundPosition: repeatCount === 0 ? 'center' : patternType === 'centered' ? 'center' : patternType === 'diagonal' ? 'top left' : 'top left',
-                                                    transform: patternType === 'diagonal' && repeatCount > 0 ? 'rotate(0deg)' : 'none'
-                                                }}
-                                            >
-                                                {/* Overlay for diagonal pattern effect */}
-                                                {patternType === 'diagonal' && repeatCount > 0 && (
-                                                    <div 
-                                                        className="w-full h-full"
-                                                        style={{
-                                                            backgroundImage: `url(${resultImage})`,
-                                                            backgroundSize: `${100 / repeatCount}%`,
-                                                            backgroundRepeat: 'repeat',
-                                                            transform: 'rotate(45deg) scale(1.5)',
-                                                            transformOrigin: 'center'
-                                                        }}
-                                                    />
-                                                )}
-                                            </div>
+                                            <img 
+                                                src={resultImage} 
+                                                alt="Generated Batik" 
+                                                className="w-full h-full object-contain rounded-xl shadow-lg"
+                                            />
                                         </div>
                                     )}
                                     
@@ -469,20 +428,20 @@ export default function BatikGeneratorPage({ auth }) {
                                 </div>
 
                                 {/* Pattern Info */}
-                                {resultImage && !isLoading && (
-                                    <div className="mt-6 grid grid-cols-3 gap-4">
-                                        <div className="bg-orange-50 rounded-lg p-3 text-center">
-                                            <p className="text-xs text-gray-600 mb-1">Ukuran</p>
-                                            <p className="text-sm font-semibold text-gray-800">{repeatCount === 0 ? 'Default' : `${repeatCount}x${repeatCount}`}</p>
-                                        </div>
-                                        <div className="bg-orange-50 rounded-lg p-3 text-center">
-                                            <p className="text-xs text-gray-600 mb-1">Gaya</p>
-                                            <p className="text-sm font-semibold text-gray-800 capitalize">{style}</p>
-                                        </div>
-                                        <div className="bg-orange-50 rounded-lg p-3 text-center">
-                                            <p className="text-xs text-gray-600 mb-1">Warna</p>
-                                            <p className="text-sm font-semibold text-gray-800 capitalize">{colorScheme}</p>
-                                        </div>
+                                {resultImage && !isLoading && (style || colorScheme) && (
+                                    <div className="mt-6 grid grid-cols-2 gap-4">
+                                        {style && (
+                                            <div className="bg-orange-50 rounded-lg p-3 text-center">
+                                                <p className="text-xs text-gray-600 mb-1">Gaya</p>
+                                                <p className="text-sm font-semibold text-gray-800 capitalize">{style}</p>
+                                            </div>
+                                        )}
+                                        {colorScheme && (
+                                            <div className="bg-orange-50 rounded-lg p-3 text-center">
+                                                <p className="text-xs text-gray-600 mb-1">Warna</p>
+                                                <p className="text-sm font-semibold text-gray-800 capitalize">{colorScheme}</p>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>

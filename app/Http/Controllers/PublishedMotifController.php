@@ -23,6 +23,7 @@ class PublishedMotifController extends Controller
                     'title' => $motif->title,
                     'slug' => $motif->slug,
                     'philosophy' => $motif->philosophy,
+                    'origin' => $motif->origin,
                     'image_url' => $motif->image_url,
                     'status' => $motif->status,
                     'rejection_reason' => $motif->rejection_reason,
@@ -51,6 +52,7 @@ class PublishedMotifController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'philosophy' => 'required|string|max:1000',
+            'origin' => 'required|string|max:100',
             'image' => 'required|file|image|max:5120', // 5MB max
             'design_data' => 'nullable|string',
             'design_id' => 'nullable|integer'
@@ -70,6 +72,7 @@ class PublishedMotifController extends Controller
         $motif = Auth::user()->publishedMotifs()->create([
             'title' => $validated['title'],
             'philosophy' => $validated['philosophy'],
+            'origin' => $validated['origin'],
             'image_path' => $imagePath,
             'design_data' => $designData,
             'status' => 'pending'
@@ -107,9 +110,14 @@ class PublishedMotifController extends Controller
                     'id' => $m->id,
                     'title' => $m->title,
                     'slug' => $m->slug,
+                    'origin' => $m->origin,
                     'image_url' => $m->image_url,
                     'likes_count' => $m->likes_count,
                     'views_count' => $m->views_count,
+                    'user' => [
+                        'name' => $m->user->name,
+                        'profile_photo_url' => $m->user->profile_photo_url,
+                    ],
                 ];
             });
 
@@ -119,6 +127,7 @@ class PublishedMotifController extends Controller
                 'title' => $motif->title,
                 'slug' => $motif->slug,
                 'philosophy' => $motif->philosophy,
+                'origin' => $motif->origin,
                 'image_url' => $motif->image_url,
                 'status' => $motif->status,
                 'likes_count' => $motif->likes_count,
@@ -195,6 +204,7 @@ class PublishedMotifController extends Controller
                 'title' => $motif->title,
                 'slug' => $motif->slug,
                 'philosophy' => substr($motif->philosophy, 0, 100) . (strlen($motif->philosophy) > 100 ? '...' : ''),
+                'origin' => $motif->origin,
                 'image_url' => $motif->image_url,
                 'likes_count' => $motif->likes_count,
                 'views_count' => $motif->views_count,

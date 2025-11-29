@@ -28,6 +28,7 @@ class AdminTrainingLessonController extends Controller
                     'type_icon' => $lesson->type_icon,
                     'video_url' => $lesson->video_url,
                     'canvas_data' => $lesson->canvas_data,
+                    'quiz_data' => $lesson->quiz_data, // ⬅ TAMBAH INI
                     'duration' => $lesson->duration,
                     'order' => $lesson->order,
                     'is_published' => $lesson->is_published,
@@ -35,7 +36,6 @@ class AdminTrainingLessonController extends Controller
                 ];
             });
 
-        // Get all active motifs for selection
         $motifs = Motif::active()
             ->orderBy('name')
             ->get()
@@ -64,65 +64,67 @@ class AdminTrainingLessonController extends Controller
     public function store(Request $request, TrainingCourse $course)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'content' => 'nullable|string',
-            'video_url' => 'nullable|url',
-            'type' => 'required|in:theory,practice,quiz',
-            'canvas_data' => 'nullable|array',
-            'duration' => 'nullable|integer|min:1',
-            'order' => 'nullable|integer|min:0',
-            'is_published' => 'boolean'
+            'title'         => 'required|string|max:255',
+            'description'   => 'nullable|string',
+            'content'       => 'nullable|string',
+            'video_url'     => 'nullable|url',
+            'type'          => 'required|in:theory,practice,quiz',
+            'canvas_data'   => 'nullable|array',
+            'quiz_data'     => 'nullable|array', // ⬅ WAJIB UNTUK KUIS
+            'duration'      => 'nullable|integer|min:1',
+            'order'         => 'nullable|integer|min:0',
+            'is_published'  => 'boolean'
         ]);
 
-        // Generate slug
+        // Generate unique slug
         $validated['slug'] = \Illuminate\Support\Str::slug($validated['title']);
-        
-        // Ensure unique slug within course
         $originalSlug = $validated['slug'];
         $counter = 1;
+
         while (TrainingLesson::where('training_course_id', $course->id)
-                ->where('slug', $validated['slug'])
-                ->exists()) {
+            ->where('slug', $validated['slug'])
+            ->exists()) 
+        {
             $validated['slug'] = $originalSlug . '-' . $counter;
             $counter++;
         }
 
         $validated['training_course_id'] = $course->id;
 
-        $lesson = TrainingLesson::create($validated);
+        TrainingLesson::create($validated);
 
-        // Update course total lessons
+        // Update total lesson count
         $course->update(['total_lessons' => $course->lessons()->count()]);
 
-        return redirect()->back()->with('success', 'Lesson created successfully');
+        return back()->with('success', 'Lesson created successfully');
     }
 
     public function update(Request $request, TrainingLesson $lesson)
     {
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'content' => 'nullable|string',
-            'video_url' => 'nullable|url',
-            'type' => 'required|in:theory,practice,quiz',
-            'canvas_data' => 'nullable|array',
-            'duration' => 'nullable|integer|min:1',
-            'order' => 'nullable|integer|min:0',
-            'is_published' => 'boolean'
+            'title'         => 'required|string|max:255',
+            'description'   => 'nullable|string',
+            'content'       => 'nullable|string',
+            'video_url'     => 'nullable|url',
+            'type'          => 'required|in:theory,practice,quiz',
+            'canvas_data'   => 'nullable|array',
+            'quiz_data'     => 'nullable|array', // ⬅ WAJIB UNTUK KUIS
+            'duration'      => 'nullable|integer|min:1',
+            'order'         => 'nullable|integer|min:0',
+            'is_published'  => 'boolean'
         ]);
 
-        // Update slug if title changed
+        // Slug regeneration if title changed
         if ($validated['title'] !== $lesson->title) {
             $validated['slug'] = \Illuminate\Support\Str::slug($validated['title']);
-            
-            // Ensure unique slug within course
             $originalSlug = $validated['slug'];
             $counter = 1;
+
             while (TrainingLesson::where('training_course_id', $lesson->training_course_id)
-                    ->where('slug', $validated['slug'])
-                    ->where('id', '!=', $lesson->id)
-                    ->exists()) {
+                ->where('slug', $validated['slug'])
+                ->where('id', '!=', $lesson->id)
+                ->exists()) 
+            {
                 $validated['slug'] = $originalSlug . '-' . $counter;
                 $counter++;
             }
@@ -130,7 +132,7 @@ class AdminTrainingLessonController extends Controller
 
         $lesson->update($validated);
 
-        return redirect()->back()->with('success', 'Lesson updated successfully');
+        return back()->with('success', 'Lesson updated successfully');
     }
 
     public function destroy(TrainingLesson $lesson)
@@ -138,16 +140,15 @@ class AdminTrainingLessonController extends Controller
         $course = $lesson->course;
         $lesson->delete();
 
-        // Update course total lessons
         $course->update(['total_lessons' => $course->lessons()->count()]);
 
-        return redirect()->back()->with('success', 'Lesson deleted successfully');
+        return back()->with('success', 'Lesson deleted successfully');
     }
 
     public function togglePublish(TrainingLesson $lesson)
     {
         $lesson->update(['is_published' => !$lesson->is_published]);
 
-        return redirect()->back()->with('success', 'Lesson publish status updated');
+        return back()->with('success', 'Lesson publish status updated');
     }
 }
