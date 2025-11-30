@@ -132,6 +132,7 @@ Route::middleware(['auth', 'verified', 'role:General'])->group(function () {
     // Profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile', [ProfileController::class, 'update']); // Support file upload via POST
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
