@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link, router, Head } from '@inertiajs/react';
-import { Heart, Eye, User, Search, Filter, Star, Share2, ArrowLeft, LogIn, MapPin } from 'lucide-react';
+import { Heart, Eye, User, Search, Filter, Star, Share2, ArrowLeft, LogIn, MapPin, Store, Users, Award } from 'lucide-react';
 
 export default function Gallery({ motifs, user }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('latest');
     const [activeCategory, setActiveCategory] = useState('all');
+    const [activeBadge, setActiveBadge] = useState('all');
     const [isScrolled, setIsScrolled] = useState(false);
 
     useEffect(() => {
@@ -16,15 +17,19 @@ export default function Gallery({ motifs, user }) {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Kategori motif populer
+    // Kategori motif populer (3 saja)
     const categories = [
-        { id: 'all', name: 'Semua Motif', icon: '🎨' },
-        { id: 'parang', name: 'Parang', icon: '⚔️' },
-        { id: 'kawung', name: 'Kawung', icon: '🌸' },
-        { id: 'mega_mendung', name: 'Mega Mendung', icon: '☁️' },
-        { id: 'truntum', name: 'Truntum', icon: '✨' },
-        { id: 'sekar_jagad', name: 'Sekar Jagad', icon: '🌺' },
-        { id: 'sido_mukti', name: 'Sido Mukti', icon: '👑' },
+        { id: 'all', name: 'Semua Motif', },
+        { id: 'parang', name: 'Parang', },
+        { id: 'kawung', name: 'Kawung', },
+        { id: 'mega_mendung', name: 'Mega Mendung',},
+    ];
+
+    // Badge filters
+    const badges = [
+        { id: 'boutique', name: 'Boutique', icon: Store },
+        { id: 'community', name: 'Community', icon: Users },
+        { id: 'artisan', name: 'Artisan', icon: Award },
     ];
 
     const handleSearch = (e) => {
@@ -41,6 +46,10 @@ export default function Gallery({ motifs, user }) {
 
     const handleCategoryChange = (categoryId) => {
         setActiveCategory(categoryId);
+    };
+
+    const handleBadgeChange = (badgeId) => {
+        setActiveBadge(badgeId);
     };
 
     const handleLike = (motifId) => {
@@ -68,7 +77,10 @@ export default function Gallery({ motifs, user }) {
         const matchesCategory = activeCategory === 'all' || 
             motif.title.toLowerCase().includes(activeCategory.replace('_', ' '));
         
-        return matchesSearch && matchesCategory;
+        const matchesBadge = activeBadge === 'all' || 
+            (motif.user.badge && motif.user.badge.toLowerCase() === activeBadge);
+        
+        return matchesSearch && matchesCategory && matchesBadge;
     });
 
     return (
@@ -205,57 +217,79 @@ export default function Gallery({ motifs, user }) {
             </div>
 
             <div className="px-8 md:px-16 lg:px-24 py-8">
-                {/* Search Bar - Dribbble Style */}
-                <div className="mb-6">
-                    <div className="relative max-w-2xl mx-auto">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                {/* Search Bar */}
+                <div className="flex justify-center mb-8">
+                    <div className="relative w-full max-w-2xl">
                         <input
                             type="text"
-                            placeholder="Cari inspirasi motif batik..."
+                            placeholder="Cari motif batik..."
                             value={searchTerm}
-                            onChange={handleSearch}
-                            className="w-full pl-12 pr-4 py-3.5 bg-white border border-gray-200 rounded-full focus:ring-2 focus:ring-[#BA682A]/20 focus:border-[#BA682A] transition-all text-gray-700 placeholder:text-gray-400"
+                            onChange={(e) => handleSearch(e.target.value)}
+                            className="w-full pl-12 pr-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#BA682A] focus:outline-none transition-colors"
                         />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
                 </div>
 
-                {/* Sort Dropdown & Category Pills */}
+                {/* Filters - Single Row Layout */}
                 <div className="mb-8">
-                    <div className="flex items-center justify-between gap-4">
-                        {/* Sort Dropdown - Paling Kiri */}
-                        <div className="flex-shrink-0 relative">
+                    <div className="flex items-center gap-3 flex-wrap">
+                        {/* Filter Label */}
+                        <span className="text-sm font-medium text-gray-700">Filter</span>
+                        
+                        {/* Category Pills */}
+                        <div className="flex items-center gap-2">
+                            {categories.map((category) => (
+                                <button
+                                    key={category.id}
+                                    onClick={() => handleCategoryChange(category.id)}
+                                    className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                                        activeCategory === category.id
+                                            ? 'bg-[#BA682A] text-white'
+                                            : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                                    }`}
+                                >
+                                    <span className="text-base">{category.icon}</span>
+                                    <span>{category.name}</span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Badge Filters */}
+                        <div className="flex items-center gap-2">
+                            {badges.map((badge) => {
+                                const IconComponent = badge.icon;
+                                return (
+                                    <button
+                                        key={badge.id}
+                                        onClick={() => handleBadgeChange(badge.id)}
+                                        className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                                            activeBadge === badge.id
+                                                ? 'bg-[#BA682A] text-white'
+                                                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                                        }`}
+                                    >
+                                        <IconComponent className="w-3.5 h-3.5" />
+                                        <span>{badge.name}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* Sort Dropdown - Right Side */}
+                        <div className="ml-auto relative">
                             <select
                                 value={sortBy}
                                 onChange={(e) => handleSort(e.target.value)}
-                                className="appearance-none pl-4 pr-10 py-2 rounded-lg font-medium text-sm bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#BA682A]/20 focus:border-[#BA682A]"
+                                className="appearance-none pl-4 pr-10 py-1.5 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#BA682A]/20"
                             >
                                 <option value="latest">Terbaru</option>
                                 <option value="popular">Terpopuler</option>
                             </select>
                             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
-                            </div>
-                        </div>
-                        
-                        {/* Category Pills - Paling Kanan dengan Scroll */}
-                        <div className="-mx-4 px-4 flex-1 overflow-hidden">
-                            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide justify-end">
-                                {categories.map((category) => (
-                                    <button
-                                        key={category.id}
-                                        onClick={() => handleCategoryChange(category.id)}
-                                        className={`flex-shrink-0 flex items-center gap-2 px-4 py-1 rounded-full font-medium transition-all ${
-                                            activeCategory === category.id
-                                                ? 'bg-[#BA682A] text-white shadow-[#BA682A]/25'
-                                                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-                                        }`}
-                                    >
-                                        <span className="text-lg">{category.icon}</span>
-                                        <span className="text-sm">{category.name}</span>
-                                    </button>
-                                ))}
                             </div>
                         </div>
                     </div>
@@ -278,7 +312,7 @@ export default function Gallery({ motifs, user }) {
                                 className="group"
                             >
                                 <Link href={route('published-motifs.show', motif.slug)}>
-                                    <div className="relative rounded-xl overflow-hidden transition-all duration-300">
+                                    <div className="relative rounded-t-xl overflow-hidden transition-all duration-300">
                                         {/* Image Container */}
                                         <div className="relative aspect-[4/3] overflow-hidden bg-gray-50">
                                             <img
@@ -295,63 +329,60 @@ export default function Gallery({ motifs, user }) {
                                                 </span>
                                             </div>
 
-                                            {/* Nama Batik Overlay - Muncul on Hover */}
-                                            <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 via-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                <h3 className="text-white font-bold text-base line-clamp-2">
-                                                    {motif.title}
-                                                </h3>
+                                            {/* Hover Overlay */}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                {/* Stats - Center */}
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <div className="flex items-center gap-6">
+                                                        <div className="flex items-center gap-2 text-white">
+                                                            <Eye className="w-5 h-5" />
+                                                            <span className="text-lg font-semibold">{motif.views_count}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 text-white">
+                                                            <Heart className="w-5 h-5" />
+                                                            <span className="text-lg font-semibold">{motif.likes_count}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                {/* Nama Batik & Creator Info - Bottom Left */}
+                                                <div className="absolute bottom-0 left-0 right-0 p-4">
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-white/80 text-xs mb-1">
+                                                            oleh {motif.user.name}
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        {/* Card Footer - Profile + Stats */}
-                                        <div className="">
-                                            <div className="flex items-center justify-between gap-3">
-                                                {/* Creator Info */}
-                                                <div className="flex items-center gap-2 flex-1">
-                                                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#BA682A] to-[#D2691E] flex items-center justify-center overflow-hidden ring-2 ring-gray-100 flex-shrink-0">
-                                                        {motif.user.profile_photo_url ? (
-                                                            <img
-                                                                src={motif.user.profile_photo_url}
-                                                                alt={motif.user.name}
-                                                                className="w-full h-full object-cover"
-                                                            />
-                                                        ) : (
-                                                            <span className="text-white text-xs font-bold">
-                                                                {motif.user.name.charAt(0).toUpperCase()}
-                                                            </span>
+                                        {/* Card Footer - Nama Batik + Badge */}
+                                        <div className="mt-3">
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-[#BA682A] transition-colors flex-1">
+                                                    {motif.title}
+                                                </h3>
+                                                
+                                                {/* Badge Icon - Unique Style */}
+                                                {motif.user.badge && (
+                                                    <div className="flex-shrink-0">
+                                                        {motif.user.badge === 'boutique' && (
+                                                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
+                                                                <Store className="w-4 h-4 text-white" />
+                                                            </div>
+                                                        )}
+                                                        {motif.user.badge === 'community' && (
+                                                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-md">
+                                                                <Users className="w-4 h-4 text-white" />
+                                                            </div>
+                                                        )}
+                                                        {motif.user.badge === 'artisan' && (
+                                                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center shadow-md">
+                                                                <Award className="w-4 h-4 text-white" />
+                                                            </div>
                                                         )}
                                                     </div>
-                                                    <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-[#BA682A] transition-colors">
-                                                        {motif.user.name}
-                                                    </p>
-                                                </div>
-
-                                                {/* Stats + Like Button */}
-                                                <div className="flex items-center gap-3 flex-shrink-0">
-                                                    <div className="flex items-center gap-1 text-gray-600">
-                                                        <Eye className="w-4 h-4" />
-                                                        <span className="text-xs font-medium">{motif.views_count}</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-1 text-gray-600">
-                                                        <Heart className="w-4 h-4" />
-                                                        <span className="text-xs font-medium">{motif.likes_count}</span>
-                                                    </div>
-                                                    {user && (
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                handleLike(motif.id);
-                                                            }}
-                                                            className={`p-1.5 rounded-full transition-all ${
-                                                                motif.is_liked_by_user
-                                                                    ? 'bg-red-500 text-white hover:bg-red-600'
-                                                                    : 'bg-gray-100 text-gray-600 hover:bg-red-50 hover:text-red-500'
-                                                            }`}
-                                                        >
-                                                            <Heart className={`w-3.5 h-3.5 ${motif.is_liked_by_user ? 'fill-current' : ''}`} />
-                                                        </button>
-                                                    )}
-                                                </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

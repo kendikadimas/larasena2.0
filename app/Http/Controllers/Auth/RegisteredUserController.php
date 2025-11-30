@@ -39,11 +39,18 @@ class RegisteredUserController extends Controller
             'role' => ['required', Rule::in(['General', 'Convection'])],
         ]);
 
+        // Set badge berdasarkan role
+        $badge = match($request->role) {
+            'Convection' => 'boutique',
+            default => 'community',
+        };
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+            'badge' => $badge,
         ]);
 
         event(new Registered($user));

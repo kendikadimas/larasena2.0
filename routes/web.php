@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BatikGeneratorController;
+use App\Http\Controllers\BoutiqueProductController;
 use App\Http\Controllers\DesignEditorController;
 use App\Http\Controllers\DesignController;
 use App\Http\Controllers\KonveksiController;
@@ -116,6 +117,18 @@ Route::middleware(['auth', 'verified', 'role:General'])->group(function () {
     // Like motif
     Route::post('/motif/{motif}/like', [\App\Http\Controllers\PublishedMotifController::class, 'toggleLike'])->name('motif.like');
 
+    // Boutique Products Management
+    Route::middleware(['auth'])->prefix('boutique')->name('boutique.')->group(function () {
+        Route::get('/products', [BoutiqueProductController::class, 'index'])->name('products.index');
+        Route::get('/products/create', [BoutiqueProductController::class, 'create'])->name('products.create');
+        Route::post('/products', [BoutiqueProductController::class, 'store'])->name('products.store');
+        Route::get('/products/{product}', [BoutiqueProductController::class, 'show'])->name('products.show');
+        Route::get('/products/{product}/edit', [BoutiqueProductController::class, 'edit'])->name('products.edit');
+        Route::put('/products/{product}', [BoutiqueProductController::class, 'update'])->name('products.update');
+        Route::put('/products/{product}/toggle-status', [BoutiqueProductController::class, 'toggleStatus'])->name('products.toggleStatus');
+        Route::delete('/products/{product}', [BoutiqueProductController::class, 'destroy'])->name('products.destroy');
+    });
+
     // Profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -148,6 +161,7 @@ Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
     Route::post('/admin-users', [AdminUserController::class, 'store'])->name('admin.users.store');
     Route::put('/admin-users/{user}', [AdminUserController::class, 'update'])->name('admin.users.update');
     Route::put('/admin-users/{user}/role', [AdminUserController::class, 'updateRole'])->name('admin.users.updateRole');
+    Route::put('/admin-users/{user}/badge', [AdminUserController::class, 'updateBadge'])->name('admin.users.updateBadge');
     Route::delete('/admin-users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
     Route::delete('/admin/users/{user}', [AdminUserController::class, 'destroy']);
 

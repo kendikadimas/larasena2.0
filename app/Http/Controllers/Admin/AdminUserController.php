@@ -56,11 +56,18 @@ class AdminUserController extends Controller
             'role' => ['required', Rule::in(['General', 'Convection', 'Admin'])],
         ]);
 
+        // Auto-set badge based on role
+        $badge = match($validated['role']) {
+            'Convection' => 'boutique',
+            default => 'community',
+        };
+
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
+            'badge' => $badge,
         ]);
 
         return back()->with('success', 'User berhasil ditambahkan.');
@@ -75,10 +82,18 @@ class AdminUserController extends Controller
             'role' => ['required', Rule::in(['General', 'Convection', 'Admin'])],
         ]);
 
+        // Auto-set badge when role changes
+        $badge = match($validated['role']) {
+            'Convection' => 'boutique',
+            'Admin' => $user->badge ?? 'community',
+            default => 'community',
+        };
+
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'role' => $validated['role'],
+            'badge' => $badge,
         ]);
 
         if ($validated['password']) {
@@ -94,9 +109,35 @@ class AdminUserController extends Controller
             'role' => ['required', Rule::in(['General', 'Convection', 'Admin'])],
         ]);
 
-        $user->update(['role' => $validated['role']]);
+        // Auto-set badge when role changes
+        $badge = match($validated['role']) {
+            'Convection' => 'boutique',
+            'Admin' => $user->badge ?? 'community', // Keep current badge for admin
+            default => 'community',
+        };
 
-        return back()->with('success', 'Role user berhasil diperbarui.');
+        $user->update([
+            'role' => $validated['role'],
+            'badge' => $badge,
+        ]);
+
+        return back()->with('success', 'Role dan badge user berhasil diperbarui.');
+    }
+
+    /**
+     * Update user badge
+     */
+    public function updateBadge(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'badge' => 'required|in:community,boutique,artisan'
+        ]);
+
+        $user->update([
+            'badge' => $validated['badge']
+        ]);
+
+        return back()->with('success', 'Badge user berhasil diupdate!');
     }
 
     public function destroy(User $user)

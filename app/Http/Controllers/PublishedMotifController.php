@@ -213,7 +213,9 @@ class PublishedMotifController extends Controller
                 'is_liked_by_user' => $isLiked,
                 'user' => [
                     'name' => $motif->user->name,
-                    'profile_photo_url' => $motif->user->profile_photo_url
+                    'profile_photo_url' => $motif->user->profile_photo_url,
+                    'badge' => $motif->user->badge,
+                    'badge_name' => $motif->user->badge_name,
                 ]
             ];
         });

@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'badge',
         'profile_photo',
     ];
 
@@ -87,10 +88,36 @@ class User extends Authenticatable
         return $this->hasMany(PublishedMotif::class);
     }
 
+    // Boutique Products
+    public function boutiqueProducts(): HasMany
+    {
+        return $this->hasMany(BoutiqueProduct::class);
+    }
+
     // Badges
     public function badges(): HasMany
     {
         return $this->hasMany(UserBadge::class);
+    }
+
+    /**
+     * Get badge display name
+     */
+    public function getBadgeNameAttribute()
+    {
+        return match($this->badge) {
+            'boutique' => 'Boutique',
+            'artisan' => 'Artisan',
+            default => 'Community',
+        };
+    }
+
+    /**
+     * Check if user has specific badge
+     */
+    public function hasBadge($badge)
+    {
+        return $this->badge === $badge;
     }
 
     // Motif Likes
