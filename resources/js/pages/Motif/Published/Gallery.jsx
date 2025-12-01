@@ -222,76 +222,69 @@ export default function Gallery({ motifs, user }) {
                     <div className="relative w-full max-w-2xl">
                         <input
                             type="text"
-                            placeholder="Cari motif batik..."
+                            placeholder="Cari inspirasi motif batik..."
                             value={searchTerm}
                             onChange={(e) => handleSearch(e.target.value)}
-                            className="w-full pl-12 pr-4 py-3 rounded-full border-2 border-gray-200 focus:border-[#BA682A] focus:outline-none transition-colors"
+                            className="w-full pl-12 pr-4 py-3 rounded-full border-2 border-gray-200 bg-white focus:border-[#BA682A] focus:outline-none transition-colors"
                         />
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
                 </div>
 
-                {/* Filters - Single Row Layout */}
-                <div className="mb-8">
-                    <div className="flex items-center gap-3 flex-wrap">
-                        {/* Filter Label */}
-                        <span className="text-sm font-medium text-gray-700">Filter</span>
-                        
+                {/* Filters - Horizontal Layout */}
+                <div className="mb-8 flex items-center justify-between gap-4">
+                    {/* Sort Dropdown - Left Side */}
+                    <div className="relative">
+                        <select
+                            value={sortBy}
+                            onChange={(e) => handleSort(e.target.value)}
+                            className="appearance-none pl-4 pr-10 py-2 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#BA682A]/20"
+                        >
+                            <option value="latest">Terbaru</option>
+                            <option value="popular">Terpopuler</option>
+                        </select>
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    {/* Category & Badge Filters - Right Side */}
+                    <div className="flex items-center gap-2">
                         {/* Category Pills */}
-                        <div className="flex items-center gap-2">
-                            {categories.map((category) => (
+                        {categories.map((category) => (
+                            <button
+                                key={category.id}
+                                onClick={() => handleCategoryChange(category.id)}
+                                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                                    activeCategory === category.id
+                                        ? 'bg-[#BA682A] text-white'
+                                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                                }`}
+                            >
+                                {category.name}
+                            </button>
+                        ))}
+
+                        {/* Badge Filters */}
+                        {badges.map((badge) => {
+                            const IconComponent = badge.icon;
+                            return (
                                 <button
-                                    key={category.id}
-                                    onClick={() => handleCategoryChange(category.id)}
-                                    className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                                        activeCategory === category.id
+                                    key={badge.id}
+                                    onClick={() => handleBadgeChange(badge.id)}
+                                    className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                                        activeBadge === badge.id
                                             ? 'bg-[#BA682A] text-white'
                                             : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
                                     }`}
                                 >
-                                    <span className="text-base">{category.icon}</span>
-                                    <span>{category.name}</span>
+                                    <IconComponent className="w-3.5 h-3.5" />
+                                    <span>{badge.name}</span>
                                 </button>
-                            ))}
-                        </div>
-
-                        {/* Badge Filters */}
-                        <div className="flex items-center gap-2">
-                            {badges.map((badge) => {
-                                const IconComponent = badge.icon;
-                                return (
-                                    <button
-                                        key={badge.id}
-                                        onClick={() => handleBadgeChange(badge.id)}
-                                        className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
-                                            activeBadge === badge.id
-                                                ? 'bg-[#BA682A] text-white'
-                                                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-                                        }`}
-                                    >
-                                        <IconComponent className="w-3.5 h-3.5" />
-                                        <span>{badge.name}</span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-
-                        {/* Sort Dropdown - Right Side */}
-                        <div className="ml-auto relative">
-                            <select
-                                value={sortBy}
-                                onChange={(e) => handleSort(e.target.value)}
-                                className="appearance-none pl-4 pr-10 py-1.5 rounded-full text-sm font-medium bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#BA682A]/20"
-                            >
-                                <option value="latest">Terbaru</option>
-                                <option value="popular">Terpopuler</option>
-                            </select>
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </div>
-                        </div>
+                            );
+                        })}
                     </div>
                 </div>
 
