@@ -312,13 +312,13 @@ export default function Gallery({ motifs, user }) {
                                 className="group"
                             >
                                 <Link href={route('published-motifs.show', motif.slug)}>
-                                    <div className="relative rounded-t-xl overflow-hidden transition-all duration-300">
+                                    <div className="relative rounded-t-2xl overflow-hidden bg-white transition-all duration-300">
                                         {/* Image Container */}
                                         <div className="relative aspect-[4/3] overflow-hidden bg-gray-50">
                                             <img
                                                 src={motif.image_url}
                                                 alt={motif.title}
-                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                             />
                                             
                                             {/* Origin Badge - Top Left */}
@@ -329,60 +329,56 @@ export default function Gallery({ motifs, user }) {
                                                 </span>
                                             </div>
 
-                                            {/* Hover Overlay */}
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                {/* Stats - Center */}
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <div className="flex items-center gap-6">
-                                                        <div className="flex items-center gap-2 text-white">
-                                                            <Eye className="w-5 h-5" />
-                                                            <span className="text-lg font-semibold">{motif.views_count}</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-2 text-white">
-                                                            <Heart className="w-5 h-5" />
-                                                            <span className="text-lg font-semibold">{motif.likes_count}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                
-                                                {/* Nama Batik & Creator Info - Bottom Left */}
+                                            {/* Hover Overlay with Creator Name & Badge */}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                {/* Creator Name & Badge - Bottom */}
                                                 <div className="absolute bottom-0 left-0 right-0 p-4">
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="text-white/80 text-xs mb-1">
-                                                            oleh {motif.user.name}
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="text-white text-sm font-medium flex-1 truncate">
+                                                            {motif.user.name}
                                                         </p>
+                                                        
+                                                        {/* Badge Icon - Small */}
+                                                        {motif.user.badge && (
+                                                            <div className="flex-shrink-0">
+                                                                {motif.user.badge === 'boutique' && (
+                                                                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                                                        <Store className="w-3 h-3 text-white" />
+                                                                    </div>
+                                                                )}
+                                                                {motif.user.badge === 'community' && (
+                                                                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                                                                        <Users className="w-3 h-3 text-white" />
+                                                                    </div>
+                                                                )}
+                                                                {motif.user.badge === 'artisan' && (
+                                                                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
+                                                                        <Award className="w-3 h-3 text-white" />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* Card Footer - Nama Batik + Badge */}
-                                        <div className="mt-3">
-                                            <div className="flex items-center gap-2">
-                                                <h3 className="text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-[#BA682A] transition-colors flex-1">
-                                                    {motif.title}
-                                                </h3>
-                                                
-                                                {/* Badge Icon - Unique Style */}
-                                                {motif.user.badge && (
-                                                    <div className="flex-shrink-0">
-                                                        {motif.user.badge === 'boutique' && (
-                                                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
-                                                                <Store className="w-4 h-4 text-white" />
-                                                            </div>
-                                                        )}
-                                                        {motif.user.badge === 'community' && (
-                                                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-md">
-                                                                <Users className="w-4 h-4 text-white" />
-                                                            </div>
-                                                        )}
-                                                        {motif.user.badge === 'artisan' && (
-                                                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center shadow-md">
-                                                                <Award className="w-4 h-4 text-white" />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                )}
+                                        {/* Card Footer - Motif Title + Stats */}
+                                        <div className="flex items-center justify-between gap-3">
+                                            <h3 className="text-sm font-semibold text-gray-800 flex-1 truncate">
+                                                {motif.title}
+                                            </h3>
+                                            
+                                            {/* Views & Likes Stats - Horizontal */}
+                                            <div className="flex items-center gap-3 flex-shrink-0">
+                                                <div className="flex items-center gap-1 text-gray-600">
+                                                    <Eye className="w-4 h-4" />
+                                                    <span className="text-sm font-medium">{motif.views_count}</span>
+                                                </div>
+                                                <div className="flex items-center gap-1 text-red-500">
+                                                    <Heart className="w-4 h-4" />
+                                                    <span className="text-sm font-medium">{motif.likes_count}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
