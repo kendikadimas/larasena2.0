@@ -63,7 +63,7 @@ class Design extends Model
         
         // Clean up malformed URLs
         
-        // Pattern: storage/http://localhost:8000/storage/... or storage/http://127.0.0.1:8000/storage/...
+        // Pattern: storage/http://... or storage/https://...
         if (str_starts_with($value, 'storage/http://') || str_starts_with($value, 'storage/https://')) {
             $cleanedUrl = str_replace('storage/', '', $value);
             
@@ -74,17 +74,14 @@ class Design extends Model
                 }
             }
             
-            // If it doesn't contain /storage/ after cleaning, it means we removed the wrong storage/
-            if (!str_contains($cleanedUrl, '/storage/')) {
-                // Extract the path after the domain and add /storage/ back
-                $parsedUrl = parse_url($cleanedUrl);
-                $pathParts = explode('/', ltrim($parsedUrl['path'], '/'));
-                if (!empty($pathParts) && $pathParts[0] !== 'storage') {
-                    array_unshift($pathParts, 'storage');
+            // If it's production domain (larasena.id), extract just the file path
+            if (str_contains($cleanedUrl, 'larasena.id')) {
+                if (preg_match('/\/storage\/(.+)$/', $cleanedUrl, $matches)) {
+                    return asset('/storage/' . $matches[1]);
                 }
-                $newPath = '/' . implode('/', $pathParts);
-                return $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . (isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '') . $newPath;
             }
+            
+            // For other cases, return the cleaned URL
             return $cleanedUrl;
         }
         

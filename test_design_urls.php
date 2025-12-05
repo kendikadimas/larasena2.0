@@ -15,6 +15,7 @@ $testUrls = [
     'http://localhost/storage/designs/generated/3_1760144183.jpg',
     'http://127.0.0.1:8000/storage/designs/generated/3_1754808326.jpg',
     'storage/http://127.0.0.1:8000/storage/designs/generated/3_1754808326.jpg',
+    'storage/https://larasena.id/storage/designs/thumbnails/3_1760143679.jpg',
     'storage/designs/generated/3_1760144183.jpg',
     'designs/generated/3_1760144183.jpg',
     '/storage/designs/generated/3_1760144183.jpg',
