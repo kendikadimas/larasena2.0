@@ -149,9 +149,19 @@ class PublishedMotif extends Model
         if (!empty($this->attributes['image_path'])) {
             $imagePath = $this->attributes['image_path'];
             
+            // If image_path already starts with published-motifs/, use it directly
+            if (str_starts_with($imagePath, 'published-motifs/')) {
+                return asset('/storage/' . $imagePath);
+            }
+            
             // Clean up double storage paths
             $imagePath = str_replace(['storage/storage/', 'storage/', '/storage/'], '', $imagePath);
             $imagePath = ltrim($imagePath, '/');
+            
+            // If it's just a filename, assume it's in published-motifs folder
+            if (!str_contains($imagePath, '/')) {
+                return asset('/storage/published-motifs/' . $imagePath);
+            }
             
             return asset('/storage/' . $imagePath);
         }
