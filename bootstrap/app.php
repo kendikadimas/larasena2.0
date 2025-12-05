@@ -17,10 +17,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            \App\Http\Middleware\HandleAIGeneration::class,
         ]);
 
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckUserRole::class,
+            'ai-gen' => \App\Http\Middleware\HandleAIGeneration::class,
         ]);
 
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);

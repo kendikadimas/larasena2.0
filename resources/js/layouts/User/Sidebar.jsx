@@ -2,51 +2,73 @@ import { Link, usePage, router } from '@inertiajs/react';
 import { useState } from 'react';
 import { Menu, X, ChevronLeft, ChevronRight, ChevronDown, Home, ImagePlus, Landmark, Store, Package, GraduationCap, Award, HelpCircle, MoreHorizontal, LogOut, User } from 'lucide-react';
 
+// Wrapper untuk Lucide React icons yang menerima props isActive/isMobile tanpa meneruskannya ke DOM
+const IconWrapper = ({ icon: IconComponent, isActive, isMobile, className, ...props }) => {
+  // Remove isActive and isMobile from props that would be passed to DOM
+  const { isActive: _, isMobile: __, ...domProps } = props;
+  return <IconComponent className={className} {...domProps} />;
+};
+
 // Custom SVG Icon components - Define before use
-const NyantingIcon = ({ isActive = false, isMobile = false }) => (
-  <img 
-    src="/images/sideicon/nyanting-icon.svg" 
-    alt="Nyanting" 
-    className="w-5 h-5"
-    style={{ 
-      filter: isActive 
-        ? isMobile 
-          ? 'brightness(0) saturate(100%) invert(42%) sepia(54%) saturate(862%) hue-rotate(358deg) brightness(93%) contrast(90%)' 
-          : 'brightness(0) invert(1)'
-        : 'none' 
-    }}
-  />
-);
+const NyantingIcon = ({ isActive = false, isMobile = false, className, ...props }) => {
+  // Remove isActive, isMobile from props that would be passed to DOM
+  const { isActive: _, isMobile: __, ...domProps } = props;
+  return (
+    <img 
+      src="/images/sideicon/nyanting-icon.svg" 
+      alt="Nyanting" 
+      className={className || "w-5 h-5"}
+      style={{ 
+        filter: isActive 
+          ? isMobile 
+            ? 'brightness(0) saturate(100%) invert(42%) sepia(54%) saturate(862%) hue-rotate(358deg) brightness(93%) contrast(90%)' 
+            : 'brightness(0) invert(1)'
+          : 'none' 
+      }}
+      {...domProps}
+    />
+  );
+};
 
-const SanggarIcon = ({ isActive = false, isMobile = false }) => (
-  <img 
-    src="/images/sideicon/sanggar-icon.svg" 
-    alt="Sanggar" 
-    className="w-5 h-5"
-    style={{ 
-      filter: isActive 
-        ? isMobile 
-          ? 'brightness(0) saturate(100%) invert(42%) sepia(54%) saturate(862%) hue-rotate(358deg) brightness(93%) contrast(90%)' 
-          : 'brightness(0) invert(1)'
-        : 'none' 
-    }}
-  />
-);
+const SanggarIcon = ({ isActive = false, isMobile = false, className, ...props }) => {
+  // Remove isActive, isMobile from props that would be passed to DOM
+  const { isActive: _, isMobile: __, ...domProps } = props;
+  return (
+    <img 
+      src="/images/sideicon/sanggar-icon.svg" 
+      alt="Sanggar" 
+      className={className || "w-5 h-5"}
+      style={{ 
+        filter: isActive 
+          ? isMobile 
+            ? 'brightness(0) saturate(100%) invert(42%) sepia(54%) saturate(862%) hue-rotate(358deg) brightness(93%) contrast(90%)' 
+            : 'brightness(0) invert(1)'
+          : 'none' 
+      }}
+      {...domProps}
+    />
+  );
+};
 
-const BatikpediaIcon = ({ isActive = false, isMobile = false }) => (
-  <img 
-    src="/images/sideicon/batikpedia-icon.svg" 
-    alt="Batikpedia" 
-    className="w-5 h-5"
-    style={{ 
-      filter: isActive 
-        ? isMobile 
-          ? 'brightness(0) saturate(100%) invert(42%) sepia(54%) saturate(862%) hue-rotate(358deg) brightness(93%) contrast(90%)' 
-          : 'brightness(0) invert(1)'
-        : 'none' 
-    }}
-  />
-);
+const BatikpediaIcon = ({ isActive = false, isMobile = false, className, ...props }) => {
+  // Remove isActive, isMobile from props that would be passed to DOM
+  const { isActive: _, isMobile: __, ...domProps } = props;
+  return (
+    <img 
+      src="/images/sideicon/batikpedia-icon.svg" 
+      alt="Batikpedia" 
+      className={className || "w-5 h-5"}
+      style={{ 
+        filter: isActive 
+          ? isMobile 
+            ? 'brightness(0) saturate(100%) invert(42%) sepia(54%) saturate(862%) hue-rotate(358deg) brightness(93%) contrast(90%)' 
+            : 'brightness(0) invert(1)'
+          : 'none' 
+      }}
+      {...domProps}
+    />
+  );
+};
 
 export default function Sidebar() {
   const { url } = usePage();
@@ -271,7 +293,7 @@ export default function Sidebar() {
                           onClick={() => setIsOpen(false)}
                           title={isCollapsed ? item.name : ''}
                         >
-                          <Icon isActive={isActive} className={`w-5 h-5 flex-shrink-0`} />
+                          <IconWrapper icon={Icon} isActive={isActive} className={`w-5 h-5 flex-shrink-0`} />
                           
                           <span className={`text-sm font-medium transition-all duration-300 ${
                             isCollapsed ? 'md:hidden' : 'md:inline'
@@ -335,7 +357,7 @@ export default function Sidebar() {
                     : 'text-gray-600'
                 }`}
               >
-                <Icon isActive={isActive} isMobile={true} className={`w-6 h-6 mb-1 ${isActive ? 'scale-110' : ''}`} />
+                <IconWrapper icon={Icon} isActive={isActive} isMobile={true} className={`w-6 h-6 mb-1 ${isActive ? 'scale-110' : ''}`} />
                 <span className="text-[10px] font-medium text-center leading-tight">
                   {item.name}
                 </span>
