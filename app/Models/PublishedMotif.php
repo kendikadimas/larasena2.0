@@ -138,7 +138,7 @@ class PublishedMotif extends Model
             
             // Direct filenames without path (like uK1cP8I4k8CQQhG9ga5RLIBUSGrWqdu37QguPErJ.jpg)
             if (!str_contains($value, '/') && (str_ends_with($value, '.jpg') || str_ends_with($value, '.png') || str_ends_with($value, '.jpeg'))) {
-                return asset('/storage/motifs/' . $value);
+                return asset('/storage/published-motifs/' . $value);
             }
             
             // Default: assume it's a path that needs /storage/ prefix
