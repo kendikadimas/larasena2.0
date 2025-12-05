@@ -51,9 +51,16 @@ class Design extends Model
         
         // First check: Already proper full URLs - return as is without further processing
         if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
-            // But if it's localhost/127.0.0.1, convert to production domain
+            // If it's localhost without /storage/, add /storage/ and convert to production domain
+            if (str_contains($value, 'localhost/designs/') || str_contains($value, '127.0.0.1:8000/designs/')) {
+                // Extract just the designs part and add proper storage path
+                if (preg_match('/\/(designs\/.+)$/', $value, $matches)) {
+                    return asset('/storage/' . $matches[1]);
+                }
+            }
+            
+            // If it's localhost/127.0.0.1 with /storage/, convert to production domain
             if (str_contains($value, '127.0.0.1:8000') || str_contains($value, 'localhost:8000')) {
-                // Extract the path part after /storage/
                 if (preg_match('/\/storage\/(.+)$/', $value, $matches)) {
                     return asset('/storage/' . $matches[1]);
                 }

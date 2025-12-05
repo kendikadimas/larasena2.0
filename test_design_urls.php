@@ -13,6 +13,7 @@ echo "=== Testing Design URL Accessor ===\n\n";
 $testUrls = [
     'https://larasena.id/storage/designs/generated/3_1761487967.jpg',
     'http://localhost/storage/designs/generated/3_1760144183.jpg',
+    'http://localhost/designs/thumbnails/3_1758427073.jpg', // New problem case
     'http://127.0.0.1:8000/storage/designs/generated/3_1754808326.jpg',
     'storage/http://127.0.0.1:8000/storage/designs/generated/3_1754808326.jpg',
     'storage/https://larasena.id/storage/designs/thumbnails/3_1760143679.jpg',
