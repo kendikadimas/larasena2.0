@@ -168,11 +168,11 @@ export default function BatikGeneratorPage({ auth }) {
 
     return (
         <UserLayout title="AI Batik Generator">
-            <SEO 
+            {/* <SEO 
                 title="AI Batik Generator - LARASENA"
                 description="Generator motif batik tradisional Indonesia dengan teknologi AI yang telah di-fine-tune. Buat desain batik autentik seperti kawung, parang, mega mendung dengan akurasi tinggi. Preservasi budaya Indonesia melalui teknologi modern."
                 keywords="AI batik Indonesia, generator batik tradisional, motif kawung AI, parang AI, mega mendung generator, batik sogan, batik lasem, LARASENA, fine-tuned AI batik, preservasi budaya Indonesia"
-            />
+            /> */}
             <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">
                 {/* Header Section */}
                 <div className="bg-white border-b border-gray-200 shadow-sm">
