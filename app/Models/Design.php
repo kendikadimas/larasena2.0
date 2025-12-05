@@ -65,20 +65,25 @@ class Design extends Model
         
         // Pattern: storage/http://... or storage/https://...
         if (str_starts_with($value, 'storage/http://') || str_starts_with($value, 'storage/https://')) {
-            $cleanedUrl = str_replace('storage/', '', $value);
+            // Remove only the first "storage/" prefix, not all occurrences
+            $cleanedUrl = preg_replace('/^storage\//', '', $value);
             
-            // If it's localhost/127.0.0.1, extract just the file path
+            // If it's localhost/127.0.0.1, extract the file path and use production domain
             if (str_contains($cleanedUrl, '127.0.0.1:8000') || str_contains($cleanedUrl, 'localhost:8000')) {
                 if (preg_match('/\/storage\/(.+)$/', $cleanedUrl, $matches)) {
                     return asset('/storage/' . $matches[1]);
                 }
+                // Fallback if no /storage/ found in path
+                return $cleanedUrl;
             }
             
-            // If it's production domain (larasena.id), extract just the file path
+            // If it's production domain (larasena.id), extract the file path and recreate properly
             if (str_contains($cleanedUrl, 'larasena.id')) {
                 if (preg_match('/\/storage\/(.+)$/', $cleanedUrl, $matches)) {
                     return asset('/storage/' . $matches[1]);
                 }
+                // Fallback if no /storage/ found in path  
+                return $cleanedUrl;
             }
             
             // For other cases, return the cleaned URL

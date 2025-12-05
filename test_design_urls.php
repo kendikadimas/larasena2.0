@@ -28,7 +28,36 @@ foreach ($testUrls as $testUrl) {
     $mockDesign->setRawAttributes(['image_url' => $testUrl]);
     
     echo "Input: {$testUrl}\n";
-    echo "Output: " . ($mockDesign->image_url ?: 'NULL') . "\n";
+    $output = $mockDesign->image_url ?: 'NULL';
+    echo "Output: {$output}\n";
+    
+    // Debug problematic cases
+    if (str_starts_with($testUrl, 'storage/http://') || str_starts_with($testUrl, 'storage/https://')) {
+        $cleaned = str_replace('storage/', '', $testUrl);
+        echo "  Debug - Cleaned URL: {$cleaned}\n";
+        if (str_contains($cleaned, '127.0.0.1:8000') || str_contains($cleaned, 'localhost:8000')) {
+            echo "  Debug - Contains localhost/127.0.0.1\n";
+            if (preg_match('/\/storage\/(.+)$/', $cleaned, $matches)) {
+                echo "  Debug - Regex match: {$matches[1]}\n";
+            } else {
+                echo "  Debug - No regex match\n";
+            }
+        }
+        if (str_contains($cleaned, 'larasena.id')) {
+            echo "  Debug - Contains larasena.id\n";
+            echo "  Debug - Cleaned string: '{$cleaned}'\n";
+            if (preg_match('/\/storage\/(.+)$/', $cleaned, $matches)) {
+                echo "  Debug - Regex match: {$matches[1]}\n";
+            } else {
+                echo "  Debug - No regex match (looking for /storage/ pattern)\n";
+                // Check if there's any storage in the string
+                if (str_contains($cleaned, 'storage')) {
+                    echo "  Debug - But 'storage' exists in: " . $cleaned . "\n";
+                }
+            }
+        }
+    }
+    
     echo "---\n";
 }
 
