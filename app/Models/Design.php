@@ -49,7 +49,12 @@ class Design extends Model
             return null;
         }
         
-        // Clean up malformed URLs similar to PublishedMotif
+        // First check: Already proper full URLs - return as is without further processing
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            return $value;
+        }
+        
+        // Clean up malformed URLs
         
         // Pattern: storage/http://localhost:8000/storage/...
         if (str_starts_with($value, 'storage/http://') || str_starts_with($value, 'storage/https://')) {
@@ -77,11 +82,6 @@ class Design extends Model
         // Pattern: storage/designs/... (missing leading slash)
         if (str_starts_with($value, 'storage/') && !str_starts_with($value, 'storage/http')) {
             return asset('/' . $value);
-        }
-        
-        // Already proper full URLs
-        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
-            return $value;
         }
         
         // Already proper relative paths with /storage/
