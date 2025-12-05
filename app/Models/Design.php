@@ -51,14 +51,29 @@ class Design extends Model
         
         // First check: Already proper full URLs - return as is without further processing
         if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            // But if it's localhost/127.0.0.1, convert to production domain
+            if (str_contains($value, '127.0.0.1:8000') || str_contains($value, 'localhost:8000')) {
+                // Extract the path part after /storage/
+                if (preg_match('/\/storage\/(.+)$/', $value, $matches)) {
+                    return asset('/storage/' . $matches[1]);
+                }
+            }
             return $value;
         }
         
         // Clean up malformed URLs
         
-        // Pattern: storage/http://localhost:8000/storage/...
+        // Pattern: storage/http://localhost:8000/storage/... or storage/http://127.0.0.1:8000/storage/...
         if (str_starts_with($value, 'storage/http://') || str_starts_with($value, 'storage/https://')) {
             $cleanedUrl = str_replace('storage/', '', $value);
+            
+            // If it's localhost/127.0.0.1, extract just the file path
+            if (str_contains($cleanedUrl, '127.0.0.1:8000') || str_contains($cleanedUrl, 'localhost:8000')) {
+                if (preg_match('/\/storage\/(.+)$/', $cleanedUrl, $matches)) {
+                    return asset('/storage/' . $matches[1]);
+                }
+            }
+            
             // If it doesn't contain /storage/ after cleaning, it means we removed the wrong storage/
             if (!str_contains($cleanedUrl, '/storage/')) {
                 // Extract the path after the domain and add /storage/ back
