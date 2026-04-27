@@ -18,11 +18,16 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
+            \App\Http\Middleware\HandleAIGeneration::class,
         ]);
 
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckUserRole::class,
+<<<<<<< HEAD
             'subscription.enforce' => \App\Http\Middleware\EnsureSubscriptionIsActive::class,
+=======
+            'ai-gen' => \App\Http\Middleware\HandleAIGeneration::class,
+>>>>>>> c932190b7cee1a6659120ea4f62ceddc23fdae6b
         ]);
 
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);

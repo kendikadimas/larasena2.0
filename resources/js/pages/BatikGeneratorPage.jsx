@@ -16,6 +16,10 @@ export default function BatikGeneratorPage({ auth }) {
     const [repeatCount, setRepeatCount] = useState(0); // 0 = default (no repeat)
     const [colorScheme, setColorScheme] = useState('');
     const [style, setStyle] = useState('');
+    
+    // Gemini-specific options
+    const [aspectRatio, setAspectRatio] = useState('1:1');
+    const [imageSize, setImageSize] = useState('1K');
 
    const promptTemplates = [
     // 🌧️ Cirebon
@@ -109,33 +113,28 @@ export default function BatikGeneratorPage({ auth }) {
                 prompt: enhancedPrompt,
                 color_scheme: colorScheme,
                 style: style,
+                aspect_ratio: aspectRatio,
+                image_size: imageSize,
             });
 
-            console.log('✅ Response success:', response.data);
-
-            // Backend mengembalikan image_url (file) + image_data (base64 inline)
-            if (response.data.image_url) {
-                setResultImage(response.data.image_url);
-            } else if (response.data.image_data) {
+            // Priority: Use base64 data first (more reliable), fallback to URL
+            if (response.data.image_data) {
                 setResultImage(response.data.image_data);
+            } else if (response.data.image_url) {
+                setResultImage(response.data.image_url);
             } else {
                 throw new Error('Respons dari server tidak berisi data gambar.');
             }
         } catch (err) {
-            console.error('❌ Submit Error:', err);
             if (err.response) {
-                console.error('🧩 Error Data:', err.response.data);
-                console.error('🧩 Status:', err.response.status);
                 setError(
                     err.response.data.details ||
                     err.response.data.error ||
                     'Server error.'
                 );
             } else if (err.request) {
-                console.error('🛰 No response:', err.request);
                 setError('Server tidak merespon.');
             } else {
-                console.error('⚙️ Config Error:', err.message);
                 setError('Kesalahan konfigurasi frontend.');
             }
         } finally {
@@ -169,11 +168,11 @@ export default function BatikGeneratorPage({ auth }) {
 
     return (
         <UserLayout title="AI Batik Generator">
-            <SEO 
-                title="AI Batik Generator"
-                description="Generator motif batik otomatis dengan teknologi AI. Buat desain batik unik dalam hitungan detik dengan berbagai pilihan warna dan gaya tradisional Indonesia."
-                keywords="AI batik, generator batik, desain batik AI, motif batik otomatis, batik sogan, batik lasem, batik mega mendung, batik modern"
-            />
+            {/* <SEO 
+                title="AI Batik Generator - LARASENA"
+                description="Generator motif batik tradisional Indonesia dengan teknologi AI yang telah di-fine-tune. Buat desain batik autentik seperti kawung, parang, mega mendung dengan akurasi tinggi. Preservasi budaya Indonesia melalui teknologi modern."
+                keywords="AI batik Indonesia, generator batik tradisional, motif kawung AI, parang AI, mega mendung generator, batik sogan, batik lasem, LARASENA, fine-tuned AI batik, preservasi budaya Indonesia"
+            /> */}
             <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50">
                 {/* Header Section */}
                 <div className="bg-white border-b border-gray-200 shadow-sm">
@@ -184,7 +183,12 @@ export default function BatikGeneratorPage({ auth }) {
                             </div>
                             <div>
                                 <h1 className="text-2xl font-bold text-gray-800">AI Batik Generator</h1>
-                                <p className="text-sm text-gray-500">Buat motif batik unik dengan teknologi AI</p>
+                                <p className="text-sm text-gray-500">
+                                    Buat motif batik tradisional Indonesia dengan AI
+                                    <span className="ml-2 px-2 py-1 bg-gradient-to-r from-orange-100 to-amber-100 text-orange-800 text-xs rounded-full font-medium">
+                                        Fine-Tuned AI
+                                    </span>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -315,6 +319,68 @@ export default function BatikGeneratorPage({ auth }) {
                                             ))}
                                         </div>
                                     </div>
+
+                                    {/* Gemini Image Options */}
+                                    <div className="border-t border-gray-200 pt-4">
+                                        <h3 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                            <Sparkles className="w-4 h-4 text-[#BA682A]" />
+                                            Opsi Gambar
+                                        </h3>
+                                        <div className="space-y-3">
+                                            {/* Aspect Ratio */}
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    Rasio Aspek
+                                                </label>
+                                                <select
+                                                    value={aspectRatio}
+                                                    onChange={(e) => setAspectRatio(e.target.value)}
+                                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#BA682A] focus:border-transparent text-sm"
+                                                    disabled={isLoading}
+                                                >
+                                                    <option value="1:1">Kotak (1:1)</option>
+                                                    <option value="3:4">Portrait (3:4)</option>
+                                                    <option value="4:3">Landscape (4:3)</option>
+                                                    <option value="16:9">Widescreen (16:9)</option>
+                                                    <option value="9:16">Mobile (9:16)</option>
+                                                    <option value="2:3">Portrait Tall (2:3)</option>
+                                                    <option value="3:2">Landscape Wide (3:2)</option>
+                                                    <option value="4:5">Social Media (4:5)</option>
+                                                    <option value="5:4">Classic (5:4)</option>
+                                                    <option value="21:9">Ultra Wide (21:9)</option>
+                                                </select>
+                                            </div>
+
+                                            {/* Image Size */}
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    Ukuran Gambar
+                                                </label>
+                                                <div className="grid grid-cols-3 gap-2">
+                                                    {[
+                                                        { value: '1K', label: '1K (Cepat)', desc: '1024px' },
+                                                        { value: '2K', label: '2K (Balance)', desc: '2048px' },
+                                                        { value: '4K', label: '4K (Detail)', desc: '4096px' }
+                                                    ].map((size) => (
+                                                        <button
+                                                            key={size.value}
+                                                            type="button"
+                                                            onClick={() => setImageSize(size.value)}
+                                                            className={`p-2 rounded-lg border-2 text-center transition-all ${
+                                                                imageSize === size.value
+                                                                    ? 'border-[#BA682A] bg-orange-50 text-[#BA682A]'
+                                                                    : 'border-gray-200 hover:border-gray-300'
+                                                            }`}
+                                                            disabled={isLoading}
+                                                        >
+                                                            <div className="text-xs font-medium">{size.label}</div>
+                                                            <div className="text-xs text-gray-500">{size.desc}</div>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -323,12 +389,13 @@ export default function BatikGeneratorPage({ auth }) {
                                 <div className="flex items-start gap-3">
                                     <Book className="w-5 h-5 text-[#BA682A] flex-shrink-0 mt-0.5" />
                                     <div>
-                                        <h3 className="text-sm font-semibold text-gray-800 mb-2">Tips Membuat Motif</h3>
+                                        <h3 className="text-sm font-semibold text-gray-800 mb-2">Tips Membuat Motif Batik</h3>
                                         <ul className="text-xs text-gray-600 space-y-1">
-                                            <li>• Gunakan deskripsi yang detail dan spesifik</li>
-                                            <li>• Sebutkan elemen utama motif (flora, fauna, geometris)</li>
-                                            <li>• Tentukan suasana atau tema yang diinginkan</li>
-                                            <li>• Eksperimen dengan berbagai kombinasi pola</li>
+                                            <li>• Sebutkan motif tradisional (kawung, parang, mega mendung, ceplok)</li>
+                                            <li>• Jelaskan detail warna dan komposisi yang diinginkan</li>
+                                            <li>• Gunakan gaya batik klasik untuk hasil terbaik</li>
+                                            <li>• Pilih palet warna tradisional (sogan, lasem) untuk akurasi</li>
+                                            <li>• Ukuran 1K untuk pratinjau cepat, hasil optimal</li>
                                         </ul>
                                     </div>
                                 </div>

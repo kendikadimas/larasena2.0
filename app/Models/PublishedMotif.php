@@ -92,17 +92,81 @@ class PublishedMotif extends Model
     }
 
     // Accessors
-    public function getImageUrlAttribute()
+    public function getImageUrlAttribute($value)
     {
-        if (!$this->image_path) {
-            return null;
+        // If image_url is already stored in database, use it
+        if (!empty($value)) {
+            // Clean up malformed URLs - various patterns from the error log
+            
+            // Pattern: storage/http://localhost:8000/storage/...
+            if (str_starts_with($value, 'storage/http://') || str_starts_with($value, 'storage/https://')) {
+                $cleanedUrl = str_replace('storage/', '', $value);
+                // If it doesn't contain /storage/ after cleaning, it means we removed the wrong storage/
+                if (!str_contains($cleanedUrl, '/storage/')) {
+                    // Extract the path after the domain and add /storage/ back
+                    $parsedUrl = parse_url($cleanedUrl);
+                    $pathParts = explode('/', ltrim($parsedUrl['path'], '/'));
+                    if (!empty($pathParts) && $pathParts[0] !== 'storage') {
+                        array_unshift($pathParts, 'storage');
+                    }
+                    $newPath = '/' . implode('/', $pathParts);
+                    return $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . (isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '') . $newPath;
+                }
+                return $cleanedUrl;
+            }
+            
+            // Pattern: storage//storage/...
+            if (str_contains($value, 'storage//storage/')) {
+                $cleaned = str_replace('storage//storage/', '', $value);
+                return asset('/storage/' . $cleaned);
+            }
+            
+            // Pattern: storage/designs/... (missing leading slash)
+            if (str_starts_with($value, 'storage/') && !str_starts_with($value, 'storage/http')) {
+                return asset('/' . $value);
+            }
+            
+            // Already proper full URLs
+            if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+                return $value;
+            }
+            
+            // Already proper relative paths with /storage/
+            if (str_starts_with($value, '/storage/')) {
+                return asset($value);
+            }
+            
+            // Direct filenames without path (like uK1cP8I4k8CQQhG9ga5RLIBUSGrWqdu37QguPErJ.jpg)
+            if (!str_contains($value, '/') && (str_ends_with($value, '.jpg') || str_ends_with($value, '.png') || str_ends_with($value, '.jpeg'))) {
+                return asset('/storage/published-motifs/' . $value);
+            }
+            
+            // Default: assume it's a path that needs /storage/ prefix
+            return asset('/storage/' . ltrim($value, '/'));
         }
-        
-        if (str_starts_with($this->image_path, 'http')) {
-            return $this->image_path;
+
+        // Fall back to image_path if image_url is empty
+        if (!empty($this->attributes['image_path'])) {
+            $imagePath = $this->attributes['image_path'];
+            
+            // If image_path already starts with published-motifs/, use it directly
+            if (str_starts_with($imagePath, 'published-motifs/')) {
+                return asset('/storage/' . $imagePath);
+            }
+            
+            // Clean up double storage paths
+            $imagePath = str_replace(['storage/storage/', 'storage/', '/storage/'], '', $imagePath);
+            $imagePath = ltrim($imagePath, '/');
+            
+            // If it's just a filename, assume it's in published-motifs folder
+            if (!str_contains($imagePath, '/')) {
+                return asset('/storage/published-motifs/' . $imagePath);
+            }
+            
+            return asset('/storage/' . $imagePath);
         }
-        
-        return asset('storage/' . str_replace('storage/', '', $this->image_path));
+
+        return null;
     }
 
     // Methods

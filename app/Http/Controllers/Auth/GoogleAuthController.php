@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Konveksi;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Http\Request;
 
@@ -41,13 +42,20 @@ class GoogleAuthController extends Controller
                 
                 return redirect()->route('dashboard');
             } else {
-                // User not found, redirect to register with Google data
-                return redirect()->route('register')->with([
-                    'info' => 'Silakan daftarkan akun terlebih dahulu untuk melanjutkan.',
-                    'google_name' => $googleUser->getName(),
-                    'google_email' => $googleUser->getEmail(),
-                    'google_avatar' => $googleUser->getAvatar(),
+                // User not found, create new user automatically
+                $newUser = User::create([
+                    'name' => $googleUser->getName(),
+                    'email' => $googleUser->getEmail(),
+                    'password' => Hash::make(uniqid()), // Random password since they use Google OAuth
+                    'role' => 'General', // Default role for Google users
+                    'badge' => 'community', // Default badge for General users
+                    'email_verified_at' => now(), // Auto-verify since Google already verified
                 ]);
+
+                // Login the new user
+                Auth::login($newUser);
+                
+                return redirect()->route('dashboard')->with('success', 'Akun berhasil dibuat dengan Google!');
             }
             
         } catch (\Exception $e) {
