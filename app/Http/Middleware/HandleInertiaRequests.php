@@ -30,6 +30,7 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $user = $request->user();
+        $subscription = $user?->subscription;
         
         return [
             ...parent::share($request),
@@ -44,6 +45,7 @@ class HandleInertiaRequests extends Middleware
                     'profile_photo_url' => $user->profile_photo_url,
                 ] : null,
             ],
+            'subscription' => $subscription ? $subscription->toSnapshot() : null,
         ];
     }
 }

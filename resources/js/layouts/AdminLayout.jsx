@@ -2,6 +2,8 @@ import { Link, usePage, router } from '@inertiajs/react';
 import { LayoutDashboard, Users, Package, DollarSign, LogOut, Menu, X, Store, GraduationCap, ImagePlus } from 'lucide-react';
 import { useState } from 'react';
 
+const SHOW_TRAINING_FEATURE = false;
+
 export default function AdminLayout({ children }) {
     const { url } = usePage();
     const { auth } = usePage().props;
@@ -16,6 +18,10 @@ export default function AdminLayout({ children }) {
         { name: 'Transaksi', href: '/admin-transactions', icon: DollarSign },
         { name: 'Pelatihan', href: '/admin-training', icon: GraduationCap },
     ];
+
+    const visibleNavigation = SHOW_TRAINING_FEATURE
+        ? navigation
+        : navigation.filter((item) => item.href !== '/admin-training');
 
     const handleLogout = () => {
         if (confirm('Are you sure you want to logout?')) {
@@ -57,7 +63,7 @@ export default function AdminLayout({ children }) {
                 
               
                 <nav className="flex-1 p-4 space-y-2">
-                    {navigation.map((item) => {
+                  {visibleNavigation.map((item) => {
                         const isActive = url === item.href;
                         return (
                             <Link

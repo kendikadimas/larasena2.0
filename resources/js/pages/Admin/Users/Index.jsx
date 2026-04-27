@@ -1,6 +1,6 @@
 import { Head, Link, router } from '@inertiajs/react';
 import AdminLayout from '@/layouts/AdminLayout';
-import { Users, Search, Filter, Edit, Trash2, UserCheck, UserX, Mail, Calendar, Shield } from 'lucide-react';
+import { Users, Search, Filter, Edit, Trash2, UserCheck, UserX, Mail, Calendar, Shield, CreditCard } from 'lucide-react';
 import { useState } from 'react';
 
 const UserRoleBadge = ({ role }) => {
@@ -102,6 +102,17 @@ export default function AdminUsers({ users, stats, filters }) {
                 preserveScroll: true,
             });
         }
+    };
+
+    const handleSubscriptionTesting = (userId, status) => {
+        const reason = window.prompt('Alasan override (opsional):', 'Testing langganan internal') || 'Testing langganan internal';
+
+        router.put(route('admin.users.subscription-testing', userId), {
+            status,
+            updated_reason: reason,
+        }, {
+            preserveScroll: true,
+        });
     };
 
     return (
@@ -314,13 +325,39 @@ export default function AdminUsers({ users, stats, filters }) {
                                                     </Link>
                                                     
                                                     {user.role !== 'Admin' && (
-                                                        <button
-                                                            onClick={() => handleDelete(user.id)}
-                                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                            title="Delete"
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                        </button>
+                                                        <>
+                                                            <button
+                                                                onClick={() => handleSubscriptionTesting(user.id, 'trial')}
+                                                                className="p-2 text-amber-700 hover:bg-amber-50 rounded-lg transition-colors"
+                                                                title="Set Trial"
+                                                            >
+                                                                <CreditCard className="w-4 h-4" />
+                                                            </button>
+
+                                                            <button
+                                                                onClick={() => handleSubscriptionTesting(user.id, 'active')}
+                                                                className="px-2 py-1 text-xs font-semibold text-green-700 hover:bg-green-50 rounded-lg transition-colors"
+                                                                title="Set Active"
+                                                            >
+                                                                Active
+                                                            </button>
+
+                                                            <button
+                                                                onClick={() => handleSubscriptionTesting(user.id, 'payment_required')}
+                                                                className="px-2 py-1 text-xs font-semibold text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                                                                title="Set Expired"
+                                                            >
+                                                                Expired
+                                                            </button>
+
+                                                            <button
+                                                                onClick={() => handleDelete(user.id)}
+                                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                                title="Delete"
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                            </button>
+                                                        </>
                                                     )}
                                                 </div>
                                             </td>

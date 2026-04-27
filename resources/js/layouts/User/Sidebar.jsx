@@ -48,11 +48,16 @@ const BatikpediaIcon = ({ isActive = false, isMobile = false }) => (
   />
 );
 
+const SHOW_TRAINING_FEATURE = false;
+
 export default function Sidebar() {
-  const { url } = usePage();
+  const { url, props } = usePage();
+  const subscription = props.subscription;
   const [isOpen, setIsOpen] = useState(false); // For mobile
   const [isCollapsed, setIsCollapsed] = useState(false); // For desktop
-  const [expandedGroups, setExpandedGroups] = useState(['batik', 'pelatihan', 'produksi']); // All expanded by default
+  const [expandedGroups, setExpandedGroups] = useState(
+    SHOW_TRAINING_FEATURE ? ['batik', 'pelatihan', 'produksi'] : ['batik', 'produksi']
+  ); // All expanded by default
   const [showMoreMenu, setShowMoreMenu] = useState(false); // For "Lainnya" bottom sheet
 
   const toggleGroup = (groupName) => {
@@ -163,6 +168,18 @@ export default function Sidebar() {
     { name: 'Logout', href: '/logout', icon: LogOut, group: 'Akun', isLogout: true }
   ];
 
+  const visibleMenuGroups = SHOW_TRAINING_FEATURE
+    ? menuGroups
+    : menuGroups.filter((group) => group.name !== 'pelatihan');
+
+  const visibleOtherMenuItems = SHOW_TRAINING_FEATURE
+    ? otherMenuItems
+    : otherMenuItems.filter((item) => item.group !== 'Pelatihan');
+
+  const otherMenuGroupNames = SHOW_TRAINING_FEATURE
+    ? ['Pelatihan', 'Layanan', 'Akun']
+    : ['Layanan', 'Akun'];
+
   return (
     <>
       {/* Mobile Header - Fixed at top with highest z-index */}
@@ -219,7 +236,7 @@ export default function Sidebar() {
 
         {/* Navigation Menu */}
         <nav className="flex-1 p-4 space-y-4 overflow-y-auto">
-          {menuGroups.map((group) => {
+          {visibleMenuGroups.map((group) => {
             // Groups without labels are always expanded (main features)
             const isExpanded = !group.label || expandedGroups.includes(group.name) || isCollapsed;
             const hasActiveItem = group.items.some(item => url.startsWith(item.href));
@@ -307,6 +324,33 @@ export default function Sidebar() {
             );
           })}
         </nav>
+
+        {!isCollapsed && subscription && (
+          <div className="hidden md:block mx-3 mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+            <p className="font-semibold">Status Langganan</p>
+            <p className="mt-1">
+              {subscription.payment_required
+                ? 'Perlu pembayaran'
+                : subscription.is_trial
+                ? 'Trial aktif'
+                : 'Aktif'}
+            </p>
+            <p className="mt-1">
+              Berlaku sampai:{' '}
+              {subscription.is_trial
+                ? (subscription.trial_ends_at ? new Date(subscription.trial_ends_at).toLocaleDateString('id-ID') : '-')
+                : (subscription.subscription_ends_at ? new Date(subscription.subscription_ends_at).toLocaleDateString('id-ID') : '-')}
+            </p>
+            {subscription.payment_required && (
+              <Link
+                href={route('billing.required')}
+                className="mt-2 inline-flex text-[11px] font-semibold text-[#BA682A] hover:underline"
+              >
+                Bayar Sekarang
+              </Link>
+            )}
+          </div>
+        )}
       </aside>
 
       {/* Overlay - Behind sidebar but above content */}
@@ -379,13 +423,13 @@ export default function Sidebar() {
             {/* Menu Items */}
             <div className="px-4 py-3 max-h-[60vh] overflow-y-auto">
               {/* Group by category */}
-              {['Pelatihan', 'Layanan', 'Akun'].map((groupName) => (
+              {otherMenuGroupNames.map((groupName) => (
                 <div key={groupName} className="mb-4">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 px-2 mb-2">
                     {groupName}
                   </h4>
                   <div className="space-y-1">
-                    {otherMenuItems
+                    {visibleOtherMenuItems
                       .filter(item => item.group === groupName)
                       .map((item) => {
                         const isActive = url.startsWith(item.href) && !item.isLogout;

@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
@@ -62,6 +63,16 @@ class User extends Authenticatable
     public function motifs(): HasMany
     {
         return $this->hasMany(Motif::class);
+    }
+
+    public function subscription(): HasOne
+    {
+        return $this->hasOne(Subscription::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'Admin';
     }
     
     // ✅ Alias untuk productions (semua pesanan yang dibuat user sebagai customer)

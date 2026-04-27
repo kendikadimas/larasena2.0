@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\Subscription;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +34,27 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = Auth::user();
+
+        if ($user && $user->role !== 'Admin') {
+            $subscription = Subscription::query()->firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'status' => 'payment_required',
+                    'monthly_amount' => (int) config('services.xendit.default_amount', 30000),
+                ]
+            );
+
+            if (!$subscription->first_login_at) {
+                $now = now();
+                $subscription->update([
+                    'first_login_at' => $now,
+                    'trial_started_at' => $now,
+                    'trial_ends_at' => $now->copy()->addDays(3),
+                    'status' => 'trial',
+                    'monthly_amount' => (int) config('services.xendit.default_amount', 30000),
+                ]);
+            }
+        }
         
         // ✅ Redirect berdasarkan role dengan route name yang benar
         return match ($user->role) {

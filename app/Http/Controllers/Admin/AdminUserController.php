@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -25,6 +26,7 @@ class AdminUserController extends Controller
             ->when($role && $role !== 'all', function ($query, $role) {
                 $query->where('role', $role);
             })
+            ->with('subscription')
             ->withCount('designs')
             ->latest()
             ->paginate(15)
@@ -153,5 +155,55 @@ class AdminUserController extends Controller
         $user->delete();
 
         return back()->with('success', 'User berhasil dihapus.');
+    }
+
+    public function updateSubscriptionTesting(Request $request, User $user)
+    {
+        abort_if($user->role === 'Admin', 422, 'Admin tidak membutuhkan status langganan.');
+
+        $validated = $request->validate([
+            'status' => ['required', Rule::in(['trial', 'active', 'payment_required'])],
+            'trial_ends_at' => ['nullable', 'date'],
+            'subscription_ends_at' => ['nullable', 'date'],
+            'updated_reason' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $now = now();
+
+        $subscription = Subscription::query()->firstOrCreate(
+            ['user_id' => $user->id],
+            ['monthly_amount' => (int) config('services.xendit.default_amount', 30000)]
+        );
+
+        $status = $validated['status'];
+
+        $payload = [
+            'status' => $status,
+            'updated_by_admin_id' => $request->user()->id,
+            'updated_reason' => $validated['updated_reason'] ?? 'Manual override untuk testing',
+        ];
+
+        if ($status === 'trial') {
+            $payload['trial_started_at'] = $subscription->trial_started_at ?: $now;
+            $payload['trial_ends_at'] = $validated['trial_ends_at'] ?? $now->copy()->addDays(3);
+            $payload['subscription_started_at'] = null;
+            $payload['subscription_ends_at'] = null;
+            $payload['paid_at'] = null;
+        }
+
+        if ($status === 'active') {
+            $payload['subscription_started_at'] = $subscription->subscription_started_at ?: $now;
+            $payload['subscription_ends_at'] = $validated['subscription_ends_at'] ?? $now->copy()->addDays(30);
+            $payload['paid_at'] = $now;
+        }
+
+        if ($status === 'payment_required') {
+            $payload['trial_ends_at'] = $validated['trial_ends_at'] ?? $subscription->trial_ends_at;
+            $payload['subscription_ends_at'] = $validated['subscription_ends_at'] ?? $subscription->subscription_ends_at;
+        }
+
+        $subscription->update($payload);
+
+        return back()->with('success', 'Status langganan user berhasil diperbarui.');
     }
 }

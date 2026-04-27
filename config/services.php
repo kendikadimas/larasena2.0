@@ -41,4 +41,14 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'xendit' => [
+        'secret_key' => env('XENDIT_SECRET_KEY'),
+        'callback_token' => env('XENDIT_CALLBACK_TOKEN'),
+        'callback_url' => env('XENDIT_CALLBACK_URL'),
+        'base_url' => env('XENDIT_BASE_URL', 'https://api.xendit.co'),
+        'currency' => env('XENDIT_CURRENCY', 'IDR'),
+        'default_amount' => (int) env('XENDIT_DEFAULT_AMOUNT', 30000),
+        'invoice_expiry_seconds' => (int) env('XENDIT_INVOICE_EXPIRY_SECONDS', 86400),
+    ],
+
 ];

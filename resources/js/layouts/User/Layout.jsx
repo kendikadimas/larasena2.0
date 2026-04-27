@@ -1,5 +1,5 @@
 import Sidebar from './Sidebar';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { Bell, Settings, User, LogOut, ChevronDown, ChevronsRight } from 'lucide-react';
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
@@ -41,8 +41,9 @@ const Breadcrumbs = () => {
 
 export default function UserLayout({ children, title }) {
 
-  const { auth, url } = usePage().props;
+  const { auth, subscription, url } = usePage().props;
   const user = auth.user;
+  const isBlockedByPayment = Boolean(subscription?.payment_required);
 
   return (
     <>
@@ -153,6 +154,34 @@ export default function UserLayout({ children, title }) {
 
         </main>
       </div>
+
+      {isBlockedByPayment && (
+        <div className="fixed inset-0 z-[120] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl p-6 md:p-8 text-center">
+            <p className="text-xs font-semibold tracking-wider text-red-600 uppercase">Akses Ditangguhkan</p>
+            <h2 className="mt-2 text-2xl font-bold text-gray-900">Langganan Kamu Sudah Berakhir</h2>
+            <p className="mt-3 text-sm text-gray-600">
+              Untuk melanjutkan penggunaan fitur Larasena, selesaikan pembayaran langganan bulanan Rp30.000.
+            </p>
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+              <Link
+                href={route('billing.pay-now')}
+                className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
+              >
+                Metode Pembayaran
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => router.visit(document.referrer || route('landing'))}
+                className="inline-flex items-center justify-center px-5 py-3 rounded-xl border border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition"
+              >
+                Kembali
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

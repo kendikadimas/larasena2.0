@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Eye, EyeOff, Mail, Lock, Sparkles, Users, Factory } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Login({ status, canResetPassword }) {
@@ -25,81 +25,18 @@ export default function Login({ status, canResetPassword }) {
             {/* Background Section - Kiri */}
             <div className="hidden lg:flex lg:w-1/2 relative">
                 <div 
-                    className="w-full bg-cover bg-center bg-no-repeat relative"
+                    className="w-full bg-cover bg-center bg-no-repeat"
                     style={{
-                        backgroundImage: "url('/images/bg-auth.png')",
+                        backgroundImage: "url('/images/bg-login.png')",
                     }}
-                >
-                    {/* Overlay gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#BA682A]/80 to-[#8B4513]/90"></div>
-                    
-                    {/* Content overlay */}
-                    <div className="relative z-10 flex flex-col justify-center items-center h-full text-white p-12">
-                        <div className="max-w-md text-center">
-                            <h1 className="text-4xl font-bold mb-6">
-                                Larasena
-                            </h1>
-                            <p className="text-xl mb-8 text-white/90">
-                                Bergabunglah dengan komunitas batik digital terdepan di Indonesia
-                            </p>
-                            
-                            {/* Feature Cards */}
-                            <div className="space-y-4">
-                                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                                            <Sparkles className="w-5 h-5 text-white" />
-                                        </div>
-                                        <div className="text-left">
-                                            <h3 className="font-semibold text-white">Editor Batik AI</h3>
-                                            <p className="text-white/80 text-sm">Buat desain batik dengan teknologi AI</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                                            <Users className="w-5 h-5 text-white" />
-                                        </div>
-                                        <div className="text-left">
-                                            <h3 className="font-semibold text-white">Kolaborasi Mitra</h3>
-                                            <p className="text-white/80 text-sm">Terhubung dengan konveksi terpercaya</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all duration-300">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                                            <Factory className="w-5 h-5 text-white" />
-                                        </div>
-                                        <div className="text-left">
-                                            <h3 className="font-semibold text-white">Kelola Produksi</h3>
-                                            <p className="text-white/80 text-sm">Sistem produksi batik terintegrasi</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                />
             </div>
 
             {/* Form Section - Kanan */}
             <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
                 <div className="w-full max-w-md">
-                   {/* Logo/Brand */}
+                   {/* Header */}
                     <div className="text-center mb-8">
-                        <div className="mb-4">
-                            <div className="w-16 h-16 mx-auto mb-4 overflow-hidde">
-                                <img 
-                                    src="/images/lolares.png" 
-                                    alt="Larasena Logo" 
-                                    className="w-full h-full object-contain"
-                                />
-                            </div>
-                        </div>
                         <h2 className="text-3xl font-bold text-gray-800 mb-2">Masuk ke Akun</h2>
                         <p className="text-gray-600">Masukkan kredensial Anda untuk melanjutkan</p>
                     </div>

@@ -2,7 +2,8 @@ import { Link, usePage } from '@inertiajs/react';
 import { LayoutDashboard, ShoppingCart, Users, DollarSign, UserCog } from 'lucide-react';
 
 export default function Sidebar() {
-  const { url } = usePage();
+  const { url, props } = usePage();
+  const subscription = props.subscription;
 
   const menuItems = [
     { name: 'Dashboard', href: '/konveksi-dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
@@ -46,6 +47,30 @@ export default function Sidebar() {
           );
         })}
       </nav>
+
+      {subscription && (
+        <div className="mx-3 mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+          <p className="font-semibold">Status Langganan</p>
+          <p className="mt-1">
+            {subscription.payment_required
+              ? 'Perlu pembayaran'
+              : subscription.is_trial
+              ? 'Trial aktif'
+              : 'Aktif'}
+          </p>
+          <p className="mt-1">
+            Berlaku sampai:{' '}
+            {subscription.is_trial
+              ? (subscription.trial_ends_at ? new Date(subscription.trial_ends_at).toLocaleDateString('id-ID') : '-')
+              : (subscription.subscription_ends_at ? new Date(subscription.subscription_ends_at).toLocaleDateString('id-ID') : '-')}
+          </p>
+          {subscription.payment_required && (
+            <Link href={route('billing.required')} className="mt-2 inline-flex text-[11px] font-semibold text-[#BA682A] hover:underline">
+              Bayar Sekarang
+            </Link>
+          )}
+        </div>
+      )}
     </aside>
   );
 }

@@ -16,6 +16,7 @@ use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\TrainingLessonController;
 use App\Http\Controllers\TrainingCertificateController;
 use App\Http\Controllers\UploadMotifController;
+use App\Http\Controllers\BillingController;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -62,9 +63,19 @@ Route::get('/layanan', function () {
 })->name('layanan');
 
 // ============================================================================
+// 💳 BILLING ROUTES (Non-Admin)
+// ============================================================================
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/billing/required', [BillingController::class, 'required'])->name('billing.required');
+    Route::post('/billing/invoice', [BillingController::class, 'createInvoice'])->name('billing.create-invoice');
+    Route::get('/billing/pay-now', [BillingController::class, 'payNow'])->name('billing.pay-now');
+    Route::get('/billing/status', [BillingController::class, 'status'])->name('billing.status');
+});
+
+// ============================================================================
 // 👤 ROUTE UNTUK GENERAL USER (role: General)
 // ============================================================================
-Route::middleware(['auth', 'verified', 'role:General'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:General', 'subscription.enforce'])->group(function () {
     Route::get('/dashboard', [DesignController::class, 'index'])->name('dashboard');
 
     // CRUD Desain
@@ -92,17 +103,19 @@ Route::middleware(['auth', 'verified', 'role:General'])->group(function () {
     Route::post('/produksi', [ProductionController::class, 'store'])->name('production.store');
     Route::get('/produksi/pesan', [ProductionController::class, 'create'])->name('production.create');
 
-    // Training/Pelatihan Batik
-    Route::get('/pelatihan', [TrainingController::class, 'index'])->name('training.index');
-    Route::get('/pelatihan/{course:slug}', [TrainingController::class, 'show'])->name('training.show');
-    Route::get('/pelatihan/{course:slug}/lesson/{lesson:slug}', [TrainingLessonController::class, 'show'])->name('training.lesson.show');
-    Route::post('/pelatihan/{course:slug}/lesson/{lesson:slug}/progress', [TrainingLessonController::class, 'saveProgress'])->name('training.lesson.progress');
-    Route::post('/pelatihan/{course:slug}/lesson/{lesson:slug}/quiz-submit',[TrainingLessonController::class, 'submitQuiz'])->name('training.lesson.quiz.submit');
-    
-    // Certificates
-    Route::get('/sertifikat', [TrainingCertificateController::class, 'index'])->name('training.certificates.index');
-    Route::get('/sertifikat/{certificate}', [TrainingCertificateController::class, 'show'])->name('training.certificates.show');
-    Route::get('/sertifikat/{certificate}/download', [TrainingCertificateController::class, 'download'])->name('training.certificates.download');
+    // Training/Pelatihan Batik (feature-flagged)
+    if (config('features.training', false)) {
+        Route::get('/pelatihan', [TrainingController::class, 'index'])->name('training.index');
+        Route::get('/pelatihan/{course:slug}', [TrainingController::class, 'show'])->name('training.show');
+        Route::get('/pelatihan/{course:slug}/lesson/{lesson:slug}', [TrainingLessonController::class, 'show'])->name('training.lesson.show');
+        Route::post('/pelatihan/{course:slug}/lesson/{lesson:slug}/progress', [TrainingLessonController::class, 'saveProgress'])->name('training.lesson.progress');
+        Route::post('/pelatihan/{course:slug}/lesson/{lesson:slug}/quiz-submit',[TrainingLessonController::class, 'submitQuiz'])->name('training.lesson.quiz.submit');
+
+        // Certificates
+        Route::get('/sertifikat', [TrainingCertificateController::class, 'index'])->name('training.certificates.index');
+        Route::get('/sertifikat/{certificate}', [TrainingCertificateController::class, 'show'])->name('training.certificates.show');
+        Route::get('/sertifikat/{certificate}/download', [TrainingCertificateController::class, 'download'])->name('training.certificates.download');
+    }
 
     // Published Motifs (Submit from Dashboard)
     Route::post('/motif/publish', [\App\Http\Controllers\PublishedMotifController::class, 'store'])->name('motif.published.store');
@@ -139,7 +152,7 @@ Route::middleware(['auth', 'verified', 'role:General'])->group(function () {
 // ============================================================================
 // 🧵 ROUTE UNTUK KONVEKSI (role: Convection)
 // ============================================================================
-Route::middleware(['auth', 'verified', 'role:Convection'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:Convection', 'subscription.enforce'])->group(function () {
     Route::get('/konveksi-dashboard', [KonveksiDashboardController::class, 'index'])->name('konveksi.dashboard');
     Route::get('/konveksi-pesanan', [KonveksiDashboardController::class, 'orders'])->name('konveksi.orders');
     Route::get('/konveksi-pelanggan', [KonveksiDashboardController::class, 'customers'])->name('konveksi.customers');
@@ -163,6 +176,7 @@ Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
     Route::put('/admin-users/{user}', [AdminUserController::class, 'update'])->name('admin.users.update');
     Route::put('/admin-users/{user}/role', [AdminUserController::class, 'updateRole'])->name('admin.users.updateRole');
     Route::put('/admin-users/{user}/badge', [AdminUserController::class, 'updateBadge'])->name('admin.users.updateBadge');
+    Route::put('/admin-users/{user}/subscription-testing', [AdminUserController::class, 'updateSubscriptionTesting'])->name('admin.users.subscription-testing');
     Route::delete('/admin-users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
     Route::delete('/admin/users/{user}', [AdminUserController::class, 'destroy']);
 
@@ -184,19 +198,21 @@ Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
     Route::get('/admin-konveksi/{konveksi}', [AdminKonveksiController::class, 'show'])->name('admin.konveksi.show');
     Route::put('/admin-konveksi/{konveksi}/toggle-verification', [AdminKonveksiController::class, 'toggleVerification'])->name('admin.konveksi.toggleVerification');
 
-    // Training Management
-    Route::get('/admin-training', [AdminTrainingController::class, 'index'])->name('admin.training.index');
-    Route::post('/admin-training', [AdminTrainingController::class, 'store'])->name('admin.training.store');
-    Route::put('/admin-training/{course}', [AdminTrainingController::class, 'update'])->name('admin.training.update');
-    Route::delete('/admin-training/{course}', [AdminTrainingController::class, 'destroy'])->name('admin.training.destroy');
-    Route::put('/admin-training/{course}/toggle-publish', [AdminTrainingController::class, 'togglePublish'])->name('admin.training.togglePublish');
-    
-    // Training Lessons Management
-    Route::get('/admin-training/{course}/lessons', [AdminTrainingLessonController::class, 'index'])->name('admin.training.lessons.index');
-    Route::post('/admin-training/{course}/lessons', [AdminTrainingLessonController::class, 'store'])->name('admin.training.lessons.store');
-    Route::put('/admin-training/lessons/{lesson}', [AdminTrainingLessonController::class, 'update'])->name('admin.training.lessons.update');
-    Route::delete('/admin-training/lessons/{lesson}', [AdminTrainingLessonController::class, 'destroy'])->name('admin.training.lessons.destroy');
-    Route::put('/admin-training/lessons/{lesson}/toggle-publish', [AdminTrainingLessonController::class, 'togglePublish'])->name('admin.training.lessons.togglePublish');
+    // Training Management (feature-flagged)
+    if (config('features.training', false)) {
+        Route::get('/admin-training', [AdminTrainingController::class, 'index'])->name('admin.training.index');
+        Route::post('/admin-training', [AdminTrainingController::class, 'store'])->name('admin.training.store');
+        Route::put('/admin-training/{course}', [AdminTrainingController::class, 'update'])->name('admin.training.update');
+        Route::delete('/admin-training/{course}', [AdminTrainingController::class, 'destroy'])->name('admin.training.destroy');
+        Route::put('/admin-training/{course}/toggle-publish', [AdminTrainingController::class, 'togglePublish'])->name('admin.training.togglePublish');
+
+        // Training Lessons Management
+        Route::get('/admin-training/{course}/lessons', [AdminTrainingLessonController::class, 'index'])->name('admin.training.lessons.index');
+        Route::post('/admin-training/{course}/lessons', [AdminTrainingLessonController::class, 'store'])->name('admin.training.lessons.store');
+        Route::put('/admin-training/lessons/{lesson}', [AdminTrainingLessonController::class, 'update'])->name('admin.training.lessons.update');
+        Route::delete('/admin-training/lessons/{lesson}', [AdminTrainingLessonController::class, 'destroy'])->name('admin.training.lessons.destroy');
+        Route::put('/admin-training/lessons/{lesson}/toggle-publish', [AdminTrainingLessonController::class, 'togglePublish'])->name('admin.training.lessons.togglePublish');
+    }
 
     // Published Motifs Management (Admin Moderation)
     Route::prefix('admin-published-motifs')->name('admin.published-motifs.')->group(function () {
