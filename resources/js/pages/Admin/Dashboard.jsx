@@ -1,6 +1,6 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import AdminLayout from '@/layouts/AdminLayout';
-import { Users, Package, DollarSign, ShoppingCart, TrendingUp } from 'lucide-react';
+import { Users, Package, DollarSign, ShoppingCart, TrendingUp, CreditCard, CheckCircle, Clock, AlertCircle, UserX } from 'lucide-react';
 import { Line } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
@@ -67,6 +67,14 @@ export default function AdminDashboard({ stats, recent_users, recent_transaction
         },
     ];
 
+    const billingCards = [
+        { title: 'Aktif', value: stats.billing_active, icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200' },
+        { title: 'Trial', value: stats.billing_trial, icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200' },
+        { title: 'Expired', value: stats.billing_expired, icon: AlertCircle, color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' },
+        { title: 'Belum Berlangganan', value: stats.billing_no_sub, icon: UserX, color: 'text-gray-500', bg: 'bg-gray-50', border: 'border-gray-200' },
+    ];
+
+
     // Chart data
     const chartData = {
         labels: revenueTrend.map(item => item.date),
@@ -124,7 +132,7 @@ export default function AdminDashboard({ stats, recent_users, recent_transaction
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                     {statCards.map((stat, index) => (
                         <div key={index} className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
                             <div className="flex items-center justify-between mb-4">
@@ -137,6 +145,31 @@ export default function AdminDashboard({ stats, recent_users, recent_transaction
                             <p className="text-xs text-gray-500 mt-2">{stat.trend}</p>
                         </div>
                     ))}
+                </div>
+
+                {/* Billing Summary */}
+                <div className="mb-6 bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                            <CreditCard className="w-5 h-5 text-[#BA682A]" />
+                            <h2 className="text-lg font-bold text-gray-800">Status Berlangganan</h2>
+                        </div>
+                        <Link href="/admin-billing" className="text-sm text-[#BA682A] hover:underline font-medium">
+                            Kelola Billing →
+                        </Link>
+                    </div>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        {billingCards.map((card, i) => (
+                            <div key={i} className={`rounded-lg p-4 border ${card.bg} ${card.border}`}>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <card.icon className={`w-4 h-4 ${card.color}`} />
+                                    <span className={`text-xs font-semibold ${card.color}`}>{card.title}</span>
+                                </div>
+                                <p className={`text-3xl font-bold ${card.color}`}>{card.value ?? 0}</p>
+                                <p className="text-xs text-gray-400 mt-1">pengguna</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

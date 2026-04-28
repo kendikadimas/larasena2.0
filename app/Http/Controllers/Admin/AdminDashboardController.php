@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Motif;
 use App\Models\Design;
 use App\Models\Production;
+use App\Models\Subscription;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -23,6 +24,11 @@ class AdminDashboardController extends Controller
             'total_transactions' => Production::count(),
             'total_revenue' => (float) Production::where('payment_status', 'paid')->sum('total_price') ?: 0,
             'pending_transactions' => Production::where('payment_status', 'pending')->count(),
+            // Billing stats
+            'billing_active'  => Subscription::where('status', 'active')->where('subscription_ends_at', '>', now())->count(),
+            'billing_trial'   => Subscription::where('status', 'trial')->where('trial_ends_at', '>', now())->count(),
+            'billing_expired' => Subscription::where('status', 'payment_required')->count(),
+            'billing_no_sub'  => User::where('role', '!=', 'Admin')->doesntHave('subscription')->count(),
         ];
 
         $recent_users = User::where('role', '!=', 'Admin')

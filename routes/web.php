@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\AdminTransactionController;
 use App\Http\Controllers\Admin\AdminKonveksiController;
 use App\Http\Controllers\Admin\AdminTrainingController;
 use App\Http\Controllers\Admin\AdminTrainingLessonController;
+use App\Http\Controllers\Admin\AdminBillingController;
 
 // Konveksi Controllers
 use App\Http\Controllers\Konveksi\DashboardController as KonveksiDashboardController;
@@ -213,6 +214,10 @@ Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
         Route::delete('/admin-training/lessons/{lesson}', [AdminTrainingLessonController::class, 'destroy'])->name('admin.training.lessons.destroy');
         Route::put('/admin-training/lessons/{lesson}/toggle-publish', [AdminTrainingLessonController::class, 'togglePublish'])->name('admin.training.lessons.togglePublish');
     }
+
+    // Billing Management
+    Route::get('/admin-billing', [AdminBillingController::class, 'index'])->name('admin.billing.index');
+    Route::put('/admin-billing/{user}/subscription', [AdminBillingController::class, 'updateSubscription'])->name('admin.billing.updateSubscription');
 
     // Published Motifs Management (Admin Moderation)
     Route::prefix('admin-published-motifs')->name('admin.published-motifs.')->group(function () {

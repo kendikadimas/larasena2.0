@@ -1,5 +1,5 @@
 import { Link, usePage, router } from '@inertiajs/react';
-import { LayoutDashboard, Users, Package, DollarSign, LogOut, Menu, X, Store, GraduationCap, ImagePlus } from 'lucide-react';
+import { LayoutDashboard, Users, Package, DollarSign, LogOut, Menu, X, Store, GraduationCap, ImagePlus, CreditCard } from 'lucide-react';
 import { useState } from 'react';
 
 const SHOW_TRAINING_FEATURE = false;
@@ -12,6 +12,7 @@ export default function AdminLayout({ children }) {
     const navigation = [
         { name: 'Dashboard', href: '/admin-dashboard', icon: LayoutDashboard },
         { name: 'Pengguna', href: '/admin-users', icon: Users },
+        { name: 'Billing', href: '/admin-billing', icon: CreditCard },
         { name: 'Konveksi', href: '/admin-konveksi', icon: Store },
         { name: 'Motif', href: '/admin-motifs', icon: Package },
         { name: 'Verifikasi Batik', href: '/admin-published-motifs', icon: ImagePlus },
