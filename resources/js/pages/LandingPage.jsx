@@ -648,7 +648,16 @@ export default function LandingPage() {
 
       {/* Custom Animations (HANYA CSS YANG DIPERLUKAN) */}
       <style jsx>{`
-  /* Animasi scroll-right dan scroll-left dihapus karena tidak lagi digunakan */
+  @keyframes scroll-right {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-scroll-right {
+    animation: scroll-right 40s linear infinite;
+  }
+  .animate-scroll-right:hover {
+    animation-play-state: paused;
+  }
 
   .gallery-gradient-text {
     background: linear-gradient(135deg, #1A332F 0%, #2C5E54 45%, #8B6F47 100%);
@@ -689,97 +698,80 @@ export default function LandingPage() {
               </p>
             </div>
             {/* === QUOTES HORIZONTAL SCROLL === */}
-            <div className="relative fade-in-up w-full overflow-x-hidden overflow-y-visible">
+            <div className={`relative fade-in-up w-full overflow-x-hidden overflow-y-visible ${isVisible ? 'visible' : ''}`}>
               {/* Fade Edge */}
 
-              {/* Kontainer Quote dengan tinggi tetap */}
-              <div className="w-full h-[240px] relative overflow-visible">
+              {/* Kontainer Quote dengan tinggi tetap yang lebih rapi */}
+              <div className="w-full h-[250px] relative overflow-visible">
                 {(() => {
                   const testimonialData = [
                     {
                       quote:
-                        "Setelah kami menggunakan Larasena, sangat seru dalam membuat gambar bantik bisa menggunakan AI. Kami jadi lebih mudah dalam membuat motif batik sesuai imajinasi kami.",
+                        "Setelah kami menggunakan Larasena, sangat seru dalam membuat gambar batik bisa menggunakan AI. Kami jadi lebih mudah dalam membuat motif batik sesuai imajinasi kami.",
                       name: "Thalita, Dina, Tia",
                       role: "Siswi Kesenian SMP Persada Sokaraja",
-                      isKonveksi: true,
+                      avatar: "/images/icons/woman2.svg",
                     },
                     {
                       quote:
                         "Dengan adanya Larasena, kami dapat mengembangkan desain batik yang lebih kreatif dan unik terutama pada pembelajaran seni pada siswa siswi kami menjadi lebih interaktif karena adanya AI dan Membatik digital.",
                       name: "Mas Rey",
                       role: "Guru Kesenian SMP Persada Sokaraja",
-                      isKonveksi: true,
+                      avatar: "/images/icons/man1.svg",
                     },
                     {
                       quote:
                         "Melalui Larasena, dengan adanya AI, kami dapat mempercepat proses desain batik kami menjadi lebih efisien dan model batik yang dihasilkan juga lebih variatif.",
-                      name: " Bapak Anto Djamil",
+                      name: "Bapak Anto Djamil",
                       role: "Owner 'Batik Anto Djamil'",
-                      isKonveksi: false,
+                      avatar: "/images/icons/man2.svg",
                     },
                     {
                       quote:
                         "Harapanya, dengan Larasena kami dapat lebih mudah dalam mengelola produksi batik kami, serta memperluas jaringan pemasaran kami ke seluruh Indonesia.",
                       name: "Bapak Untung",
                       role: "Owner 'Batik Martadireja'",
-                      isKonveksi: false,
+                      avatar: "/images/icons/man1.svg",
                     },
                     {
                       quote:
                         "Akhirnya ada platform yang memikirkan efisiensi dari hulu ke hilir. mulai dari desain 3d modeling hingga produksi semua ada di Larasena.",
                       name: "Mba Nabila Rima",
                       role: "Tim Desain 'Batik Martadireja'",
-                      isKonveksi: true,
+                      avatar: "/images/icons/woman3.svg",
                     },
                   ];
                   const loopedData = [...testimonialData, ...testimonialData];
                   return (
-                    <div className="flex gap-8 animate-scroll-right hover:pause-animation absolute top-0 left-0 w-max">
+                    <div className="flex gap-8 animate-scroll-right absolute top-0 left-0 w-max">
                       {loopedData.map((item, index) => (
                         <div
                           key={index}
-                          className="flex-shrink-0 w-[19rem] md:w-[21rem] bg-[#FDFAF6] p-6 rounded-2xl shadow-md transition-all duration-300 border border-[#D9CCBF] hover:shadow-xl hover:border-[#C9B8A2]"
+                          className="flex-shrink-0 w-[20rem] md:w-[24rem] h-[210px] flex flex-col justify-between bg-white p-6 rounded-2xl shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-gray-100 transition-all duration-300 hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)] hover:-translate-y-1"
                         >
-                          <p className="text-gray-800 italic leading-relaxed mb-4 line-clamp-4">
-                            "{item.quote}"
-                          </p>
+                          <div>
+                            {/* Rating Stars (Optional but adds professional look) */}
+                            <div className="flex gap-1 mb-3">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <svg key={star} className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                              ))}
+                            </div>
+                            
+                            <p className="text-gray-700 leading-relaxed line-clamp-3 text-sm">
+                              "{item.quote}"
+                            </p>
+                          </div>
                           <div className="flex items-center">
-                            <div className="w-10 h-10 rounded-full bg-[#F5F0E8] flex items-center justify-center mr-3 flex-shrink-0">
-                              {item.isKonveksi ? (
-                                <svg
-                                  className="w-5 h-5 text-[#8B6F47]"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M19 21V10M19 10L12 3L5 10M19 10H5M21 21H3M12 21V14"
-                                  />
-                                </svg>
-                              ) : (
-                                <svg
-                                  className="w-6 h-6 text-[#8B6F47]"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={1.5}
-                                    d="M12 14l9-5-9-5-9 5 9 5zm0 0v6m0-6L3 9m9 5l9-5M3 9v6l9 5"
-                                  />
-                                </svg>
-                              )}
+                            <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-50 flex items-center justify-center mr-3 flex-shrink-0 border border-gray-100">
+                              <img src={item.avatar} alt={item.name} className="w-full h-full object-cover p-1" />
                             </div>
                             <div>
-                              <p className="font-semibold text-gray-900">
+                              <p className="font-bold text-gray-900 text-sm">
                                 {item.name}
                               </p>
-                              <p className="text-sm text-[#8B6F47] font-medium">
+                              <p className="text-xs text-gray-500 mt-0.5">
                                 {item.role}
                               </p>
                             </div>
