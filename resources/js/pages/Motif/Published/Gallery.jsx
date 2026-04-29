@@ -96,11 +96,24 @@ export default function Gallery({ motifs, user }) {
 
     return (
         <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #FBF8F1 0%, #F5F0E8 40%, #FBF8F1 100%)' }}>
-            <Head title="Batikpedia — Galeri Motif Batik Nusantara">
+            <Head>
+                <title>Batikpedia — Galeri Motif Batik Nusantara</title>
+                <meta name="description" content="Jelajahi keindahan dan filosofi ribuan motif batik dari seluruh Nusantara di Galeri Larasena. Temukan inspirasi warisan budaya Indonesia." />
+                
+                {/* Open Graph */}
+                <meta property="og:type" content="website" />
+                <meta property="og:title" content="Batikpedia — Galeri Motif Batik Nusantara" />
+                <meta property="og:description" content="Jelajahi keindahan dan filosofi ribuan motif batik dari seluruh Nusantara di Galeri Larasena. Temukan inspirasi warisan budaya Indonesia." />
+                
+                {/* Twitter */}
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:title" content="Batikpedia — Galeri Motif Batik Nusantara" />
+                <meta name="twitter:description" content="Jelajahi keindahan dan filosofi ribuan motif batik dari seluruh Nusantara di Galeri Larasena." />
+                
                 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
             </Head>
 
-            <style jsx>{`
+            <style>{`
                 * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
                 .serif { font-family: 'Playfair Display', Georgia, serif; }
                 .gradient-text {
