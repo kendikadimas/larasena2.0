@@ -1,8 +1,8 @@
 
 import { useState } from 'react';
 import UserLayout from '@/layouts/User/Layout';
-import { 
-  Search, 
+import {
+  Search,
   HelpCircle,
   X,
   Palette,
@@ -111,43 +111,43 @@ export default function Bantuan() {
   ];
 
   const categories = [
-    { 
-      name: 'Batik & Motif', 
+    {
+      name: 'Batik & Motif',
       icon: <Palette className="w-10 h-10" />,
       desc: 'Pelajari filosofi, jenis, dan cara merawat kain batik.',
       color: 'text-[#BA682A]',
       bg: 'bg-orange-50'
     },
-    { 
-      name: 'Layanan', 
+    {
+      name: 'Layanan',
       icon: <Clock className="w-10 h-10" />,
       desc: 'Informasi mengenai layanan custom dan kunjungan galeri.',
       color: 'text-blue-600',
       bg: 'bg-blue-50'
     },
-    { 
-      name: 'Konveksi', 
+    {
+      name: 'Konveksi',
       icon: <Package className="w-10 h-10" />,
       desc: 'Detail mengenai pesanan konveksi dan minimum order.',
       color: 'text-emerald-600',
       bg: 'bg-emerald-50'
     },
-    { 
-      name: 'Kemitraan', 
+    {
+      name: 'Kemitraan',
       icon: <Users className="w-10 h-10" />,
       desc: 'Syarat dan ketentuan menjadi mitra pemasok Larasena.',
       color: 'text-purple-600',
       bg: 'bg-purple-50'
     },
-    { 
-      name: 'Pembayaran', 
+    {
+      name: 'Pembayaran',
       icon: <CreditCard className="w-10 h-10" />,
       desc: 'Panduan metode pembayaran, cicilan, dan garansi.',
       color: 'text-rose-600',
       bg: 'bg-rose-50'
     },
-    { 
-      name: 'Pengiriman', 
+    {
+      name: 'Pengiriman',
       icon: <Truck className="w-10 h-10" />,
       desc: 'Opsi pengiriman domestik dan juga internasional.',
       color: 'text-teal-600',
@@ -157,7 +157,7 @@ export default function Bantuan() {
 
   const filteredFaq = faqData.filter(faq => {
     const matchesSearch = faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
+      faq.answer.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'Semua' || faq.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -169,16 +169,16 @@ export default function Bantuan() {
   return (
     <UserLayout title="Bantuan">
       <div className="min-h-screen bg-[#FBF8F1]">
-       
+
         {/* Discord-like Hero Section */}
         <div className="bg-[#1A332F] text-white pt-24 pb-32 relative overflow-hidden">
           {/* Subtle decorative background elements */}
           <div className="absolute top-10 left-10 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
           <div className="absolute bottom-10 right-20 w-48 h-48 bg-[#BA682A]/20 rounded-full blur-3xl"></div>
-          
+
           <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
             <h1 className="text-4xl md:text-5xl font-bold mb-8 font-serif tracking-wide">Pusat Bantuan</h1>
-            
+
             {/* Search Bar inside Hero */}
             <div className="relative max-w-2xl mx-auto shadow-2xl rounded-2xl bg-white p-2 flex items-center">
               <div className="pl-4 text-gray-400">
@@ -207,7 +207,7 @@ export default function Bantuan() {
         {!searchQuery && selectedCategory === 'Semua' && (
           <div className="max-w-7xl mx-auto px-4 -mt-16 relative z-20 pb-16">
             <div className="text-center mb-10 pt-4">
-              <h2 className="text-3xl font-bold text-gray-900 mb-3">Butuh bantuan? Kami siap membantu.</h2>
+              <h2 className="text-3xl font-bold text-white mb-3">Butuh bantuan? Kami siap membantu.</h2>
               <p className="text-gray-600 text-lg">
                 Pilih topik di bawah ini untuk menemukan jawaban yang Anda butuhkan.
               </p>
@@ -238,7 +238,7 @@ export default function Bantuan() {
               <h2 className="text-2xl font-bold text-gray-900">
                 {searchQuery ? `Hasil Pencarian: "${searchQuery}"` : `Topik: ${selectedCategory}`}
               </h2>
-              <button 
+              <button
                 onClick={() => {
                   setSelectedCategory('Semua');
                   setSearchQuery('');
