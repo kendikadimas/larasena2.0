@@ -46,7 +46,7 @@ class GoogleAuthController extends Controller
                 $newUser = User::create([
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
-                    'password' => Hash::make(uniqid()), // Random password since they use Google OAuth
+                    'password' => Hash::make(\Illuminate\Support\Str::random(32)), // Secure random password for OAuth users
                     'role' => 'General', // Default role for Google users
                     'badge' => 'community', // Default badge for General users
                     'email_verified_at' => now(), // Auto-verify since Google already verified

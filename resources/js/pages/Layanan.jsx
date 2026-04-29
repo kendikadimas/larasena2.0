@@ -1,12 +1,45 @@
-import { useState, useEffect } from 'react';
-import { Link, Head } from '@inertiajs/react';
+import { useState } from 'react';
+import { Head } from '@inertiajs/react';
+import { Mail, Phone, MapPin, MessageCircle, ChevronDown } from 'lucide-react';
 import LarasenaCTA from '@/components/LarasenaCTA';
 import LarasenaFooter from '@/components/LarasenaFooter';
 import LarasenaNavbar from '@/components/LarasenaNavbar';
 
+// ============================================================
+// Batik pattern SVG — dipakai di Hero background (sangat tipis)
+// ============================================================
+const BatikPatternHero = () => (
+    <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.045 }}>
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <pattern id="batik-layanan-hero" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+                    <path d="M15,15 L65,15 L65,65 L15,65 Z" fill="none" stroke="#1A332F" strokeWidth="1.5" />
+                    <path d="M25,25 L55,25 L55,55 L25,55 Z" fill="none" stroke="#1A332F" strokeWidth="1" />
+                    <circle cx="40" cy="40" r="10" fill="none" stroke="#1A332F" strokeWidth="1" />
+                    <path d="M32,32 L48,48 M48,32 L32,48" stroke="#C9A84C" strokeWidth="0.7" opacity="0.7" />
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#batik-layanan-hero)" />
+        </svg>
+    </div>
+);
+
+// ============================================================
+// Ornament pemisah section
+// ============================================================
+const SectionDivider = () => (
+    <div className="flex items-center justify-center gap-4 my-2">
+        <div className="flex-1 h-px max-w-16" style={{ background: 'linear-gradient(90deg, transparent, #C9A84C)' }} />
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="2.5" fill="#C9A84C" opacity="0.7" />
+            <circle cx="8" cy="8" r="5.5" stroke="#C9A84C" strokeWidth="0.8" opacity="0.35" fill="none" />
+        </svg>
+        <div className="flex-1 h-px max-w-16" style={{ background: 'linear-gradient(90deg, #C9A84C, transparent)' }} />
+    </div>
+);
+
 export default function Layanan({ user }) {
     const [openFaq, setOpenFaq] = useState(null);
-    
 
     const faqData = [
         {
@@ -15,106 +48,201 @@ export default function Layanan({ user }) {
         },
         {
             q: "Apa masalah utama yang ingin diselesaikan Larasena?",
-            a: "Kami fokus mengatasi krisis regenerasi pengrajin batik. Data APPBI menunjukkan jumlah pengrajin nasional menyusut drastis dari 151.565 orang pada 2020 menjadi 37.914 pada 2023. Larasena bertujuan menarik generasi muda (yang saat ini hanya 12%) untuk terlibat melalui teknologi yang modern."
+            a: "Kami fokus mengatasi krisis regenerasi pengrajin batik. Larasena bertujuan menarik generasi muda untuk terlibat melalui teknologi modern yang mudah diakses dan inovatif."
         },
         {
             q: "Bagaimana cara kerja fitur AI Generator Batik?",
-            a: "Anda dapat membuat desain batik menggunakan generator AI yang terintegrasi dengan Hugging Face API. Fitur ini memanfaatkan kecerdasan buatan untuk menghasilkan motif batik otomatis berdasarkan parameter atau deskripsi yang Anda tentukan."
+            a: "Anda dapat membuat desain batik menggunakan generator AI yang terintegrasi dengan teknologi terkini. Fitur ini memanfaatkan kecerdasan buatan untuk menghasilkan motif batik otomatis berdasarkan parameter atau deskripsi yang Anda tentukan."
         },
         {
             q: "Apakah saya bisa melihat desain saya di produk jadi?",
-            a: "Ya. Platform kami dilengkapi fitur 3D Modelling Products menggunakan Three.js. Setelah Anda selesai mendesain di kanvas, Anda bisa melihat preview desain Anda secara langsung pada model 3D seperti kemeja, kaos, atau gaun."
+            a: "Ya. Platform kami dilengkapi fitur 3D Modelling. Setelah Anda selesai mendesain di kanvas, Anda bisa melihat preview desain Anda secara langsung pada model 3D seperti kemeja, kaos, atau gaun."
         },
         {
             q: "Apakah Larasena yang akan mencetak kain batik saya?",
-            a: "Tidak secara langsung. Larasena adalah platform untuk perencanaan dan desain produksi. Namun, kami memiliki fitur 'Konveksi Bermitra' yang memungkinkan Anda terhubung dan membuat pesanan produksi langsung ke mitra konveksi terverifikasi yang ada di platform kami."
-        },
-        {
-            q: "Saya tidak tahu banyak tentang batik. Bisakah saya belajar di sini?",
-            a: "Tentu. Kami memiliki fitur 'Galeri Nusantara' yang merupakan repositori untuk Anda menjelajahi koleksi motif batik dari berbagai daerah. Anda bisa mempelajari sejarah, filosofi, dan makna di balik setiap motif sebagai inspirasi desain Anda."
-        },
-        {
-            q: "Bagaimana Larasena membantu industri konveksi?",
-            a: "Kami menyediakan platform yang menghubungkan desainer dengan konveksi melalui sistem 'Konveksi Bermitra'. Konveksi dapat menerima pesanan produksi langsung dari desainer, mengelola pesanan, dan melacak status produksi secara real-time."
-        },
-        {
-            q: "Apakah ada biaya untuk menggunakan Larasena?",
-            a: "Pendaftaran dan penggunaan fitur dasar Larasena gratis. Namun, untuk layanan produksi melalui konveksi mitra, biaya akan disesuaikan dengan kesepakatan antara Anda dan konveksi yang dipilih."
+            a: "Tidak secara langsung. Larasena adalah platform untuk perencanaan dan desain produksi. Namun, kami memiliki fitur 'Konveksi Bermitra' yang memungkinkan Anda terhubung dan membuat pesanan produksi langsung ke mitra konveksi terverifikasi."
         },
         {
             q: "Bagaimana cara memulai menggunakan Larasena?",
             a: "Anda cukup mendaftar akun gratis, kemudian dapat langsung mengakses fitur AI Generator untuk membuat desain batik, melihat galeri inspirasi, atau menghubungi konveksi mitra untuk produksi."
-        },
-        {
-            q: "Apakah desain saya akan dilindungi?",
-            a: "Ya. Semua desain yang Anda buat tersimpan di akun Anda dan hanya Anda yang memiliki akses penuh. Anda juga dapat memilih untuk mempublikasikan desain ke galeri atau menyimpannya sebagai private."
         }
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-orange-50/30 to-gray-50">
-            <Head title="Layanan -" />
-            
+        <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #FBF8F1 0%, #F5F0E8 100%)' }}>
+            <Head title="Layanan & Bantuan -">
+                <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+            </Head>
+
+            <style jsx>{`
+                * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+                .serif { font-family: 'Playfair Display', Georgia, serif; }
+                .gradient-text {
+                    background: linear-gradient(135deg, #1A332F 0%, #2C5E54 45%, #8B6F47 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+                .hover-glow { transition: box-shadow 0.4s ease; }
+                .hover-glow:hover { box-shadow: 0 0 22px rgba(139, 111, 71, 0.15); }
+                /* Fade animations */
+                @keyframes fade-up {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .fade-up { animation: fade-up 0.7s ease-out both; }
+                .stagger-1 { animation-delay: 0.05s; }
+                .stagger-2 { animation-delay: 0.1s; }
+                .stagger-3 { animation-delay: 0.15s; }
+            `}</style>
+
             <LarasenaNavbar user={user} />
 
-            {/* FAQ Section */}
-            <section className="px-8 md:px-16 lg:px-24 py-20 bg-gradient-to-b from-gray-50 to-amber-50/30 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-80 h-80 bg-amber-200/20 rounded-full blur-3xl opacity-50"></div>
-                <div className="absolute bottom-0 right-0 w-72 h-72 bg-orange-100/20 rounded-full blur-3xl opacity-50"></div>
-                
-                <div className="text-center mb-16 relative z-10">
-                        <p className="text-sm font-semibold text-amber-600 tracking-wider uppercase mb-3">
-                            BANTUAN
+            {/* ===== HERO SECTION ===== */}
+            <section className="relative overflow-hidden pt-12 pb-20" style={{ background: 'linear-gradient(135deg, #FBF8F1 0%, #F0EBE0 60%, #F5F0E8 100%)' }}>
+                <BatikPatternHero />
+
+                {/* Soft glow decorations */}
+                <div className="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none" style={{ background: 'radial-gradient(ellipse, rgba(201,168,76,0.08) 0%, transparent 70%)' }} />
+                <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full pointer-events-none" style={{ background: 'radial-gradient(ellipse, rgba(44,94,84,0.06) 0%, transparent 70%)' }} />
+
+                <div className="px-8 md:px-16 lg:px-24 relative z-10">
+                    <div className="max-w-3xl mx-auto text-center">
+                        <p className="text-xs font-semibold tracking-[0.24em] uppercase mb-4 fade-up stagger-1" style={{ color: '#8B6F47' }}>
+                            Pusat Bantuan
                         </p>
-                        <h3 className="text-3xl md:text-5xl font-serif font-bold text-gray-900 mb-6">
-                            Pertanyaan yang <span className="text-amber-700">Sering Diajukan</span>
-                        </h3>
-                        <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-                            Menemukan jawaban yang Anda butuhkan tentang platform Larasena, dari AI hingga produksi.
+                        <h1 className="serif font-bold mb-4 fade-up stagger-2 leading-tight"
+                            style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)', color: '#1A332F', letterSpacing: '-0.02em' }}>
+                            Layanan & <span className="gradient-text">Informasi</span>
+                        </h1>
+                        <SectionDivider />
+                        <p className="text-base md:text-lg mt-6 mb-8 fade-up stagger-3 max-w-2xl mx-auto"
+                            style={{ color: '#6F6358', lineHeight: 1.8 }}>
+                            Temukan jawaban untuk pertanyaan umum mengenai Larasena atau hubungi tim kami untuk bantuan lebih lanjut terkait pembuatan motif, produksi, maupun kemitraan.
                         </p>
                     </div>
+                </div>
 
-                    <div className="max-w-7xl mx-auto space-y-5 relative z-10">
-                        {faqData.map((item, index) => (
-                            <div 
-                                key={index} 
-                                className="bg-white rounded-2xl border border-amber-100/70 overflow-hidden transition-all duration-300 hover:border-amber-200 hover:shadow-lg hover-glow"
-                            >
-                                <button
-                                    onClick={() => setOpenFaq(openFaq === index ? null : index)}
-                                    className="flex justify-between items-center w-full p-6 text-left"
-                                >
-                                    <span className="text-base md:text-lg font-semibold text-gray-900">
-                                        {item.q}
-                                    </span>
-                                    
-                                    <div className="w-6 h-6 flex-shrink-0 flex items-center justify-center text-amber-600">
-                                        <svg
-                                            className={`w-5 h-5 transition-transform duration-300 ${openFaq === index ? 'transform rotate-180' : ''}`}
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </div>
-                                </button>
-                                
+                {/* Wave bottom separator */}
+                <div className="absolute bottom-0 left-0 right-0 overflow-hidden" style={{ height: '40px' }}>
+                    <svg viewBox="0 0 1200 40" preserveAspectRatio="none" className="w-full h-full" style={{ fill: '#FBF8F1' }}>
+                        <path d="M0,20 C200,40 400,0 600,20 C800,40 1000,0 1200,20 L1200,40 L0,40 Z" opacity="0.5" />
+                        <path d="M0,30 C200,10 400,40 600,30 C800,10 1000,40 1200,30 L1200,40 L0,40 Z" />
+                    </svg>
+                </div>
+            </section>
+
+            <div className="px-8 md:px-16 lg:px-24 py-12">
+                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+
+                    {/* ===== FAQ SECTION ===== */}
+                    <div className="lg:col-span-7">
+                        <div className="mb-8">
+                            <h2 className="serif text-2xl font-bold mb-2" style={{ color: '#1A332F' }}>Pertanyaan yang Sering Diajukan</h2>
+                            <p className="text-sm" style={{ color: '#8B6F47' }}>Informasi dasar mengenai platform dan fitur Larasena.</p>
+                        </div>
+
+                        <div className="space-y-4">
+                            {faqData.map((item, index) => (
                                 <div
-                                    className={`overflow-hidden transition-all duration-500 ease-in-out ${openFaq === index ? 'max-h-screen' : 'max-h-0'}`}
+                                    key={index}
+                                    className="bg-white/80 backdrop-blur-sm rounded-2xl border transition-all duration-300 hover-glow"
+                                    style={{ borderColor: openFaq === index ? '#1A332F' : '#D9CCBF' }}
                                 >
-                                    <div className="p-6 pt-0 text-gray-600 leading-relaxed">
-                                        <p>{item.a}</p>
+                                    <button
+                                        onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                                        className="flex justify-between items-center w-full p-6 text-left"
+                                    >
+                                        <span className="text-base font-semibold" style={{ color: '#1A332F' }}>
+                                            {item.q}
+                                        </span>
+                                        <div className="w-6 h-6 flex-shrink-0 flex items-center justify-center transition-transform duration-300" style={{ color: '#8B6F47', transform: openFaq === index ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                                            <ChevronDown className="w-5 h-5" />
+                                        </div>
+                                    </button>
+
+                                    <div className={`overflow-hidden transition-all duration-500 ease-in-out ${openFaq === index ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                        <div className="p-6 pt-0 leading-relaxed text-sm" style={{ color: '#5A4F3E' }}>
+                                            <p>{item.a}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* ===== CONTACT US SECTION ===== */}
+                    <div className="lg:col-span-5">
+                        <div className="sticky top-24">
+                            <div className="mb-8">
+                                <h2 className="serif text-2xl font-bold mb-2" style={{ color: '#1A332F' }}>Hubungi Kami</h2>
+                                <p className="text-sm" style={{ color: '#8B6F47' }}>Butuh bantuan lebih lanjut? Tim kami siap membantu.</p>
+                            </div>
+
+                            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-[#D9CCBF] shadow-sm relative overflow-hidden">
+                                {/* Decorative circle */}
+                                <div className="absolute -bottom-16 -right-16 w-48 h-48 rounded-full" style={{ background: 'radial-gradient(ellipse, rgba(44,94,84,0.08) 0%, transparent 70%)' }}></div>
+
+                                <div className="space-y-8 relative z-10">
+                                    <div className="flex items-start gap-4">
+                                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 border border-[#E9E0D4] bg-[#F5F0E8]">
+                                            <MessageCircle className="w-5 h-5" style={{ color: '#1A332F' }} />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold mb-1" style={{ color: '#1A332F' }}>WhatsApp Bantuan</h4>
+                                            <p className="text-sm mb-2" style={{ color: '#6F6358' }}>Layanan cepat untuk kendala teknis.</p>
+                                            <a href="https://wa.me/6285814174267" target="_blank" rel="noopener noreferrer" className="inline-flex font-semibold text-sm hover:underline transition-all" style={{ color: '#8B6F47' }}>
+                                                +62 858-1417-4267
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-start gap-4">
+                                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 border border-[#E9E0D4] bg-[#F5F0E8]">
+                                            <Mail className="w-5 h-5" style={{ color: '#1A332F' }} />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold mb-1" style={{ color: '#1A332F' }}>Email Partnership</h4>
+                                            <p className="text-sm mb-2" style={{ color: '#6F6358' }}>Untuk kerjasama konveksi dan bisnis.</p>
+                                            <a href="mailto:halo@larasena.com" className="inline-flex font-semibold text-sm hover:underline transition-all" style={{ color: '#8B6F47' }}>
+                                                halo@larasena.com
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-start gap-4">
+                                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 border border-[#E9E0D4] bg-[#F5F0E8]">
+                                            <MapPin className="w-5 h-5" style={{ color: '#1A332F' }} />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold mb-1" style={{ color: '#1A332F' }}>Kantor Pusat</h4>
+                                            <p className="text-sm leading-relaxed" style={{ color: '#6F6358' }}>
+                                                Jl. Veteran No. 19<br />
+                                                Kecamatan Purwokerto Selatan, Kabupaten Banyumas<br />
+                                                Jawa Tengah 53141
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        ))}
-                    </div>
-            </section>
 
-            <LarasenaCTA user={user} dashboardRoute={route('dashboard')} />
+                            {/* Extra Info Box */}
+                            <div className="mt-6 p-5 rounded-2xl border border-[#D9CCBF] bg-[#FBF8F1] flex gap-3 items-start">
+                                <div className="mt-1 w-2 h-2 rounded-full flex-shrink-0" style={{ background: '#C9A84C' }}></div>
+                                <p className="text-xs leading-relaxed" style={{ color: '#6F6358' }}>
+                                    Jam operasional layanan pelanggan kami adalah Senin—Jumat, 09:00 - 17:00 WIB. Pertanyaan di luar jam kerja akan dibalas pada hari kerja berikutnya.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-20">
+                    <LarasenaCTA user={user} dashboardRoute={route('dashboard')} />
+                </div>
+            </div>
+
             <LarasenaFooter />
         </div>
-        
     );
 }

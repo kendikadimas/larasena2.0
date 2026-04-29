@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, router, Head } from '@inertiajs/react';
-import { Heart, Eye, User, Share2, Facebook, Twitter, Copy, Check, Calendar, ArrowLeft, MapPin } from 'lucide-react';
+import { Heart, Eye, Share2, Facebook, Twitter, Copy, Check, Calendar, ArrowLeft, MapPin, Store, Users, Award } from 'lucide-react';
+import LarasenaNavbar from '@/components/LarasenaNavbar';
+import LarasenaFooter from '@/components/LarasenaFooter';
 
 export default function Show({ motif, relatedMotifs, user }) {
     const [copied, setCopied] = useState(false);
@@ -9,17 +11,13 @@ export default function Show({ motif, relatedMotifs, user }) {
 
     const handleLike = () => {
         if (!user) {
-            // Redirect to login if not authenticated
             router.visit('/login');
             return;
         }
-        
-        // Toggle like for authenticated users
         router.post(`/motif/${motif.id}/like`, {}, {
             preserveScroll: true,
             preserveState: true,
             onSuccess: () => {
-                // Immediately reload motif data
                 router.reload({ only: ['motif'], preserveScroll: true });
             }
         });
@@ -28,7 +26,6 @@ export default function Show({ motif, relatedMotifs, user }) {
     const handleShare = (platform) => {
         const encodedUrl = encodeURIComponent(shareUrl);
         const encodedText = encodeURIComponent(shareText);
-        
         let url = '';
         switch(platform) {
             case 'facebook':
@@ -41,10 +38,7 @@ export default function Show({ motif, relatedMotifs, user }) {
                 url = `https://wa.me/?text=${encodedText} ${encodedUrl}`;
                 break;
         }
-        
-        if (url) {
-            window.open(url, '_blank', 'width=600,height=400');
-        }
+        if (url) window.open(url, '_blank', 'width=600,height=400');
     };
 
     const handleCopyLink = () => {
@@ -54,136 +48,108 @@ export default function Show({ motif, relatedMotifs, user }) {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-orange-50/30 to-gray-50">
+        <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #FBF8F1 0%, #F5F0E8 100%)' }}>
             <Head title={motif.title}>
-                <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
+                <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
             </Head>
-            
+
             <style jsx>{`
-                * {
-                    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+                .serif { font-family: 'Playfair Display', Georgia, serif; }
+                .gradient-text {
+                    background: linear-gradient(135deg, #1A332F 0%, #2C5E54 45%, #8B6F47 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                }
+                .hover-lift { transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+                .hover-lift:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(26, 51, 47, 0.12); }
+                .hover-glow { transition: box-shadow 0.4s ease; }
+                .hover-glow:hover { box-shadow: 0 0 20px rgba(139, 111, 71, 0.2); }
+                .batik-border {
+                    position: relative;
+                    padding-left: 16px;
+                }
+                .batik-border::before {
+                    content: '';
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    bottom: 0;
+                    width: 3px;
+                    background: linear-gradient(180deg, #1A332F, #C9A84C, #1A332F);
+                    border-radius: 4px;
                 }
             `}</style>
-            
-            {/* ===== NAVBAR - Same as Gallery ===== */}
-            {/* Logo & Auth Button - Scrolls Away */}
-            <div className="relative w-full py-4 bg-transparent">
-                <div className="px-8 md:px-16 lg:px-24 flex justify-between items-center">
-                    <Link href="/" className="flex-shrink-0 flex items-center transform hover:scale-105 transition-transform duration-300">
-                        <img 
-                            src="/images/larasena-icon.svg" 
-                            alt="Larasena Logo" 
-                            className="h-12 w-auto"
-                        />
-                        <span className="ml-3 font-serif text-lg font-semibold text-amber-700 tracking-tight lowercase">larasena</span>
-                    </Link>
-                    
-                    {/* Auth Button - Desktop (Scrolls Away) */}
-                    <div className="flex items-center gap-3">
-                        {user ? (
-                            <Link
-                                href={route('dashboard')}
-                                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                            >
-                                Dashboard
-                            </Link>
-                        ) : (
-                            <Link
-                                href={route('login')}
-                                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                            >
-                                Masuk
-                            </Link>
-                        )}
-                    </div>
-                </div>
-            </div>
 
-            {/* Navigation Menu - Fixed Centered */}
-            <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
-                <div className="flex items-center gap-8 px-8 py-3 rounded-3xl bg-white/90 backdrop-blur-lg border border-amber-100 shadow-lg">
-                    <Link href="/" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
-                        Beranda
-                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
-                    </Link>
-                    <Link href={route('published-motifs.gallery')} className="font-medium transition-all duration-300 relative group text-base text-amber-700">
-                        Batikpedia
-                        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-600"></span>
-                    </Link>
-                    <Link href="/layanan" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
-                        Layanan
-                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
-                    </Link>
-                </div>
-            </nav>
+            <LarasenaNavbar user={user} />
 
             <div className="px-8 md:px-16 lg:px-24 py-8">
                 {/* Back Button */}
                 <Link
                     href="/galeri-motif"
-                    className="inline-flex items-center gap-2 text-gray-600 hover:text-[#BA682A] mb-8 transition-colors"
+                    className="inline-flex items-center gap-2 mb-8 transition-all duration-300 group"
+                    style={{ color: '#8B6F47' }}
                 >
-                    <ArrowLeft className="w-5 h-5" />
-                    <span className="font-medium">Kembali ke Galeri</span>
+                    <span className="w-8 h-8 rounded-full border border-[#D9CCBF] flex items-center justify-center group-hover:border-[#1A332F] group-hover:bg-white transition-all">
+                        <ArrowLeft className="w-4 h-4 group-hover:text-[#1A332F] transition-colors" />
+                    </span>
+                    <span className="font-medium text-sm group-hover:text-[#1A332F] transition-colors">Kembali ke Galeri</span>
                 </Link>
 
-                {/* Title & Profile Creator */}
+                {/* Title & Creator */}
                 <div className="mb-8">
-                    {/* Title & Origin Badge */}
-                    <div className="mb-4 flex items-start justify-between">
-                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{motif.title}</h1>
-                        <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#BA682A]/10 to-[#D2691E]/10 border border-[#BA682A]/20 rounded-xl">
-                            <MapPin className="w-5 h-5 text-[#BA682A]" />
-                            <span className="text-base font-semibold text-gray-900">
+                    <div className="mb-4 flex items-start justify-between gap-4">
+                        <h1 className="serif text-3xl md:text-5xl font-bold leading-tight" style={{ color: '#1A332F', letterSpacing: '-0.02em' }}>
+                            {motif.title}
+                        </h1>
+                        <div className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-2xl border border-[#D9CCBF] bg-white/80 backdrop-blur-sm">
+                            <MapPin className="w-4 h-4" style={{ color: '#8B6F47' }} />
+                            <span className="text-sm font-semibold" style={{ color: '#1A332F' }}>
                                 {motif.origin || 'Indonesia'}
                             </span>
                         </div>
                     </div>
 
-                    {/* Profile & Stats Section */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#BA682A] to-[#D2691E] flex items-center justify-center text-white font-bold overflow-hidden ring-2 ring-gray-100">
+                    {/* Creator & Stats */}
+                    <div className="flex items-center justify-between flex-wrap gap-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#1A332F] to-[#2C5E54] flex items-center justify-center text-white font-bold overflow-hidden ring-2 ring-[#D9CCBF]">
                                 {motif.user.profile_photo_url ? (
-                                    <img
-                                        src={motif.user.profile_photo_url}
-                                        alt={motif.user.name}
-                                        className="w-full h-full object-cover"
-                                    />
+                                    <img src={motif.user.profile_photo_url} alt={motif.user.name} className="w-full h-full object-cover" />
                                 ) : (
                                     <span className="text-sm">{motif.user.name.charAt(0).toUpperCase()}</span>
                                 )}
                             </div>
                             <div>
-                                <div className="text-sm font-semibold text-gray-900">
-                                    {motif.user.name}
-                                </div>
-                                <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                                <div className="text-sm font-semibold" style={{ color: '#1A332F' }}>{motif.user.name}</div>
+                                <div className="flex items-center gap-1.5 text-xs" style={{ color: '#8B6F47' }}>
                                     <Calendar className="w-3 h-3" />
                                     <span>{motif.published_at}</span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Stats & Like Button */}
+                        {/* Stats & Like */}
                         <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-4 text-gray-600">
+                            <div className="flex items-center gap-4" style={{ color: '#6F6358' }}>
                                 <div className="flex items-center gap-1.5">
-                                    <Eye className="w-5 h-5" />
-                                    <span className="font-semibold">{motif.views_count}</span>
+                                    <Eye className="w-4 h-4" />
+                                    <span className="text-sm font-medium">{motif.views_count}</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
-                                    <Heart className={`w-5 h-5 ${motif.is_liked_by_user ? 'fill-current text-red-500' : ''}`} />
-                                    <span className="font-semibold">{motif.likes_count}</span>
+                                    <Heart className={`w-4 h-4 ${motif.is_liked_by_user ? 'fill-current text-rose-500' : ''}`} />
+                                    <span className="text-sm font-medium">{motif.likes_count}</span>
                                 </div>
                             </div>
                             <button
                                 onClick={handleLike}
-                                className={`px-5 py-2.5 rounded-xl font-semibold transition-all flex items-center gap-2 ${
+                                className={`px-5 py-2.5 rounded-2xl font-semibold text-sm transition-all duration-300 flex items-center gap-2 hover:scale-105 ${
                                     motif.is_liked_by_user
-                                        ? 'bg-red-500 text-white hover:bg-red-600'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        ? 'bg-rose-500 text-white shadow-lg'
+                                        : 'bg-white border border-[#D9CCBF] hover:border-[#1A332F] hover:shadow-md'
                                 }`}
+                                style={motif.is_liked_by_user ? {} : { color: '#1A332F' }}
                             >
                                 <Heart className={`w-4 h-4 ${motif.is_liked_by_user ? 'fill-current' : ''}`} />
                                 {motif.is_liked_by_user ? 'Disukai' : 'Suka'}
@@ -192,9 +158,19 @@ export default function Show({ motif, relatedMotifs, user }) {
                     </div>
                 </div>
 
-                {/* Main Image - Full Width */}
-                <div className="mb-8">
-                    <div className="aspect-[16/10] rounded-2xl overflow-hidden bg-gray-50">
+                {/* Ornamen divider */}
+                <div className="flex items-center gap-4 mb-8">
+                    <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg, transparent, #D9CCBF)' }} />
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="3" fill="#C9A84C" opacity="0.6" />
+                        <circle cx="12" cy="12" r="7" stroke="#C9A84C" strokeWidth="1" opacity="0.3" fill="none" />
+                    </svg>
+                    <div className="flex-1 h-px" style={{ background: 'linear-gradient(90deg, #D9CCBF, transparent)' }} />
+                </div>
+
+                {/* Main Image */}
+                <div className="mb-10">
+                    <div className="aspect-[16/9] rounded-3xl overflow-hidden shadow-2xl border border-[#D9CCBF]/50 hover-glow">
                         <img
                             src={motif.image_url}
                             alt={motif.title}
@@ -203,46 +179,57 @@ export default function Show({ motif, relatedMotifs, user }) {
                     </div>
                 </div>
 
-                {/* Philosophy - Below Image */}
-                <div className=" mb-12">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Filosofi Motif</h2>
-                    <p className="text-gray-700 leading-relaxed text-center text-lg whitespace-pre-wrap">
-                        {motif.philosophy}
-                    </p>
+                {/* Philosophy */}
+                <div className="max-w-3xl mx-auto mb-12">
+                    <h2 className="serif text-2xl font-bold mb-6 text-center" style={{ color: '#1A332F' }}>
+                        Filosofi Motif
+                    </h2>
+                    <div className="relative bg-white/70 backdrop-blur-sm rounded-3xl p-8 border border-[#D9CCBF]/60 shadow-sm">
+                        {/* decorative quote mark */}
+                        <svg className="absolute top-6 left-8 w-8 h-8 opacity-10" viewBox="0 0 32 32" fill="#1A332F">
+                            <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.648-7.104 6.624-9.024L25.864 4z"/>
+                        </svg>
+                        <p className="text-lg leading-relaxed text-center italic" style={{ color: '#5A4F3E', lineHeight: 1.9 }}>
+                            {motif.philosophy}
+                        </p>
+                    </div>
                 </div>
 
-                {/* Share Section - Minimal */}
-                <div className="mb-16 pb-16 border-b border-gray-200">
-                    <h3 className="text-lg font-bold text-gray-900 mb-4">Bagikan Motif</h3>
+                {/* Share Section */}
+                <div className="mb-16 pb-16 border-b" style={{ borderColor: '#D9CCBF' }}>
+                    <h3 className="text-sm font-semibold uppercase tracking-[0.15em] mb-4" style={{ color: '#8B6F47' }}>
+                        Bagikan Motif
+                    </h3>
                     <div className="flex flex-wrap gap-3">
                         <button
                             onClick={() => handleShare('facebook')}
-                            className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors flex items-center gap-2"
+                            className="px-5 py-2.5 bg-blue-600 text-white rounded-2xl font-medium hover:bg-blue-700 transition-all hover:scale-105 flex items-center gap-2 text-sm"
                         >
                             <Facebook className="w-4 h-4" />
                             Facebook
                         </button>
                         <button
                             onClick={() => handleShare('twitter')}
-                            className="px-5 py-2.5 bg-sky-500 text-white rounded-xl font-medium hover:bg-sky-600 transition-colors flex items-center gap-2"
+                            className="px-5 py-2.5 bg-sky-500 text-white rounded-2xl font-medium hover:bg-sky-600 transition-all hover:scale-105 flex items-center gap-2 text-sm"
                         >
                             <Twitter className="w-4 h-4" />
                             Twitter
                         </button>
                         <button
                             onClick={() => handleShare('whatsapp')}
-                            className="px-5 py-2.5 bg-green-500 text-white rounded-xl font-medium hover:bg-green-600 transition-colors flex items-center gap-2"
+                            className="px-5 py-2.5 bg-emerald-500 text-white rounded-2xl font-medium hover:bg-emerald-600 transition-all hover:scale-105 flex items-center gap-2 text-sm"
                         >
                             <Share2 className="w-4 h-4" />
                             WhatsApp
                         </button>
                         <button
                             onClick={handleCopyLink}
-                            className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors flex items-center gap-2"
+                            className="px-5 py-2.5 rounded-2xl font-medium transition-all hover:scale-105 flex items-center gap-2 text-sm border border-[#D9CCBF] bg-white/80 hover:bg-white hover:border-[#1A332F]"
+                            style={{ color: '#1A332F' }}
                         >
                             {copied ? (
                                 <>
-                                    <Check className="w-4 h-4 text-green-600" />
+                                    <Check className="w-4 h-4 text-emerald-600" />
                                     Tersalin!
                                 </>
                             ) : (
@@ -257,72 +244,94 @@ export default function Show({ motif, relatedMotifs, user }) {
 
                 {/* Related Motifs */}
                 {relatedMotifs && relatedMotifs.length > 0 && (
-                    <div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-6">Motif Lainnya</h2>
+                    <div className="mb-16">
+                        <div className="flex items-center justify-between mb-8">
+                            <div>
+                                <p className="text-xs font-semibold tracking-[0.2em] uppercase mb-1" style={{ color: '#8B6F47' }}>Koleksi Lainnya</p>
+                                <h2 className="serif text-2xl font-bold" style={{ color: '#1A332F' }}>Motif Terkait</h2>
+                            </div>
+                            <Link
+                                href="/galeri-motif"
+                                className="inline-flex items-center gap-2 text-sm font-medium transition-all hover:gap-3 group"
+                                style={{ color: '#1A332F' }}
+                            >
+                                Lihat Semua
+                                <span className="w-7 h-7 rounded-full border border-[#D9CCBF] flex items-center justify-center group-hover:border-[#1A332F] group-hover:bg-white transition-all">
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </span>
+                            </Link>
+                        </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {relatedMotifs.map((related) => (
-                                <div key={related.id} className="group">
-                                    <Link href={route('published-motifs.show', related.slug)}>
-                                        <div className="relative rounded-2xl overflow-hidden transition-all duration-300">
-                                            {/* Image Container */}
-                                            <div className="relative aspect-[4/3] overflow-hidden bg-gray-50">
-                                                <img
-                                                    src={related.image_url}
-                                                    alt={related.title}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                                />
-                                                
-                                                {/* Origin Badge - Top Left */}
-                                                <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full shadow-lg">
-                                                    <MapPin className="w-3.5 h-3.5 text-[#BA682A]" />
-                                                    <span className="text-xs font-semibold text-gray-700">
-                                                        {related.origin || 'Indonesia'}
-                                                    </span>
-                                                </div>
-
-                                                {/* Nama Batik Overlay - Muncul on Hover */}
-                                                <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 via-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                    <h3 className="text-white font-bold text-base line-clamp-2">
-                                                        {related.title}
-                                                    </h3>
-                                                </div>
+                                <Link key={related.id} href={route('published-motifs.show', related.slug)}>
+                                    <div className="relative rounded-2xl overflow-hidden transition-all duration-300">
+                                        <div className="relative aspect-[4/3] overflow-hidden bg-gray-50">
+                                            <img
+                                                src={related.image_url}
+                                                alt={related.title}
+                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                            />
+                                            <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full">
+                                                <MapPin className="w-3.5 h-3.5 text-[#BA682A]" />
+                                                <span className="text-xs font-semibold text-gray-700">
+                                                    {related.origin || 'Indonesia'}
+                                                </span>
                                             </div>
-
-                                            {/* Card Footer - Stats Only */}
-                                            <div className="pt-3">
-                                                <div className="flex items-center gap-4 text-gray-600">
-                                                    <div className="flex items-center gap-1">
-                                                        <Eye className="w-4 h-4" />
-                                                        <span className="text-xs font-medium">{related.views_count}</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-1">
-                                                        <Heart className="w-4 h-4" />
-                                                        <span className="text-xs font-medium">{related.likes_count}</span>
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                <div className="absolute bottom-0 left-0 right-0 p-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="text-white text-sm font-medium flex-1 truncate">
+                                                            {related.user?.name}
+                                                        </p>
+                                                        {related.user?.badge && (
+                                                            <div className="flex-shrink-0">
+                                                                {related.user.badge === 'boutique' && (
+                                                                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                                                                        <Store className="w-3 h-3 text-white" />
+                                                                    </div>
+                                                                )}
+                                                                {related.user.badge === 'community' && (
+                                                                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                                                                        <Users className="w-3 h-3 text-white" />
+                                                                    </div>
+                                                                )}
+                                                                {related.user.badge === 'artisan' && (
+                                                                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
+                                                                        <Award className="w-3 h-3 text-white" />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </Link>
-                                </div>
+                                        <div className="flex items-center justify-between gap-3 p-1">
+                                            <h3 className="text-sm font-semibold text-gray-800 flex-1 truncate">
+                                                {related.title}
+                                            </h3>
+                                            <div className="flex items-center gap-3 flex-shrink-0">
+                                                <div className="flex items-center gap-1 text-gray-600">
+                                                    <Eye className="w-4 h-4" />
+                                                    <span className="text-sm font-medium">{related.views_count}</span>
+                                                </div>
+                                                <div className="flex items-center gap-1 text-red-500">
+                                                    <Heart className="w-4 h-4" />
+                                                    <span className="text-sm font-medium">{related.likes_count}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Link>
                             ))}
                         </div>
                     </div>
                 )}
             </div>
 
-            {/* Footer */}
-            <footer className="bg-white border-t mt-20">
-                <div className="px-8 md:px-16 lg:px-24 py-12">
-                    <div className="text-center text-gray-600">
-                        <p className="mb-2">© 2025 Larasena. Platform Desain Batik Indonesia</p>
-                        <div className="flex justify-center gap-6 mt-4">
-                            <Link href="/" className="hover:text-[#BA682A] transition-colors">Beranda</Link>
-                            <Link href="/galeri-motif" className="hover:text-[#BA682A] transition-colors">Galeri</Link>
-                            <Link href="/login" className="hover:text-[#BA682A] transition-colors">Login</Link>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            <LarasenaFooter />
         </div>
     );
 }
