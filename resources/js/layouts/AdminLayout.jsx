@@ -43,54 +43,61 @@ export default function AdminLayout({ children }) {
            
             <aside className={`
                 fixed md:static inset-y-0 left-0 z-30
-                w-64 bg-[#BA682A] text-white flex flex-col
-                transform transition-transform duration-300 ease-in-out
+                w-64 bg-white border-r border-gray-100 flex flex-col shadow-lg
+                transform transition-all duration-300 ease-in-out
                 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
             `}>
                 
-                <div className="px-6 py-4 border-b border-[#A0522D] bg-[#A0522D]/30">
-                    <div className="flex items-center gap-3">
-                        <img 
-                            src={`https://ui-avatars.com/api/?name=${auth.user.name}&background=F8F5F2&color=BA682A`}
-                            alt={auth.user.name}
-                            className="w-10 h-10 rounded-full border-2 border-white"
+                <div className="px-6 pt-3 flex items-center h-24 border-b border-gray-100 transition-all duration-300">
+                    <div className="flex items-center hover:transform hover:scale-105 transition-transform duration-300">
+                        <img
+                            src="/images/larasena-icon.svg"
+                            alt="Larasena Logo"
+                            className="object-contain h-10 w-auto"
                         />
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-white truncate">{auth.user.name}</p>
-                            <p className="text-xs text-[#F8F5F2] truncate">{auth.user.email}</p>
-                        </div>
+                        <span className="ml-3 font-serif text-lg font-semibold text-[#1A332F] tracking-tight lowercase">larasena</span>
                     </div>
                 </div>
                 
               
-                <nav className="flex-1 p-4 space-y-2">
+                <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
                   {visibleNavigation.map((item) => {
                         const isActive = url === item.href;
                         return (
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative ${
                                     isActive 
-                                        ? 'bg-white text-[#BA682A] shadow-sm' 
-                                        : 'text-[#F8F5F2] hover:bg-[#A0522D]/50'
+                                        ? 'bg-[#F5F0E8] border border-[#D9CCBF] text-gray-900 shadow-sm font-bold scale-105' 
+                                        : 'text-gray-600 hover:bg-orange-50 hover:text-gray-900 font-medium border border-transparent'
                                 }`}
                             >
                                 <item.icon className="w-5 h-5" />
-                                <span className="font-medium">{item.name}</span>
+                                <span>{item.name}</span>
                             </Link>
                         );
                     })}
                 </nav>
 
-               
-                <div className="p-4 border-t border-[#A0522D]">
+                <div className="px-4 py-4 border-t border-gray-100 bg-gray-50/50">
+                    <div className="flex items-center gap-3 mb-4 px-2">
+                        <img 
+                            src={`https://ui-avatars.com/api/?name=${auth.user.name}&background=F8F5F2&color=BA682A`}
+                            alt={auth.user.name}
+                            className="w-10 h-10 rounded-full border-2 border-white shadow-sm"
+                        />
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-gray-900 truncate">{auth.user.name}</p>
+                            <p className="text-xs text-gray-500 truncate">{auth.user.email}</p>
+                        </div>
+                    </div>
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-[#F8F5F2] hover:bg-red-600 rounded-lg transition"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-red-600 hover:bg-red-50 hover:text-red-700 font-medium rounded-xl transition-colors border border-transparent hover:border-red-100"
                     >
-                        <LogOut className="w-5 h-5" />
-                        <span className="font-medium">Logout</span>
+                        <LogOut className="w-4 h-4" />
+                        <span>Logout</span>
                     </button>
                 </div>
             </aside>
@@ -98,20 +105,20 @@ export default function AdminLayout({ children }) {
          
             <div className="flex-1 flex flex-col overflow-hidden">
                
-                <header className="md:hidden bg-white border-b px-4 py-3 flex items-center justify-between">
-                    <button onClick={() => setSidebarOpen(true)}>
-                        <Menu className="w-6 h-6 text-gray-600" />
+                <header className="md:hidden bg-white border-b px-4 py-3 flex items-center justify-between shadow-sm relative z-20">
+                    <button onClick={() => setSidebarOpen(true)} className="p-1">
+                        <Menu className="w-6 h-6 text-gray-700" />
                     </button>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center">
                         <img 
-                            src="/images/logo.png" 
+                            src="/images/larasena-icon.svg" 
                             alt="Larasena" 
-                            className="h-8 w-auto"
+                            className="h-8 w-auto object-contain"
                         />
-                        <h1 className="text-lg font-bold text-gray-800">Larasena</h1>
+                        <span className="ml-2 font-serif text-lg font-semibold text-[#1A332F] tracking-tight lowercase">larasena</span>
                     </div>
-                    <button onClick={handleLogout} className="p-2">
-                        <LogOut className="w-5 h-5 text-gray-600" />
+                    <button onClick={handleLogout} className="p-1">
+                        <LogOut className="w-5 h-5 text-red-600" />
                     </button>
                 </header>
 

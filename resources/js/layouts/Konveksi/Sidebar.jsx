@@ -14,14 +14,17 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-white border-r min-h-screen flex-col shadow-sm hidden md:flex">
+    <aside className="w-64 bg-white border-r min-h-screen flex-col shadow-lg hidden md:flex transition-all duration-300">
       {/* Logo */}
-      <div className="px-6 pt-3 flex items-center h-24 w-64 border-b border-gray-100">
-        <img
-          src="/images/LARASENA.png"
-          alt="Larasena Logo"
-          className="object-contain h-46 hover:transform hover:scale-105 transition-transform duration-300"
-        />
+      <div className="px-6 pt-3 flex items-center h-24 w-64 border-b border-gray-100 transition-all duration-300">
+        <div className="flex items-center hover:transform hover:scale-105 transition-transform duration-300">
+          <img
+            src="/images/larasena-icon.svg"
+            alt="Larasena Logo"
+            className="object-contain h-10 w-auto"
+          />
+          <span className="ml-3 font-serif text-lg font-semibold text-[#1A332F] tracking-tight lowercase">larasena</span>
+        </div>
       </div>
 
       {/* Menu Items */}
@@ -32,14 +35,11 @@ export default function Sidebar() {
             <Link
               key={item.name}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-colors ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative ${
                 isActive
-                  ? 'text-white shadow-sm'
-                  : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+                  ? 'bg-blue-50 border border-blue-200 text-blue-900 shadow-sm font-bold scale-105'
+                  : 'text-gray-600 hover:bg-blue-50 hover:text-gray-900 font-medium border border-transparent'
               }`}
-              style={{
-                backgroundColor: isActive ? '#BA682A' : undefined,
-              }}
             >
               {item.icon}
               <span>{item.name}</span>
