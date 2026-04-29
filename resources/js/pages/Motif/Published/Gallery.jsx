@@ -1,21 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Link, router, Head } from '@inertiajs/react';
 import { Heart, Eye, User, Search, Filter, Star, Share2, ArrowLeft, LogIn, MapPin, Store, Users, Award } from 'lucide-react';
+import LarasenaCTA from '@/components/LarasenaCTA';
+import LarasenaFooter from '@/components/LarasenaFooter';
+import LarasenaNavbar from '@/components/LarasenaNavbar';
 
 export default function Gallery({ motifs, user }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('latest');
     const [activeCategory, setActiveCategory] = useState('all');
     const [activeBadge, setActiveBadge] = useState('all');
-    const [isScrolled, setIsScrolled] = useState(false);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 50);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    
 
     // Kategori motif populer (3 saja)
     const categories = [
@@ -85,7 +80,7 @@ export default function Gallery({ motifs, user }) {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-orange-50/30 to-gray-50">
-            <Head title="Galeri Motif Batik - Larasena">
+            <Head title="Galeri Motif Batik -">
                 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
             </Head>
             
@@ -95,70 +90,10 @@ export default function Gallery({ motifs, user }) {
                 }
             `}</style>
             
-            {/* ===== NAVBAR - Same as Landing Page ===== */}
-            {/* Logo & Auth Button - Scrolls Away */}
-            <div className="relative w-full py-4 bg-transparent">
-                <div className="px-8 md:px-16 lg:px-24 flex justify-between items-center">
-                    <Link href="/" className="flex-shrink-0 flex items-center transform hover:scale-105 transition-transform duration-300">
-                        <img 
-                            src="/images/larasena-icon.svg" 
-                            alt="Larasena Logo" 
-                            className="h-12 w-auto"
-                        />
-                        <span className="ml-3 font-serif text-lg font-semibold text-amber-700 tracking-tight lowercase">larasena</span>
-                    </Link>
-                    
-                    {/* Auth Button - Desktop & Mobile (Scrolls Away) */}
-                    <div className="flex items-center gap-3">
-                        {user ? (
-                            <Link
-                                href={route('dashboard')}
-                                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                            >
-                                Dashboard
-                            </Link>
-                        ) : (
-                            <>
-                                <Link
-                                    href={route('login')}
-                                    className="px-4 py-2 md:px-6 md:py-2.5 rounded-xl border-2 border-amber-600 text-amber-600 font-semibold hover:bg-amber-50 transition-all duration-300"
-                                >
-                                    Masuk
-                                </Link>
-                                <Link
-                                    href={route('register')}
-                                    className="px-4 py-2 md:px-6 md:py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                                >
-                                    Daftar
-                                </Link>
-                            </>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            {/* Navigation Menu - Fixed (Muncul saat scroll) */}
-            <nav className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ${
-                isScrolled ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0 pointer-events-none'
-            }`}>
-                <div className="flex items-center gap-8 px-8 py-3 rounded-3xl bg-white/90 backdrop-blur-lg border border-amber-100 shadow-lg">
-                    <Link href="/" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
-                        Beranda
-                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
-                    </Link>
-                    <Link href={route('published-motifs.gallery')} className="font-medium transition-all duration-300 relative group text-base text-amber-700">
-                        Batikpedia
-                        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-600"></span>
-                    </Link>
-                    <Link href="/layanan" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
-                        Layanan
-                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
-                    </Link>
-                </div>
-            </nav>
+            <LarasenaNavbar user={user} />
 
             {/* Hero Section - Visual Hook */}
-            <div className="bg-gradient-to-br from-[#BA682A] via-[#D2691E] to-[#F4A460] text-white relative overflow-hidden">
+            <div className="bg-gradient-to-br from-[#8B6F47] via-[#D2691E] to-[#F4A460] text-white relative overflow-hidden">
                 {/* Batik Pattern Background */}
                 <div className="absolute inset-0 opacity-10">
                     <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -180,7 +115,7 @@ export default function Gallery({ motifs, user }) {
                 
                 <div className="px-8 md:px-16 lg:px-24 py-16 relative z-10">
                     <div className="text-center max-w-4xl mx-auto">
-                        <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                        <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6 leading-tight">
                             Temukan Inspirasi<br />
                             <span className="text-yellow-200">Motif Batik Nusantara</span>
                         </h1>
@@ -306,7 +241,7 @@ export default function Gallery({ motifs, user }) {
                                 className="group"
                             >
                                 <Link href={route('published-motifs.show', motif.slug)}>
-                                    <div className="relative rounded-t-2xl overflow-hidden bg-white transition-all duration-300">
+                                            <div className="relative rounded-2xl overflow-hidden bg-white/95 border border-amber-50 transition-all duration-300 hover-glow hover-lift">
                                         {/* Image Container */}
                                         <div className="relative aspect-[4/3] overflow-hidden bg-gray-50">
                                             <img
@@ -358,7 +293,7 @@ export default function Gallery({ motifs, user }) {
                                         </div>
 
                                         {/* Card Footer - Motif Title + Stats */}
-                                        <div className="flex items-center justify-between gap-3">
+                                        <div className="flex items-center justify-between gap-3 p-3">
                                             <h3 className="text-sm font-semibold text-gray-800 flex-1 truncate">
                                                 {motif.title}
                                             </h3>
@@ -382,56 +317,10 @@ export default function Gallery({ motifs, user }) {
                     </div>
                 )}
 
-                {/* CTA Section */}
-                <div className="mt-16 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-10 text-center overflow-hidden relative">
-                    <div className="absolute inset-0 opacity-10">
-                        <div className="absolute inset-0" style={{
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l5 10-5 10-5-10z M0 30l10 5-10 5-10-5z M60 30l-10 5 10 5 10-5z M30 40l5 10-5 10-5-10z' fill='%23ffffff' fill-opacity='1'/%3E%3C/svg%3E")`,
-                        }}></div>
-                    </div>
-                    <div className="relative z-10">
-                        <h2 className="text-3xl font-bold text-white mb-3">Waktunya Berkarya!</h2>
-                        <p className="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
-                            Bagikan kreativitas batikmu dan inspirasi ribuan orang di seluruh Indonesia
-                        </p>
-                        {user ? (
-                            <Link
-                                href={route('dashboard')}
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-900 rounded-full font-bold hover:shadow-2xl transition-all hover:scale-105"
-                            >
-                                <span>Mulai Buat Motif</span>
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                </svg>
-                            </Link>
-                        ) : (
-                            <Link
-                                href={route('login')}
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-900 rounded-full font-bold hover:shadow-2xl transition-all hover:scale-105"
-                            >
-                                <span>Gabung Sekarang</span>
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                </svg>
-                            </Link>
-                        )}
-                    </div>
-                </div>
+                <LarasenaCTA user={user} dashboardRoute={route('dashboard')} />
             </div>
 
-            {/* Footer */}
-            <footer className="bg-white border-t mt-20">
-                <div className="px-8 md:px-16 lg:px-24 py-12">
-                    <div className="text-center">
-                        <p className="text-gray-600 mb-4">© 2025 Larasena. Platform Desain Batik Indonesia</p>
-                        <div className="flex justify-center gap-8">
-                            <Link href="/" className="text-gray-500 hover:text-[#BA682A] transition-colors font-medium">Beranda</Link>
-                            <Link href="/login" className="text-gray-500 hover:text-[#BA682A] transition-colors font-medium">Login</Link>
-                            <Link href="/register" className="text-gray-500 hover:text-[#BA682A] transition-colors font-medium">Daftar</Link>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            <LarasenaFooter />
 
             <style jsx>{`
                 .scrollbar-hide::-webkit-scrollbar {

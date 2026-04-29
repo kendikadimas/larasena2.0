@@ -1,17 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link, Head } from '@inertiajs/react';
+import LarasenaCTA from '@/components/LarasenaCTA';
+import LarasenaFooter from '@/components/LarasenaFooter';
+import LarasenaNavbar from '@/components/LarasenaNavbar';
 
 export default function Layanan({ user }) {
     const [openFaq, setOpenFaq] = useState(null);
-    const [isScrolled, setIsScrolled] = useState(false);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 50);
-        };
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    
 
     const faqData = [
         {
@@ -58,68 +53,9 @@ export default function Layanan({ user }) {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-orange-50/30 to-gray-50">
-            <Head title="Layanan - Larasena" />
+            <Head title="Layanan -" />
             
-            {/* ===== NAVBAR ===== */}
-            <div className="relative w-full py-4 bg-transparent">
-                <div className="px-8 md:px-16 lg:px-24 flex justify-between items-center">
-                    <Link href="/" className="flex-shrink-0 flex items-center transform hover:scale-105 transition-transform duration-300">
-                        <img 
-                            src="/images/larasena-icon.svg" 
-                            alt="Larasena Logo" 
-                            className="h-12 w-auto"
-                        />
-                        <span className="ml-3 font-serif text-lg font-semibold text-amber-700 tracking-tight lowercase">larasena</span>
-                    </Link>
-                    
-                    {/* Auth Button - Desktop & Mobile (Scrolls Away) */}
-                    <div className="flex items-center gap-3">
-                        {user ? (
-                            <Link
-                                href={route('dashboard')}
-                                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                            >
-                                Dashboard
-                            </Link>
-                        ) : (
-                            <>
-                                <Link
-                                    href={route('login')}
-                                    className="px-4 py-2 md:px-6 md:py-2.5 rounded-xl border-2 border-amber-600 text-amber-600 font-semibold hover:bg-amber-50 transition-all duration-300"
-                                >
-                                    Masuk
-                                </Link>
-                                <Link
-                                    href={route('register')}
-                                    className="px-4 py-2 md:px-6 md:py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-500 text-white font-semibold hover:from-amber-800 hover:to-amber-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                                >
-                                    Daftar
-                                </Link>
-                            </>
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            {/* Navigation Menu - Fixed (Muncul saat scroll) */}
-            <nav className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ${
-                isScrolled ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0 pointer-events-none'
-            }`}>
-                <div className="flex items-center gap-8 px-8 py-3 rounded-3xl bg-white/90 backdrop-blur-lg border border-amber-100 shadow-lg">
-                    <Link href="/" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
-                        Beranda
-                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
-                    </Link>
-                    <Link href="/galeri-motif" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-amber-700">
-                        Batikpedia
-                        <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-amber-600 transition-all duration-300 group-hover:w-full"></span>
-                    </Link>
-                    <Link href="/layanan" className="font-medium transition-all duration-300 relative group text-base text-amber-700">
-                        Layanan
-                        <span className="absolute bottom-0 left-0 w-full h-0.5 bg-amber-600"></span>
-                    </Link>
-                </div>
-            </nav>
+            <LarasenaNavbar user={user} />
 
             {/* FAQ Section */}
             <section className="px-8 md:px-16 lg:px-24 py-20 bg-gradient-to-b from-gray-50 to-amber-50/30 relative overflow-hidden">
@@ -130,7 +66,7 @@ export default function Layanan({ user }) {
                         <p className="text-sm font-semibold text-amber-600 tracking-wider uppercase mb-3">
                             BANTUAN
                         </p>
-                        <h3 className="text-3xl md:text-5xl font-bold text-gray-900 mb-6">
+                        <h3 className="text-3xl md:text-5xl font-serif font-bold text-gray-900 mb-6">
                             Pertanyaan yang <span className="text-amber-700">Sering Diajukan</span>
                         </h3>
                         <p className="text-gray-600 text-lg max-w-3xl mx-auto">
@@ -142,7 +78,7 @@ export default function Layanan({ user }) {
                         {faqData.map((item, index) => (
                             <div 
                                 key={index} 
-                                className="bg-white rounded-2xl border border-amber-100/70 overflow-hidden transition-all duration-300 hover:border-amber-200 hover:shadow-lg"
+                                className="bg-white rounded-2xl border border-amber-100/70 overflow-hidden transition-all duration-300 hover:border-amber-200 hover:shadow-lg hover-glow"
                             >
                                 <button
                                     onClick={() => setOpenFaq(openFaq === index ? null : index)}
@@ -176,115 +112,8 @@ export default function Layanan({ user }) {
                     </div>
             </section>
 
-            {/* CTA Section */}
-            <div className="px-8 md:px-16 lg:px-24 py-8">
-                <div className="mt-16 bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl p-10 text-center overflow-hidden relative">
-                    <div className="absolute inset-0 opacity-10">
-                        <div className="absolute inset-0" style={{
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l5 10-5 10-5-10z M0 30l10 5-10 5-10-5z M60 30l-10 5 10 5 10-5z M30 40l5 10-5 10-5-10z' fill='%23ffffff' fill-opacity='1'/%3E%3C/svg%3E")`,
-                        }}></div>
-                    </div>
-                    <div className="relative z-10">
-                        <h2 className="text-3xl font-bold text-white mb-3">Waktunya Berkarya!</h2>
-                        <p className="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
-                            Bagikan kreativitas batikmu dan inspirasi ribuan orang di seluruh Indonesia
-                        </p>
-                        {user ? (
-                            <Link
-                                href={route('dashboard')}
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-900 rounded-full font-bold hover:shadow-2xl transition-all hover:scale-105"
-                            >
-                                <span>Mulai Buat Motif</span>
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                </svg>
-                            </Link>
-                        ) : (
-                            <Link
-                                href={route('login')}
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-900 rounded-full font-bold hover:shadow-2xl transition-all hover:scale-105"
-                            >
-                                <span>Gabung Sekarang</span>
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                                </svg>
-                            </Link>
-                        )}
-                    </div>
-                </div>
-            </div>
-            
-            {/* Footer */}
-                  {/* ===== FOOTER MODERN & HANGAT ===== */}
-                    <footer className="bg-gradient-to-br from-amber-50 via-orange-50/40 to-white text-gray-800 px-8 md:px-16 lg:px-24 py-16 relative overflow-hidden">
-                    {/* Background dekoratif lembut */}
-                    <div className="absolute inset-0 opacity-40 pointer-events-none">
-                        <div className="absolute top-10 right-20 w-80 h-80 bg-amber-200/30 rounded-full blur-3xl"></div>
-                        <div className="absolute bottom-10 left-10 w-72 h-72 bg-orange-100/30 rounded-full blur-3xl"></div>
-                    </div>
-                    {/* Konten utama footer */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 relative z-10">
-                        {/* Brand */}
-                        <div>
-                        <div className="flex items-center gap-3 mb-6">
-                          <a href="/" className="flex-shrink-0 flex items-center transform hover:scale-105 transition-transform duration-300 group">
-                                  <img 
-                                    src="/images/larasena-icon.svg" 
-                                    alt="Larasena Logo" 
-                                    className="h-12 w-auto"
-                                  />
-                                <span className="ml-3 font-serif text-sm font-semibold text-amber-700 tracking-tight lowercase">larasena</span>
-                                </a>
-                        </div>
-                        <p className="text-gray-600 text-sm leading-relaxed max-w-sm">
-                            Platform digital terdepan untuk mendesain dan memproduksi batik dengan teknologi modern,
-                            melestarikan warisan budaya dengan sentuhan inovasi terkini.
-                        </p>
-                        </div>
-                        {/* Link Sections */}
-                        {[
-                        {
-                            title: "Fitur",
-                            links: ["Generte Batik AI", "Canvas Digital", "3D Model Batik", "Mitra Konveksi"]
-                        },
-                        {
-                            title: "Perusahaan",
-                            links: ["Tentang Kami", "Galeri", "Fitur", "Mitra"]
-                        },
-                        {
-                            title: "Dukungan",
-                            links: ["Bantuan", "Dokumentasi", "Privasi", "Syarat Layanan"]
-                        }
-                        ].map((section, index) => (
-                        <div key={index}>
-                            <h4 className="font-semibold text-lg mb-4 text-gray-900">{section.title}</h4>
-                            <ul className="space-y-3">
-                            {section.links.map((link, linkIndex) => (
-                                <li key={linkIndex}>
-                                <a
-                                    href="#"
-                                    className="text-gray-600 hover:text-orange-600 transition-colors duration-300 text-sm"
-                                >
-                                    {link}
-                                </a>
-                                </li>
-                            ))}
-                            </ul>
-                        </div>
-                        ))}
-                    </div>
-                    {/* Garis & Copyright */}
-                    <div className="border-t border-amber-200/70 pt-8 relative z-10 text-sm text-gray-600">
-                        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div>
-                            © {new Date().getFullYear()} <span className="font-semibold text-orange-600">Larasena</span> — Teknologi Batik Dengan Tradisi
-                        </div>
-                    
-                        </div>
-                    </div>
-                    {/* Ornamen bawah */}
-                    <div className="absolute -bottom-10 right-10 w-60 h-60 bg-gradient-to-tr from-orange-200/40 to-amber-100/30 rounded-full blur-3xl opacity-60"></div>
-                    </footer>
+            <LarasenaCTA user={user} dashboardRoute={route('dashboard')} />
+            <LarasenaFooter />
         </div>
         
     );

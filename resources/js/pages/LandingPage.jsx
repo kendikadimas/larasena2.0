@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, Head } from '@inertiajs/react';
-import SEO from '@/components/SEO';
-import GalleryCTA from '@/components/GalleryCTA';
+import LarasenaCTA from '@/components/LarasenaCTA';
+import LarasenaFooter from '@/components/LarasenaFooter';
+import LarasenaNavbar from '@/components/LarasenaNavbar';
 
 // Ikon Batik yang lebih detail (Disimpan jika diperlukan di masa depan)
 const BatikIcon = () => (
@@ -132,60 +133,59 @@ export default function LandingPage() {
       <Head title="larasena - Desain Batik Online & Kolaborasi Kreatif" />
       {/* Custom CSS untuk animasi */}
       <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-15px); }
-        }
-        @keyframes gentle-glow {
-          0%, 100% { opacity: 0.6; }
-          50% { opacity: 0.8; }
-        }
-        .animate-float {
-          animation: float 8s ease-in-out infinite;
-        }
-        .animate-gentle-glow {
-          animation: gentle-glow 4s ease-in-out infinite;
-        }
-        .fade-in-up {
-          opacity: 0;
-          transform: translateY(30px);
-          transition: all 0.8s ease-out;
-        }
-        .fade-in-up.visible {
-          opacity: 1;
-          transform: translateY(0);
-        }
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-15px); }
+        }
+        @keyframes gentle-glow {
+          0%, 100% { opacity: 0.6; }
+          50% { opacity: 0.8; }
+        }
+        .animate-float {
+          animation: float 8s ease-in-out infinite;
+        }
+        .animate-gentle-glow {
+          animation: gentle-glow 4s ease-in-out infinite;
+        }
+        .fade-in-up {
+          opacity: 0;
+          transform: translateY(30px);
+          transition: all 0.8s ease-out;
+        }
+        .fade-in-up.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
         /* Style untuk Hero */
         .gradient-text { 
           background: linear-gradient(135deg, #1A332F 0%, #2C5E54 45%, #8B6F47 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-        .hero-gradient {
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        .hero-gradient {
           background: linear-gradient(135deg, #FBF8F1 0%, #F5F0E8 35%, #F8F4EE 70%, #FBF8F1 100%);
-          position: relative;
-          overflow: hidden;
-        }
-        .nav-shadow {
-          box-shadow: 0 4px 25px rgba(139, 69, 19, 0.12);
-        }
-        .traditional-border {
-          position: relative;
-        }
-        .traditional-border::before {
-          content: '';
-          position: absolute;
-          top: -1.5px;
-          left: -1.5px;
-          right: -1.5px;
-          bottom: -1.5px;
+          position: relative;
+          overflow: hidden;
+        }
+        .nav-shadow {
+          box-shadow: 0 4px 25px rgba(139, 69, 19, 0.12);
+        }
+        .traditional-border {
+          position: relative;
+        }
+        .traditional-border::before {
+          content: '';
+          position: absolute;
+          top: -1.5px;
+          left: -1.5px;
+          right: -1.5px;
+          bottom: -1.5px;
           background: linear-gradient(45deg, #8B6F47, #C9A84C, #8B6F47);
-          border-radius: 9999px; /* Disesuaikan dengan rounded-full */
-          z-index: -1;
-          opacity: 0.2;
-        }
-        /* Perbaikan: border-radius untuk navbar */
+          border-radius: 9999px; /* Disesuaikan dengan rounded-full */
+          z-index: -1;
+          opacity: 0.2;
+        }
         .traditional-border.rounded-2xl::before {
           border-radius: 1rem; /* 16px */
         }
@@ -327,66 +327,7 @@ export default function LandingPage() {
         }
       `}</style>
 
-      {/* ===== NAVBAR ELEGAN DENGAN LOGO ASLI ===== */}
-      {/* Logo & Auth Button - Not Fixed (Scrolls Away) */}
-      <div className="relative w-full py-4 bg-transparent">
-        <div className="px-8 md:px-16 lg:px-24 flex justify-between items-center">
-          <a href="/" className="flex-shrink-0 flex items-center transform hover:scale-105 transition-transform duration-300">
-            <img
-              src="/images/larasena-icon.svg"
-              alt="Larasena Logo"
-              className="h-12 w-auto"
-            />
-            <span className="ml-3 font-serif text-lg font-semibold text-[#1A332F] tracking-tight lowercase">larasena</span>
-          </a>
-
-          {/* Auth Button - Desktop & Mobile (Scrolls Away) */}
-          <div className="flex items-center gap-3">
-            {user ? (
-              <a
-                href={dashboardRoute}
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#1A332F] to-[#2C5E54] text-white font-semibold hover:from-[#0F2420] hover:to-[#1A4A3F] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-              >
-                Dashboard
-              </a>
-            ) : (
-              <>
-                <a
-                  href="/login"
-                  className="px-4 py-2 md:px-6 md:py-2.5 rounded-xl border-2 border-[#8B6F47] text-[#8B6F47] font-semibold hover:bg-[#F5F0E8] transition-all duration-300"
-                >
-                  Masuk
-                </a>
-                <a
-                  href="/register"
-                  className="px-4 py-2 md:px-6 md:py-2.5 rounded-xl bg-gradient-to-r from-[#1A332F] to-[#2C5E54] text-white font-semibold hover:from-[#0F2420] hover:to-[#1A4A3F] transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                >
-                  Daftar
-                </a>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Navigation Menu - Fixed (Muncul saat scroll) */}
-      <nav className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ${isScrolled ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0 pointer-events-none'
-        }`}>
-        <div className="flex items-center gap-8 px-8 py-3 rounded-3xl bg-white/90 backdrop-blur-lg border border-[#D9CCBF] shadow-lg">
-          <a href="#hero" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-[#1A332F]">
-            Beranda
-            <span className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full bg-[#8B6F47]"></span>
-          </a>
-          <Link href="/galeri-motif" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-[#1A332F]">
-            Batikpedia
-            <span className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full bg-[#8B6F47]"></span>
-          </Link>
-          <Link href="/layanan" className="font-medium transition-all duration-300 relative group text-base text-gray-700 hover:text-[#1A332F]">
-            Layanan
-            <span className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full bg-[#8B6F47]"></span>
-          </Link>
-        </div>
-      </nav>
+      <LarasenaNavbar user={user} />
 
 
      <header
@@ -720,7 +661,7 @@ export default function LandingPage() {
       {/* ===== TESTIMONI SECTION (VIDEO CENTERED) ===== */}
       <section
         id="testimonials"
-        className="px-8 md:px-16 lg:px-24 py-20 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden"
+        className="px-8 md:px-16 lg:px-24 py-20 bg-gradient-to-b from-white to-gray-50 relative"
       >
         {/* ===== Dekorasi background ===== */}
         <div className="absolute top-1/2 -right-10 w-96 h-96 rounded-full blur-3xl opacity-40 -z-0 transform -translate-y-1/2" style={{ background: 'radial-gradient(ellipse, rgba(201,168,76,0.15), transparent)' }}></div>
@@ -748,11 +689,11 @@ export default function LandingPage() {
               </p>
             </div>
             {/* === QUOTES HORIZONTAL SCROLL === */}
-            <div className="relative fade-in-up w-full overflow-hidden">
+            <div className="relative fade-in-up w-full overflow-x-hidden overflow-y-visible">
               {/* Fade Edge */}
 
               {/* Kontainer Quote dengan tinggi tetap */}
-              <div className="w-full h-[240px] relative overflow-hidden">
+              <div className="w-full h-[240px] relative overflow-visible">
                 {(() => {
                   const testimonialData = [
                     {
@@ -793,13 +734,13 @@ export default function LandingPage() {
                   ];
                   const loopedData = [...testimonialData, ...testimonialData];
                   return (
-                    <div className="flex gap-8 animate-scroll-right hover:pause-animation absolute">
+                    <div className="flex gap-8 animate-scroll-right hover:pause-animation absolute top-0 left-0 w-max">
                       {loopedData.map((item, index) => (
                         <div
                           key={index}
-                          className="flex-shrink-0 w-[19rem] md:w-[21rem] bg-white p-6 rounded-2xl hover:shadow-xl transition-all duration-300 border border-[#D9CCBF]/50"
+                          className="flex-shrink-0 w-[19rem] md:w-[21rem] bg-[#FDFAF6] p-6 rounded-2xl shadow-md transition-all duration-300 border border-[#D9CCBF] hover:shadow-xl hover:border-[#C9B8A2]"
                         >
-                          <p className="text-gray-700 italic leading-relaxed mb-4 line-clamp-4">
+                          <p className="text-gray-800 italic leading-relaxed mb-4 line-clamp-4">
                             "{item.quote}"
                           </p>
                           <div className="flex items-center">

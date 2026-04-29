@@ -43,7 +43,7 @@ export default function Gallery({ motifs, user }) {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <Head title="Galeri Motif Batik - Larasena" />
+            <Head title="Galeri Motif Batik -" />
             {/* Hero Header */}
             <div className="bg-gradient-to-br from-[#BA682A] via-[#D2691E] to-[#F4A460] text-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
