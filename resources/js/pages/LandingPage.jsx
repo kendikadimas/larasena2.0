@@ -129,6 +129,7 @@ export default function LandingPage() {
   return (
 
     <div className="min-h-screen flex flex-col bg-white overflow-x-hidden relative">
+      <Head title="larasena - Desain Batik Online & Kolaborasi Kreatif" />
       {/* Custom CSS untuk animasi */}
       <style jsx>{`
         @keyframes float {
@@ -194,7 +195,7 @@ export default function LandingPage() {
           width: 100%;
           margin-top: 4px;
         }
-        {/* --- PERBAIKAN: CSS digabung & ganti nama biar gak konflik --- */}
+        /* --- PERBAIKAN: CSS digabung & ganti nama biar gak konflik --- */
         .hide-scrollbar::-webkit-scrollbar {
           display: none;
         }
@@ -215,8 +216,116 @@ export default function LandingPage() {
         .shadow-3xl {
           box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
         }
-      `}</style>
-
+        /* ===== SMOOTH & ELEGANT ANIMATIONS ===== */
+        @keyframes subtle-pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.85; transform: scale(1.02); }
+        }
+        @keyframes slide-in-left {
+          from {
+            opacity: 0;
+            transform: translateX(-40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        @keyframes slide-in-right {
+          from {
+            opacity: 0;
+            transform: translateX(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        @keyframes soft-rotate {
+          0%, 100% { transform: rotate(0deg); }
+          50% { transform: rotate(1.5deg); }
+        }
+        @keyframes shimmer {
+          0% { background-position: -1000px 0; }
+          100% { background-position: 1000px 0; }
+        }
+        @keyframes scale-in-fade {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        @keyframes gentle-rise {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        /* Animation Classes */
+        .animate-subtle-pulse {
+          animation: subtle-pulse 4s ease-in-out infinite;
+        }
+        .animate-slide-in-left {
+          animation: slide-in-left 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .animate-slide-in-right {
+          animation: slide-in-right 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .animate-soft-rotate {
+          animation: soft-rotate 6s ease-in-out infinite;
+        }
+        .animate-scale-in-fade {
+          animation: scale-in-fade 0.6s ease-out;
+        }
+        .animate-gentle-rise {
+          animation: gentle-rise 0.7s ease-out;
+        }
+        /* Staggered animations */
+        .stagger-1 { animation-delay: 0.1s; }
+        .stagger-2 { animation-delay: 0.2s; }
+        .stagger-3 { animation-delay: 0.3s; }
+        .stagger-4 { animation-delay: 0.4s; }
+        .stagger-5 { animation-delay: 0.5s; }
+        /* Smooth Hover Effects */
+        .hover-lift {
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .hover-lift:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 24px rgba(26, 51, 47, 0.12);
+        }
+        /* Soft Border Glow on Hover */
+        .hover-glow {
+          transition: box-shadow 0.4s ease;
+        }
+        .hover-glow:hover {
+          box-shadow: 0 0 20px rgba(139, 111, 71, 0.25);
+        }
+        /* Text animation */
+        .text-shimmer {
+          background: linear-gradient(
+            90deg,
+            #1A332F 0%,
+            #2C5E54 25%,
+            #1A332F 50%,
+            #2C5E54 75%,
+            #1A332F 100%
+          );
+          background-size: 200% auto;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: shimmer 3s linear infinite;
+        }
+      `}</style>
 
       {/* ===== NAVBAR ELEGAN DENGAN LOGO ASLI ===== */}
       {/* Logo & Auth Button - Not Fixed (Scrolls Away) */}
@@ -224,10 +333,11 @@ export default function LandingPage() {
         <div className="px-8 md:px-16 lg:px-24 flex justify-between items-center">
           <a href="/" className="flex-shrink-0 flex items-center transform hover:scale-105 transition-transform duration-300">
             <img
-              src="/images/logolarasena.png"
+              src="/images/larasena-icon.svg"
               alt="Larasena Logo"
               className="h-12 w-auto"
             />
+            <span className="ml-3 font-serif text-lg font-semibold text-[#1A332F] tracking-tight lowercase">larasena</span>
           </a>
 
           {/* Auth Button - Desktop & Mobile (Scrolls Away) */}
@@ -360,7 +470,7 @@ export default function LandingPage() {
       style={{ transitionDelay: '0.2s' }}
     >
       <img
-        src="/images/hero-section.png"
+        src="/images/hero-section.webp"
         alt="Batik Illustration"
         className="w-full h-full object-cover object-[70%_center]"
         style={{
@@ -520,7 +630,7 @@ export default function LandingPage() {
         <div className="px-8 md:px-16 lg:px-24 space-y-16">
           {/* Institutional Partners */}
           <div>
-            <h4 className="text-center font-serif text-lg font-semibold mb-10" style={{ color: '#1C3A35' }}>Institusi Pendidikan</h4>
+            <h4 className="text-center font-serif text-lg font-semibold" style={{ color: '#1C3A35' }}>Institusi Pendidikan</h4>
             <div className="space-y-8">
               {/* Baris 1 */}
               <div
@@ -776,45 +886,47 @@ export default function LandingPage() {
   `}</style>
       </section>
 
-      <section
-  className="relative w-full flex items-center"
+     <section
+  className="relative w-full flex items-center overflow-hidden"
   style={{
-    minHeight: '320px', // ⬅️ dari 420 → lebih compact
-    backgroundImage: "url('/images/cta-section.png')",
+    minHeight: '340px',
+    backgroundImage: `
+      linear-gradient(to right, rgba(10,35,32,0.65) 0%, rgba(10,35,32,0.3) 35%, rgba(10,35,32,0) 60%),
+      url('/images/cta-section.webp')
+    `,
     backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    backgroundPosition: 'right center',
     backgroundRepeat: 'no-repeat'
   }}
 >
+  {/* CONTENT */}
   <div className={`relative z-10 w-full px-6 md:px-12 lg:px-20 py-12 fade-in-up ${isVisible ? 'visible' : ''}`}>
     
-    <div className="md:w-[45%]">
+    <div className="md:w-[42%]">
       
-
-      {/* Heading */}
-      <h2 className="font-serif text-2xl md:text-4xl font-bold text-white leading-snug mb-4">
-        Siap Wujudkan<br />
-        Ide Batikmu<br />
-        <span className="text-[#C9A84C]">Menjadi Nyata?</span>
+      {/* HEADING */}
+      <h2 className="font-serif text-2xl md:text-[2.4rem] font-semibold text-white leading-tight mb-3">
+        Ready to Bring Your<br />
+        Batik Ideas to Life?
       </h2>
 
-      {/* Description */}
-      <p className="text-sm md:text-base mb-6 max-w-sm text-[rgba(245,240,232,0.85)] leading-relaxed">
-        Bergabung dengan Larasena dan mulai perjalanan kreatifmu hari ini bersama ribuan pengrajin batik digital Indonesia.
+      {/* DESC */}
+      <p className="text-sm md:text-[0.95rem] mb-6 max-w-sm text-white/80 leading-relaxed">
+        Join Larasena and start your creative journey today.
       </p>
 
-      {/* Button */}
+      {/* BUTTON */}
       <a
         href={user ? dashboardRoute : '/register'}
-        className="inline-flex items-center gap-2 text-sm font-semibold transition-transform duration-300 hover:-translate-y-0.5"
+        className="inline-flex items-center gap-2 text-sm font-semibold transition-all duration-300 hover:translate-x-1"
         style={{
-          background: '#C9A84C',
+          background: '#D4A63F',
           color: '#fff',
-          padding: '12px 26px', // ⬅️ lebih kecil
-          borderRadius: '40px'
+          padding: '12px 26px',
+          borderRadius: '999px'
         }}
       >
-        Mulai Mendesain
+        Start Designing Now
         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
@@ -829,10 +941,7 @@ export default function LandingPage() {
       <footer className="relative overflow-hidden text-gray-800 px-8 md:px-16 lg:px-24 py-16"
         style={{ background: 'white' }}>
 
-        {/* Glow blob top right */}
-        <div className="absolute top-0 right-0 w-72 h-72 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse, rgba(201,168,76,0.12), transparent)' }} />
-
+        
         {/* footer-section.png — ilustrasi daun di pojok kanan bawah */}
         <div className="absolute bottom-0 right-0 w-56 md:w-72 pointer-events-none select-none" style={{ zIndex: 1, opacity: 0.65 }}>
           <img src="/images/footer-section.png" alt="" className="w-full h-auto object-contain"
@@ -844,7 +953,8 @@ export default function LandingPage() {
           {/* Brand */}
           <div>
             <a href="/" className="flex-shrink-0 flex items-center mb-5 hover:opacity-80 transition-opacity">
-              <img src="/images/logolarasena.png" alt="Larasena Logo" className="h-11 w-auto" />
+              <img src="/images/larasena-icon.svg" alt="Larasena Logo" className="h-11 w-auto" />
+              <span className="ml-3 font-serif text-sm font-semibold text-[#1C3A35] tracking-tight lowercase">larasena</span>
             </a>
             <p className="text-sm leading-relaxed max-w-xs" style={{ color: '#7A6E62' }}>
               Platform digital terdepan untuk mendesain dan memproduksi batik dengan teknologi modern, melestarikan warisan budaya Indonesia.

@@ -101,10 +101,11 @@ export default function Gallery({ motifs, user }) {
                 <div className="px-8 md:px-16 lg:px-24 flex justify-between items-center">
                     <Link href="/" className="flex-shrink-0 flex items-center transform hover:scale-105 transition-transform duration-300">
                         <img 
-                            src="/images/logolarasena.png" 
+                            src="/images/larasena-icon.svg" 
                             alt="Larasena Logo" 
                             className="h-12 w-auto"
                         />
+                        <span className="ml-3 font-serif text-lg font-semibold text-amber-700 tracking-tight lowercase">larasena</span>
                     </Link>
                     
                     {/* Auth Button - Desktop & Mobile (Scrolls Away) */}
