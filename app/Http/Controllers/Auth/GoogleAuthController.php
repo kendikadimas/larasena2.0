@@ -32,6 +32,13 @@ class GoogleAuthController extends Controller
             $user = User::where('email', $googleUser->getEmail())->first();
             
             if ($user) {
+                // Update profile photo if it's empty
+                if (empty($user->profile_photo) && $googleUser->getAvatar()) {
+                    $user->update([
+                        'profile_photo' => $googleUser->getAvatar()
+                    ]);
+                }
+
                 // User exists, just login
                 Auth::login($user);
                 
@@ -47,6 +54,7 @@ class GoogleAuthController extends Controller
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
                     'password' => Hash::make(\Illuminate\Support\Str::random(32)), // Secure random password for OAuth users
+                    'profile_photo' => $googleUser->getAvatar(), // Save Google avatar
                     'role' => 'General', // Default role for Google users
                     'badge' => 'community', // Default badge for General users
                     'email_verified_at' => now(), // Auto-verify since Google already verified

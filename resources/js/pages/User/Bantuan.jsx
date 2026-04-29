@@ -111,13 +111,48 @@ export default function Bantuan() {
   ];
 
   const categories = [
-    { name: 'Semua', count: faqData.length },
-    { name: 'Batik & Motif', count: faqData.filter(f => f.category === 'Batik & Motif').length },
-    { name: 'Layanan', count: faqData.filter(f => f.category === 'Layanan').length },
-    { name: 'Konveksi', count: faqData.filter(f => f.category === 'Konveksi').length },
-    { name: 'Kemitraan', count: faqData.filter(f => f.category === 'Kemitraan').length },
-    { name: 'Pembayaran', count: faqData.filter(f => f.category === 'Pembayaran').length },
-    { name: 'Pengiriman', count: faqData.filter(f => f.category === 'Pengiriman').length }
+    { 
+      name: 'Batik & Motif', 
+      icon: <Palette className="w-10 h-10" />,
+      desc: 'Pelajari filosofi, jenis, dan cara merawat kain batik.',
+      color: 'text-[#BA682A]',
+      bg: 'bg-orange-50'
+    },
+    { 
+      name: 'Layanan', 
+      icon: <Clock className="w-10 h-10" />,
+      desc: 'Informasi mengenai layanan custom dan kunjungan galeri.',
+      color: 'text-blue-600',
+      bg: 'bg-blue-50'
+    },
+    { 
+      name: 'Konveksi', 
+      icon: <Package className="w-10 h-10" />,
+      desc: 'Detail mengenai pesanan konveksi dan minimum order.',
+      color: 'text-emerald-600',
+      bg: 'bg-emerald-50'
+    },
+    { 
+      name: 'Kemitraan', 
+      icon: <Users className="w-10 h-10" />,
+      desc: 'Syarat dan ketentuan menjadi mitra pemasok Larasena.',
+      color: 'text-purple-600',
+      bg: 'bg-purple-50'
+    },
+    { 
+      name: 'Pembayaran', 
+      icon: <CreditCard className="w-10 h-10" />,
+      desc: 'Panduan metode pembayaran, cicilan, dan garansi.',
+      color: 'text-rose-600',
+      bg: 'bg-rose-50'
+    },
+    { 
+      name: 'Pengiriman', 
+      icon: <Truck className="w-10 h-10" />,
+      desc: 'Opsi pengiriman domestik dan juga internasional.',
+      color: 'text-teal-600',
+      bg: 'bg-teal-50'
+    }
   ];
 
   const filteredFaq = faqData.filter(faq => {
@@ -129,128 +164,134 @@ export default function Bantuan() {
 
   const clearSearch = () => {
     setSearchQuery('');
-    setSelectedCategory('Semua');
   };
 
   return (
     <UserLayout title="Bantuan">
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-amber-50/30">
+      <div className="min-h-screen bg-[#FBF8F1]">
        
-        {/* Header Section */}
-        <div className="bg-gradient-to-r from-[#8B4513] to-[#BA682A] text-white py-20 mb-12">
-          <div className="max-w-7xl mx-auto px-4 text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-2xl mb-6 backdrop-blur-sm">
-              <HelpCircle className="w-10 h-10 text-white" />
-            </div>
-            <h1 className="text-5xl font-bold mb-4">Frequently Asked Questions</h1>
-            <p className="text-xl text-amber-100 max-w-2xl mx-auto">
-              Temukan jawaban untuk pertanyaan yang sering ditanyakan seputar Larasena
-            </p>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 pb-16">
+        {/* Discord-like Hero Section */}
+        <div className="bg-[#1A332F] text-white pt-24 pb-32 relative overflow-hidden">
+          {/* Subtle decorative background elements */}
+          <div className="absolute top-10 left-10 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
+          <div className="absolute bottom-10 right-20 w-48 h-48 bg-[#BA682A]/20 rounded-full blur-3xl"></div>
           
-          {/* Search Bar */}
-          <div className="bg-white rounded-2xl shadow-lg border p-8 mb-8">
-            <div className="relative max-w-2xl mx-auto">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
+          <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+            <h1 className="text-4xl md:text-5xl font-bold mb-8 font-serif tracking-wide">Pusat Bantuan</h1>
+            
+            {/* Search Bar inside Hero */}
+            <div className="relative max-w-2xl mx-auto shadow-2xl rounded-2xl bg-white p-2 flex items-center">
+              <div className="pl-4 text-gray-400">
+                <Search className="w-6 h-6" />
+              </div>
               <input
                 type="text"
                 placeholder="Cari pertanyaan atau kata kunci..."
-                className="w-full pl-14 pr-14 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#BA682A] focus:border-[#BA682A] text-lg transition-all"
+                className="w-full px-4 py-3 border-none focus:ring-0 text-lg text-gray-800 placeholder-gray-400 bg-transparent outline-none"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               {searchQuery && (
                 <button
                   onClick={clearSearch}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="pr-4 text-gray-400 hover:text-gray-600 transition-colors"
                 >
                   <X className="w-6 h-6" />
                 </button>
               )}
             </div>
           </div>
+        </div>
 
-          {/* Category Filter */}
-          <div className="mb-8">
-            <div className="flex flex-wrap gap-3 justify-center">
-              {categories.map((category) => (
+        {/* Categories Section (Discord-style Cards) */}
+        {!searchQuery && selectedCategory === 'Semua' && (
+          <div className="max-w-7xl mx-auto px-4 -mt-16 relative z-20 pb-16">
+            <div className="text-center mb-10 pt-4">
+              <h2 className="text-3xl font-bold text-gray-900 mb-3">Butuh bantuan? Kami siap membantu.</h2>
+              <p className="text-gray-600 text-lg">
+                Pilih topik di bawah ini untuk menemukan jawaban yang Anda butuhkan.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {categories.map((cat) => (
                 <button
-                  key={category.name}
-                  onClick={() => setSelectedCategory(category.name)}
-                  className={`px-6 py-3 rounded-xl text-sm font-semibold transition-all ${
-                    selectedCategory === category.name
-                      ? 'bg-[#BA682A] text-white shadow-lg scale-105'
-                      : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200'
-                  }`}
+                  key={cat.name}
+                  onClick={() => setSelectedCategory(cat.name)}
+                  className="bg-white rounded-3xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 flex flex-col items-center text-center group hover:-translate-y-1"
                 >
-                  {category.name}
-                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
-                    selectedCategory === category.name 
-                      ? 'bg-white/20 text-white' 
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {category.count}
-                  </span>
+                  <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110 ${cat.bg} ${cat.color}`}>
+                    {cat.icon}
+                  </div>
+                  <h3 className={`text-xl font-bold mb-3 ${cat.color}`}>{cat.name}</h3>
+                  <p className="text-gray-500">{cat.desc}</p>
                 </button>
               ))}
             </div>
           </div>
+        )}
 
-          {/* FAQ Cards Grid */}
-          {filteredFaq.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="inline-flex items-center justify-center w-24 h-24 bg-gray-100 rounded-full mb-6">
-                <HelpCircle className="w-12 h-12 text-gray-300" />
-              </div>
-              <h3 className="text-2xl font-semibold text-gray-600 mb-3">Tidak Ada Hasil</h3>
-              <p className="text-gray-500 mb-6">
-                Maaf, tidak ada pertanyaan yang sesuai dengan pencarian Anda
-              </p>
-              <button
-                onClick={clearSearch}
-                className="px-8 py-3 bg-[#BA682A] text-white rounded-xl hover:bg-[#9d5a24] transition-colors font-semibold"
+        {/* FAQ List Section */}
+        {(searchQuery || selectedCategory !== 'Semua') && (
+          <div className="max-w-4xl mx-auto px-4 pb-20 pt-8">
+            <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900">
+                {searchQuery ? `Hasil Pencarian: "${searchQuery}"` : `Topik: ${selectedCategory}`}
+              </h2>
+              <button 
+                onClick={() => {
+                  setSelectedCategory('Semua');
+                  setSearchQuery('');
+                }}
+                className="text-[#BA682A] font-medium hover:underline text-sm flex items-center gap-1"
               >
-                Reset Pencarian
+                Kembali ke Semua Topik
               </button>
             </div>
-          ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredFaq.map((faq) => (
-                <div
-                  key={faq.id}
-                  className="bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 border-2 border-gray-100 hover:border-[#BA682A]/30 group"
+
+            {filteredFaq.length === 0 ? (
+              <div className="text-center py-16 bg-white rounded-3xl shadow-sm border border-gray-100">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-gray-50 rounded-full mb-6">
+                  <HelpCircle className="w-10 h-10 text-gray-300" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-700 mb-2">Tidak Ada Hasil</h3>
+                <p className="text-gray-500 mb-6">Maaf, kami tidak dapat menemukan jawaban untuk pencarian Anda.</p>
+                <button
+                  onClick={clearSearch}
+                  className="px-6 py-2.5 bg-[#1A332F] text-white rounded-xl hover:bg-[#0f201d] transition-colors font-medium"
                 >
-                  {/* Icon */}
-                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-[#BA682A]/10 to-amber-100 rounded-xl mb-4 group-hover:scale-110 transition-transform">
-                    <div className="text-[#BA682A]">
+                  Reset Pencarian
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredFaq.map((faq) => (
+                  <div
+                    key={faq.id}
+                    className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:border-[#D9CCBF] transition-all hover:shadow-md flex gap-5 group"
+                  >
+                    <div className="hidden sm:flex flex-shrink-0 w-12 h-12 bg-[#FBF8F1] rounded-full items-center justify-center text-[#BA682A]">
                       {faq.icon}
                     </div>
+                    <div>
+                      <div className="mb-2">
+                        <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                          {faq.category}
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#BA682A] transition-colors">
+                        {faq.question}
+                      </h3>
+                      <p className="text-gray-600 leading-relaxed text-sm md:text-base">
+                        {faq.answer}
+                      </p>
+                    </div>
                   </div>
-
-                  {/* Category Badge */}
-                  <div className="mb-3">
-                    <span className="px-3 py-1 bg-[#BA682A]/10 text-[#BA682A] text-xs rounded-full font-semibold">
-                      {faq.category}
-                    </span>
-                  </div>
-
-                  {/* Question */}
-                  <h3 className="text-lg font-bold text-gray-800 mb-3 leading-snug group-hover:text-[#BA682A] transition-colors">
-                    {faq.question}
-                  </h3>
-
-                  {/* Answer */}
-                  <p className="text-gray-600 text-sm leading-relaxed line-clamp-4">
-                    {faq.answer}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </UserLayout>
   );

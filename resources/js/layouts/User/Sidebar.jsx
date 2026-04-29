@@ -19,10 +19,8 @@ const NyantingIcon = ({ isActive = false, isMobile = false, className, ...props 
       alt="Nyanting" 
       className={className || "w-5 h-5"}
       style={{ 
-        filter: isActive 
-          ? isMobile 
-            ? 'brightness(0) saturate(100%) invert(42%) sepia(54%) saturate(862%) hue-rotate(358deg) brightness(93%) contrast(90%)' 
-            : 'brightness(0) invert(1)'
+        filter: isActive && isMobile 
+          ? 'brightness(0) saturate(100%) invert(42%) sepia(54%) saturate(862%) hue-rotate(358deg) brightness(93%) contrast(90%)' 
           : 'none' 
       }}
       {...domProps}
@@ -39,10 +37,8 @@ const SanggarIcon = ({ isActive = false, isMobile = false, className, ...props }
       alt="Sanggar" 
       className={className || "w-5 h-5"}
       style={{ 
-        filter: isActive 
-          ? isMobile 
-            ? 'brightness(0) saturate(100%) invert(42%) sepia(54%) saturate(862%) hue-rotate(358deg) brightness(93%) contrast(90%)' 
-            : 'brightness(0) invert(1)'
+        filter: isActive && isMobile 
+          ? 'brightness(0) saturate(100%) invert(42%) sepia(54%) saturate(862%) hue-rotate(358deg) brightness(93%) contrast(90%)' 
           : 'none' 
       }}
       {...domProps}
@@ -59,10 +55,8 @@ const BatikpediaIcon = ({ isActive = false, isMobile = false, className, ...prop
       alt="Batikpedia" 
       className={className || "w-5 h-5"}
       style={{ 
-        filter: isActive 
-          ? isMobile 
-            ? 'brightness(0) saturate(100%) invert(42%) sepia(54%) saturate(862%) hue-rotate(358deg) brightness(93%) contrast(90%)' 
-            : 'brightness(0) invert(1)'
+        filter: isActive && isMobile 
+          ? 'brightness(0) saturate(100%) invert(42%) sepia(54%) saturate(862%) hue-rotate(358deg) brightness(93%) contrast(90%)' 
           : 'none' 
       }}
       {...domProps}
@@ -100,21 +94,21 @@ export default function Sidebar() {
           name: 'Nyanting',
           href: '/dashboard',
           icon: NyantingIcon,
-          activeColor: 'bg-gradient-to-r from-[#BA682A] to-[#D2691E]',
+          activeColor: 'bg-[#F5F0E8] border border-[#D9CCBF] text-gray-900',
           hoverColor: 'hover:bg-orange-50'
         },
         {
           name: 'Sanggar',
           href: '/upload',
           icon: SanggarIcon,
-          activeColor: 'bg-gradient-to-r from-[#BA682A] to-[#D2691E]',
+          activeColor: 'bg-[#F5F0E8] border border-[#D9CCBF] text-gray-900',
           hoverColor: 'hover:bg-orange-50'
         },
         {
           name: 'Batikpedia',
           href: '/galeri-motif',
           icon: BatikpediaIcon,
-          activeColor: 'bg-gradient-to-r from-[#BA682A] to-[#D2691E]',
+          activeColor: 'bg-[#F5F0E8] border border-[#D9CCBF] text-gray-900',
           hoverColor: 'hover:bg-orange-50'
         }
       ]
@@ -129,14 +123,14 @@ export default function Sidebar() {
           name: 'Pelatihan',
           href: '/pelatihan',
           icon: GraduationCap,
-          activeColor: 'bg-[#dc213e]',
+          activeColor: 'bg-red-50 border border-red-200 text-red-900',
           hoverColor: 'hover:bg-red-50',
         },
         {
           name: 'Sertifikat',
           href: '/sertifikat',
           icon: Award,
-          activeColor: 'bg-[#dc213e]',
+          activeColor: 'bg-red-50 border border-red-200 text-red-900',
           hoverColor: 'hover:bg-red-50'
         }
       ]
@@ -151,21 +145,21 @@ export default function Sidebar() {
           name: 'Pengrajin',
           href: '/konveksi',
           icon: Store,
-          activeColor: 'bg-gradient-to-r from-[#3B82F6] to-[#2563EB]',
+          activeColor: 'bg-blue-50 border border-blue-200 text-blue-900',
           hoverColor: 'hover:bg-blue-50'
         },
         {
           name: 'Produksi',
           href: '/produksi',
           icon: Package,
-          activeColor: 'bg-gradient-to-r from-[#3B82F6] to-[#2563EB]',
+          activeColor: 'bg-blue-50 border border-blue-200 text-blue-900',
           hoverColor: 'hover:bg-blue-50'
         },
         {
           name: 'Bantuan',
           href: '/bantuan',
           icon: HelpCircle,
-          activeColor: 'bg-gradient-to-r from-[#3B82F6] to-[#2563EB]',
+          activeColor: 'bg-blue-50 border border-blue-200 text-blue-900',
           hoverColor: 'hover:bg-blue-50'
         }
       ]
@@ -206,12 +200,13 @@ export default function Sidebar() {
     <>
       {/* Mobile Header - Fixed at top with highest z-index */}
       <div className="md:hidden flex justify-between items-center bg-white border-b px-4 py-3 shadow-md fixed top-0 left-0 right-0 z-[60]">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center">
           <img
-            src="/images/LARASENA.png"
+            src="/images/larasena-icon.svg"
             alt="Larasena Logo"
-            className="h-12 object-contain"
+            className="h-10 w-auto object-contain"
           />
+          <span className="ml-2 font-serif text-lg font-semibold text-[#1A332F] tracking-tight lowercase">larasena</span>
         </div>
       </div>
 
@@ -227,16 +222,19 @@ export default function Sidebar() {
         }`}>
           {isCollapsed ? (
             <img
-              src="/images/LARASENA.png"
+              src="/images/larasena-icon.svg"
               alt="Larasena Logo"
-              className="object-contain h-12 w-12"
+              className="object-contain h-10 w-10"
             />
           ) : (
-            <img
-              src="/images/LARASENA.png"
-              alt="Larasena Logo"
-              className="object-contain h-46 hover:transform hover:scale-105 transition-transform duration-300"
-            />
+            <div className="flex items-center hover:transform hover:scale-105 transition-transform duration-300">
+              <img
+                src="/images/larasena-icon.svg"
+                alt="Larasena Logo"
+                className="object-contain h-10 w-auto"
+              />
+              <span className="ml-3 font-serif text-lg font-semibold text-[#1A332F] tracking-tight lowercase">larasena</span>
+            </div>
           )}
         </div>
         
@@ -300,12 +298,12 @@ export default function Sidebar() {
                         <Link
                           key={item.name}
                           href={item.href}
-                          className={`flex items-center gap-3 rounded-xl font-medium transition-all duration-200 group relative
+                          className={`flex items-center gap-3 rounded-xl transition-all duration-200 group relative
                             ${isCollapsed ? 'justify-center px-3 py-3' : 'px-4 py-3'}
                             ${
                             isActive
-                              ? `${item.activeColor} text-white shadow-lg scale-105`
-                              : `text-gray-600 ${item.hoverColor} hover:text-gray-900`
+                              ? `${item.activeColor} shadow-sm scale-105 font-bold`
+                              : `border border-transparent text-gray-600 ${item.hoverColor} hover:text-gray-900 font-medium`
                           }`}
                           onClick={() => setIsOpen(false)}
                           title={isCollapsed ? item.name : ''}
@@ -481,8 +479,8 @@ export default function Sidebar() {
                             onClick={() => setShowMoreMenu(false)}
                             className={`flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all duration-200 ${
                               isActive
-                                ? 'bg-gradient-to-r from-[#BA682A] to-[#D2691E] text-white shadow-lg'
-                                : 'text-gray-700 hover:bg-gray-50'
+                                ? 'bg-[#F5F0E8] border border-[#D9CCBF] text-gray-900 shadow-sm font-bold'
+                                : 'text-gray-700 hover:bg-gray-50 border border-transparent font-medium'
                             }`}
                           >
                             <Icon className="w-5 h-5 flex-shrink-0" />
