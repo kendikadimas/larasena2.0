@@ -40,7 +40,10 @@ export default function UploadMotifIndex({ motifs }) {
 
     const handleDelete = (motif) => {
         if (confirm(`Hapus motif "${motif.title}"?`)) {
-            router.delete(route('motif.upload.destroy', motif.id));
+            // Use POST with method spoofing to avoid servers/firewalls that block DELETE
+            router.post(route('motif.upload.destroy', motif.id), {
+                _method: 'delete',
+            });
         }
     };
 

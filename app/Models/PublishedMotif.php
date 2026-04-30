@@ -96,8 +96,13 @@ class PublishedMotif extends Model
     {
         // If image_url is already stored in database, use it
         if (!empty($value)) {
-            // Clean up malformed URLs - various patterns from the error log
             
+            // TAMBAHAN BARU: Handle aset statis di folder public/images
+            if (str_starts_with($value, '/images/') || str_starts_with($value, 'images/')) {
+                return asset('/' . ltrim($value, '/'));
+            }
+
+            // Clean up malformed URLs - various patterns from the error log
             // Pattern: storage/http://localhost:8000/storage/...
             if (str_starts_with($value, 'storage/http://') || str_starts_with($value, 'storage/https://')) {
                 $cleanedUrl = str_replace('storage/', '', $value);
@@ -136,7 +141,7 @@ class PublishedMotif extends Model
                 return asset($value);
             }
             
-            // Direct filenames without path (like uK1cP8I4k8CQQhG9ga5RLIBUSGrWqdu37QguPErJ.jpg)
+            // Direct filenames without path
             if (!str_contains($value, '/') && (str_ends_with($value, '.jpg') || str_ends_with($value, '.png') || str_ends_with($value, '.jpeg'))) {
                 return asset('/storage/published-motifs/' . $value);
             }

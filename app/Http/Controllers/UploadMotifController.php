@@ -102,9 +102,9 @@ class UploadMotifController extends Controller
      */
     public function destroy(PublishedMotif $motif)
     {
-        // Check if user owns this motif
-        if ($motif->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
+        // Allow owner (flexible type comparison) or Admin role to delete
+        if ($motif->user_id != Auth::id() && Auth::user()->role !== 'Admin') {
+            abort(403, 'Unauthorized action. Anda tidak memiliki akses untuk menghapus motif ini.');
         }
 
         // Delete image from storage
