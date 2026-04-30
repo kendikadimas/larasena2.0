@@ -120,9 +120,10 @@ class Design extends Model
         
         // Direct filenames
         if (!str_contains($value, '/') && (str_ends_with($value, '.jpg') || str_ends_with($value, '.png') || str_ends_with($value, '.jpeg'))) {
-            return asset('/storage/designs/' . $value);
+            // Ubah path ke folder yang tepat
+            return asset('/storage/designs/generated/' . $value);
         }
-        
+                
         // Default: assume it's a path that needs /storage/ prefix
         return asset('/storage/' . ltrim($value, '/'));
     }
