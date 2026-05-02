@@ -5,31 +5,65 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        @if(isset($pageMeta))
+            {{-- Dynamic Meta Tags for Individual Pages (SEO-friendly for social media crawlers) --}}
+            <title inertia>{{ $pageMeta['title'] }}</title>
+            
+            <meta name="title" content="{{ $pageMeta['title'] }}">
+            <meta name="description" content="{{ $pageMeta['description'] }}">
+            <meta name="keywords" content="batik, {{ $pageMeta['title'] ?? '' }}, motif batik, desain batik">
+            <meta name="author" content="Larasena">
+            <meta name="robots" content="index, follow">
+            <meta name="language" content="Indonesian">
+            
+            <!-- Open Graph / Facebook -->
+            <meta property="og:type" content="{{ $pageMeta['type'] ?? 'website' }}">
+            <meta property="og:url" content="{{ $pageMeta['url'] }}">
+            <meta property="og:title" content="{{ $pageMeta['title'] }}">
+            <meta property="og:description" content="{{ $pageMeta['description'] }}">
+            <meta property="og:image" content="{{ $pageMeta['image'] }}">
+            <meta property="og:image:width" content="1200">
+            <meta property="og:image:height" content="630">
+            <meta property="og:image:type" content="image/jpeg">
 
-        <!-- SEO Meta Tags -->
-        <meta name="description" content="Larasena - Platform desain dan produksi batik berbasis AI. Buat motif batik unik dengan teknologi AI dan produksi bersama konveksi terpercaya.">
-        <meta name="keywords" content="batik, desain batik, AI batik generator, motif batik, konveksi batik, produksi batik, batik Indonesia">
-        <meta name="author" content="Larasena">
-        <meta name="robots" content="index, follow">
-        <meta name="language" content="Indonesian">
-        
-        <!-- Open Graph / Facebook -->
-        <meta property="og:type" content="website">
-        <meta property="og:url" content="{{ url()->current() }}">
-        <meta property="og:title" content="Larasena - Platform Desain Batik AI">
-        <meta property="og:description" content="Buat motif batik unik dengan teknologi AI dan produksi bersama konveksi terpercaya.">
-        <meta property="og:image" content="{{ asset('images/larasena-icon.svg') }}">
+            <!-- Twitter / X -->
+            <meta name="twitter:card" content="summary_large_image">
+            <meta name="twitter:url" content="{{ $pageMeta['url'] }}">
+            <meta name="twitter:title" content="{{ $pageMeta['title'] }}">
+            <meta name="twitter:description" content="{{ $pageMeta['description'] }}">
+            <meta name="twitter:image" content="{{ $pageMeta['image'] }}">
+            <meta name="twitter:creator" content="@larasena_id">
 
-        <!-- Twitter -->
-        <meta property="twitter:card" content="summary_large_image">
-        <meta property="twitter:url" content="{{ url()->current() }}">
-        <meta property="twitter:title" content="Larasena - Platform Desain Batik AI">
-        <meta property="twitter:description" content="Buat motif batik unik dengan teknologi AI dan produksi bersama konveksi terpercaya.">
-        <meta property="twitter:image" content="{{ asset('images/larasena-icon.svg') }}">
+            <!-- Canonical URL -->
+            <link rel="canonical" href="{{ $pageMeta['url'] }}">
+        @else
+            {{-- Default Meta Tags (Homepage & Other Pages) --}}
+            <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Canonical URL -->
-        <link rel="canonical" href="{{ url()->current() }}">
+            <!-- SEO Meta Tags -->
+            <meta name="description" content="Larasena - Platform desain dan produksi batik berbasis AI. Buat motif batik unik dengan teknologi AI dan produksi bersama konveksi terpercaya.">
+            <meta name="keywords" content="batik, desain batik, AI batik generator, motif batik, konveksi batik, produksi batik, batik Indonesia">
+            <meta name="author" content="Larasena">
+            <meta name="robots" content="index, follow">
+            <meta name="language" content="Indonesian">
+            
+            <!-- Open Graph / Facebook -->
+            <meta property="og:type" content="website">
+            <meta property="og:url" content="{{ url()->current() }}">
+            <meta property="og:title" content="Larasena - Platform Desain Batik AI">
+            <meta property="og:description" content="Buat motif batik unik dengan teknologi AI dan produksi bersama konveksi terpercaya.">
+            <meta property="og:image" content="{{ asset('images/larasena-icon.svg') }}">
+
+            <!-- Twitter -->
+            <meta property="twitter:card" content="summary_large_image">
+            <meta property="twitter:url" content="{{ url()->current() }}">
+            <meta property="twitter:title" content="Larasena - Platform Desain Batik AI">
+            <meta property="twitter:description" content="Buat motif batik unik dengan teknologi AI dan produksi bersama konveksi terpercaya.">
+            <meta property="twitter:image" content="{{ asset('images/larasena-icon.svg') }}">
+
+            <!-- Canonical URL -->
+            <link rel="canonical" href="{{ url()->current() }}">
+        @endif
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

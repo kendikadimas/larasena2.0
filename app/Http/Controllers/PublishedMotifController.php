@@ -121,6 +121,22 @@ class PublishedMotifController extends Controller
                 ];
             });
 
+        // Prepare SEO meta data
+        $metaTitle = "{$motif->title} — Larasena";
+        $metaDescription = substr($motif->philosophy, 0, 160) ?: "Pelajari filosofi dan makna motif batik {$motif->title} dari {$motif->origin} di Larasena.";
+        $metaImage = $motif->image_url;
+        $metaUrl = route('published-motifs.show', $motif->slug);
+
+        // Share meta data to Blade view for server-side rendering
+        // This ensures social media crawlers see the correct meta tags
+        view()->share('pageMeta', [
+            'title' => $metaTitle,
+            'description' => $metaDescription,
+            'image' => $metaImage,
+            'url' => $metaUrl,
+            'type' => 'article',
+        ]);
+
         return Inertia::render('Motif/Published/Show', [
             'motif' => [
                 'id' => $motif->id,
@@ -152,7 +168,15 @@ class PublishedMotifController extends Controller
                 'id' => Auth::user()->id,
                 'name' => Auth::user()->name,
                 'email' => Auth::user()->email,
-            ] : null
+            ] : null,
+            // SEO Meta Tags untuk server-side rendering
+            'meta' => [
+                'title' => $metaTitle,
+                'description' => $metaDescription,
+                'image' => $metaImage,
+                'url' => $metaUrl,
+                'type' => 'article',
+            ]
         ]);
     }
 
@@ -219,6 +243,15 @@ class PublishedMotifController extends Controller
                 ]
             ];
         });
+
+        // Share SEO meta data for gallery page
+        view()->share('pageMeta', [
+            'title' => 'Galeri Motif Batik — Larasena',
+            'description' => 'Jelajahi koleksi motif batik nusantara dengan filosofi mendalam. Temukan inspirasi desain batik dari berbagai daerah dan makna budayanya.',
+            'image' => asset('images/larasena-icon.svg'),
+            'url' => route('published-motifs.gallery'),
+            'type' => 'website',
+        ]);
 
         return Inertia::render('Motif/Published/Gallery', [
             'motifs' => $motifs,

@@ -4,10 +4,10 @@ import { Heart, Eye, Share2, Facebook, Twitter, Copy, Check, Calendar, ArrowLeft
 import LarasenaNavbar from '@/components/LarasenaNavbar';
 import LarasenaFooter from '@/components/LarasenaFooter';
 
-export default function Show({ motif, relatedMotifs, user }) {
+export default function Show({ motif, relatedMotifs, user, meta }) {
     const [copied, setCopied] = useState(false);
-    const shareUrl = window.location.href;
-    const shareText = `Lihat motif batik "${motif.title}" - ${motif.philosophy.substring(0, 100)}...`;
+    const shareUrl = meta?.url || window.location.href;
+    const shareText = meta?.description || `Lihat motif batik "${motif.title}" - ${motif.philosophy.substring(0, 100)}...`;
 
     const handleLike = () => {
         if (!user) {
@@ -62,26 +62,26 @@ export default function Show({ motif, relatedMotifs, user }) {
     return (
         <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #FBF8F1 0%, #F5F0E8 100%)' }}>
             <Head>
-                <title>{`${motif.title} -`}</title>
+                <title>{meta?.title || `${motif.title} - Larasena`}</title>
                 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
                 {/* Primary Meta Tags */}
-                <meta name="title" content={`${motif.title} — Larasena`} />
-                <meta name="description" content={shareText} />
+                <meta name="title" content={meta?.title || `${motif.title} — Larasena`} />
+                <meta name="description" content={meta?.description || shareText} />
 
                 {/* Open Graph / Facebook / WhatsApp */}
-                <meta property="og:type" content="article" />
-                <meta property="og:url" content={shareUrl} />
-                <meta property="og:title" content={`${motif.title} — Larasena`} />
-                <meta property="og:description" content={motif.philosophy} />
-                <meta property="og:image" content={motif.image_url} />
+                <meta property="og:type" content={meta?.type || "article"} />
+                <meta property="og:url" content={meta?.url || shareUrl} />
+                <meta property="og:title" content={meta?.title || `${motif.title} — Larasena`} />
+                <meta property="og:description" content={meta?.description || motif.philosophy} />
+                <meta property="og:image" content={meta?.image || motif.image_url} />
 
                 {/* Twitter / X */}
                 <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:url" content={shareUrl} />
-                <meta name="twitter:title" content={`${motif.title} — Larasena`} />
-                <meta name="twitter:description" content={motif.philosophy} />
-                <meta name="twitter:image" content={motif.image_url} />
+                <meta name="twitter:url" content={meta?.url || shareUrl} />
+                <meta name="twitter:title" content={meta?.title || `${motif.title} — Larasena`} />
+                <meta name="twitter:description" content={meta?.description || motif.philosophy} />
+                <meta name="twitter:image" content={meta?.image || motif.image_url} />
             </Head>
 
             <style>{`
@@ -210,16 +210,16 @@ export default function Show({ motif, relatedMotifs, user }) {
                 </div>
 
                 {/* Philosophy */}
-                <div className="max-w-3xl mx-auto mb-12">
+                <div className="w-full max-w-5xl mx-auto mb-12 px-0 sm:px-2 lg:px-0">
                     <h2 className="serif text-2xl font-bold mb-6 text-center" style={{ color: '#1A332F' }}>
                         Filosofi Motif
                     </h2>
-                    <div className="relative bg-white/70 backdrop-blur-sm rounded-3xl p-8 border border-[#D9CCBF]/60 shadow-sm">
+                    <div className="relative w-full bg-white/75 backdrop-blur-sm rounded-3xl p-5 sm:p-6 md:p-8 border border-[#D9CCBF]/60 shadow-sm">
                         {/* decorative quote mark */}
-                        <svg className="absolute top-6 left-8 w-8 h-8 opacity-10" viewBox="0 0 32 32" fill="#1A332F">
+                        <svg className="absolute top-4 left-4 sm:top-6 sm:left-8 w-7 h-7 sm:w-8 sm:h-8 opacity-10" viewBox="0 0 32 32" fill="#1A332F">
                             <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.648-7.104 6.624-9.024L25.864 4z" />
                         </svg>
-                        <p className="text-lg leading-relaxed text-center italic" style={{ color: '#5A4F3E', lineHeight: 1.9 }}>
+                        <p className="mx-auto max-w-4xl text-sm sm:text-base md:text-lg leading-relaxed text-center italic px-2 sm:px-4" style={{ color: '#5A4F3E', lineHeight: 1.9 }}>
                             {motif.philosophy}
                         </p>
                     </div>
