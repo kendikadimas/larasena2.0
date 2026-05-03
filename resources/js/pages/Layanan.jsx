@@ -204,8 +204,8 @@ export default function Layanan({ user }) {
                                         <div>
                                             <h4 className="font-semibold mb-1" style={{ color: '#1A332F' }}>Email Partnership</h4>
                                             <p className="text-sm mb-2" style={{ color: '#6F6358' }}>Untuk kerjasama konveksi dan bisnis.</p>
-                                            <a href="mailto:halo@larasena.com" className="inline-flex font-semibold text-sm hover:underline transition-all" style={{ color: '#8B6F47' }}>
-                                                halo@larasena.com
+                                            <a href="mailto:larasenabatik@gmail.com" className="inline-flex font-semibold text-sm hover:underline transition-all" style={{ color: '#8B6F47' }}>
+                                                larasenabatik@gmail.com
                                             </a>
                                         </div>
                                     </div>
