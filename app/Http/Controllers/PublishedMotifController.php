@@ -7,6 +7,7 @@ use App\Models\MotifLike;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class PublishedMotifController extends Controller
@@ -121,62 +122,97 @@ class PublishedMotifController extends Controller
                 ];
             });
 
-        // Prepare SEO meta data
-        $metaTitle = "{$motif->title} — Larasena";
-        $metaDescription = substr($motif->philosophy, 0, 160) ?: "Pelajari filosofi dan makna motif batik {$motif->title} dari {$motif->origin} di Larasena.";
-        $metaImage = $motif->image_url;
-        $metaUrl = route('published-motifs.show', $motif->slug);
+        // ── SEO Meta Data ──────────────────────────────────────────
+        $metaTitle       = "Motif Batik {$motif->title}: Filosofi, Sejarah & Desain Modern | Larasena";
+        $metaDescription = $this->buildMetaDescription($motif);
+        $metaKeywords    = $this->buildKeywords($motif);
+        $metaImage       = $motif->image_url;
+        $metaUrl         = route('published-motifs.show', $motif->slug);
 
-        // Share meta data to Blade view for server-side rendering
-        // This ensures social media crawlers see the correct meta tags
+        // JSON-LD Structured Data (Schema.org CreativeWork)
+        $jsonLd = json_encode([
+            '@context'      => 'https://schema.org',
+            '@type'         => 'CreativeWork',
+            'name'          => "Motif Batik {$motif->title}",
+            'description'   => $metaDescription,
+            'image'         => $metaImage,
+            'url'           => $metaUrl,
+            'inLanguage'    => 'id-ID',
+            'keywords'      => $metaKeywords,
+            'datePublished' => $motif->published_at?->toIso8601String(),
+            'dateModified'  => $motif->updated_at?->toIso8601String(),
+            'creator' => [
+                '@type' => 'Person',
+                'name'  => $motif->user->name,
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name'  => 'Larasena',
+                'url'   => url('/'),
+            ],
+            'about' => [
+                '@type'       => 'Thing',
+                'name'        => 'Batik',
+                'description' => 'Seni tekstil tradisional Indonesia',
+            ],
+            'locationCreated' => $motif->origin ? [
+                '@type' => 'Place',
+                'name'  => $motif->origin,
+            ] : null,
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        // Share ke Blade (server-side — dibaca social media crawler)
         view()->share('pageMeta', [
-            'title' => $metaTitle,
+            'title'       => $metaTitle,
             'description' => $metaDescription,
-            'image' => $metaImage,
-            'url' => $metaUrl,
-            'type' => 'article',
+            'image'       => $metaImage,
+            'url'         => $metaUrl,
+            'type'        => 'article',
+            'keywords'    => $metaKeywords,
+            'jsonLd'      => $jsonLd,
         ]);
 
         return Inertia::render('Motif/Published/Show', [
             'motif' => [
-                'id' => $motif->id,
-                'title' => $motif->title,
-                'slug' => $motif->slug,
-                'philosophy' => $motif->philosophy,
-                'origin' => $motif->origin,
-                'image_url' => $motif->image_url,
-                'status' => $motif->status,
-                'likes_count' => $motif->likes_count,
-                'views_count' => $motif->views_count,
-                'is_featured' => $motif->is_featured,
-                'published_at' => $motif->published_at?->format('d M Y'),
-                'is_liked_by_user' => $isLiked,
+                'id'              => $motif->id,
+                'title'           => $motif->title,
+                'slug'            => $motif->slug,
+                'philosophy'      => $motif->philosophy,
+                'origin'          => $motif->origin,
+                'category'        => $motif->category,
+                'image_url'       => $motif->image_url,
+                'status'          => $motif->status,
+                'likes_count'     => $motif->likes_count,
+                'views_count'     => $motif->views_count,
+                'is_featured'     => $motif->is_featured,
+                'published_at'    => $motif->published_at?->format('d M Y'),
+                'is_liked_by_user'=> $isLiked,
                 'user' => [
-                    'id' => $motif->user->id,
-                    'name' => $motif->user->name,
-                    'profile_photo_url' => $motif->user->profile_photo_url,
-                    'badges' => $motif->user->badges->map(function($b) {
-                        return [
-                            'badge_name' => $b->badge_name,
-                            'badge_icon' => $b->badge_icon
-                        ];
-                    })
-                ]
+                    'id'               => $motif->user->id,
+                    'name'             => $motif->user->name,
+                    'profile_photo_url'=> $motif->user->profile_photo_url,
+                    'badges'           => $motif->user->badges->map(fn($b) => [
+                        'badge_name' => $b->badge_name,
+                        'badge_icon' => $b->badge_icon,
+                    ]),
+                ],
             ],
             'relatedMotifs' => $relatedMotifs,
             'user' => Auth::user() ? [
-                'id' => Auth::user()->id,
-                'name' => Auth::user()->name,
+                'id'    => Auth::user()->id,
+                'name'  => Auth::user()->name,
                 'email' => Auth::user()->email,
             ] : null,
-            // SEO Meta Tags untuk server-side rendering
+            // SEO props — juga dikirim ke React untuk fallback client-side
             'meta' => [
-                'title' => $metaTitle,
+                'title'       => $metaTitle,
                 'description' => $metaDescription,
-                'image' => $metaImage,
-                'url' => $metaUrl,
-                'type' => 'article',
-            ]
+                'image'       => $metaImage,
+                'url'         => $metaUrl,
+                'type'        => 'article',
+                'keywords'    => $metaKeywords,
+            ],
+            'jsonLd' => $jsonLd,
         ]);
     }
 
@@ -244,23 +280,87 @@ class PublishedMotifController extends Controller
             ];
         });
 
+        // JSON-LD untuk halaman galeri
+        $galleryJsonLd = json_encode([
+            '@context'    => 'https://schema.org',
+            '@type'       => 'CollectionPage',
+            'name'        => 'Galeri Motif Batik Nusantara — Larasena',
+            'description' => 'Jelajahi koleksi motif batik nusantara dengan filosofi mendalam dari berbagai daerah di Indonesia.',
+            'url'         => route('published-motifs.gallery'),
+            'inLanguage'  => 'id-ID',
+            'publisher'   => [
+                '@type' => 'Organization',
+                'name'  => 'Larasena',
+                'url'   => url('/'),
+            ],
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
         // Share SEO meta data for gallery page
         view()->share('pageMeta', [
-            'title' => 'Galeri Motif Batik — Larasena',
-            'description' => 'Jelajahi koleksi motif batik nusantara dengan filosofi mendalam. Temukan inspirasi desain batik dari berbagai daerah dan makna budayanya.',
-            'image' => asset('images/larasena-icon.svg'),
-            'url' => route('published-motifs.gallery'),
-            'type' => 'website',
+            'title'       => 'Galeri Motif Batik Nusantara | Temukan Inspirasi Batik Indonesia — Larasena',
+            'description' => 'Jelajahi ratusan motif batik nusantara lengkap dengan filosofi, asal daerah, dan makna budayanya. Temukan inspirasi desain batik kawung, parang, mega mendung & lainnya.',
+            'image'       => asset('images/og-gallery.jpg'),
+            'url'         => route('published-motifs.gallery'),
+            'type'        => 'website',
+            'keywords'    => 'galeri motif batik, motif batik Indonesia, batik kawung, batik parang, mega mendung, desain batik online, filosofi batik',
+            'jsonLd'      => $galleryJsonLd,
         ]);
 
         return Inertia::render('Motif/Published/Gallery', [
             'motifs' => $motifs,
             'user' => Auth::user() ? [
-                'id' => Auth::user()->id,
-                'name' => Auth::user()->name,
+                'id'    => Auth::user()->id,
+                'name'  => Auth::user()->name,
                 'email' => Auth::user()->email,
-            ] : null
+            ] : null,
         ]);
+    }
+
+    // ── Private SEO Helpers ────────────────────────────────────────
+
+    /**
+     * Build keyword-rich, unique meta description per motif.
+     * Target: ~155 chars, natural language, mengandung keyword utama.
+     */
+    private function buildMetaDescription(PublishedMotif $motif): string
+    {
+        $origin  = $motif->origin  ? "dari {$motif->origin}"  : 'Indonesia';
+        $excerpt = Str::limit(strip_tags($motif->philosophy ?? ''), 80);
+        $base    = "Pelajari motif batik {$motif->title} {$origin}: filosofi, sejarah, dan inspirasi desain modern. ";
+        return Str::limit($base . $excerpt, 160);
+    }
+
+    /**
+     * Build comma-separated keywords dari data motif.
+     */
+    private function buildKeywords(PublishedMotif $motif): string
+    {
+        $keywords = [
+            "motif batik {$motif->title}",
+            "{$motif->title}",
+            "batik {$motif->title}",
+            "filosofi batik {$motif->title}",
+            "arti motif {$motif->title}",
+        ];
+
+        if ($motif->origin) {
+            $keywords[] = "batik {$motif->origin}";
+            $keywords[] = "motif batik {$motif->origin}";
+        }
+
+        if ($motif->category) {
+            $keywords[] = "batik {$motif->category}";
+        }
+
+        $keywords = array_merge($keywords, [
+            'motif batik',
+            'desain batik online',
+            'batik Indonesia',
+            'batik modern',
+            'Larasena',
+        ]);
+
+        return implode(', ', $keywords);
     }
 
     // Delete motif

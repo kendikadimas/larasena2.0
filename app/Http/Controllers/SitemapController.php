@@ -17,7 +17,8 @@ class SitemapController extends Controller
         $today = now()->toDateString();
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+                 xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">';
 
         /*
         |--------------------------------------------------------------------------
@@ -57,12 +58,30 @@ class SitemapController extends Controller
         */
 
         foreach ($motifs as $motif) {
-            $xml .= $this->addUrl(
-                route('published-motifs.show', $motif->slug),
-                'weekly',
-                '0.85',
-                $motif->updated_at->toDateString()
-            );
+            $motifUrl = route('published-motifs.show', $motif->slug);
+            $xml .= '<url>';
+            $xml .= '<loc>' . htmlspecialchars($motifUrl, ENT_XML1, 'UTF-8') . '</loc>';
+            $xml .= '<lastmod>' . $motif->updated_at->toDateString() . '</lastmod>';
+            $xml .= '<changefreq>weekly</changefreq>';
+            $xml .= '<priority>0.85</priority>';
+
+            // Image sitemap — bantu Google index gambar motif
+            if ($motif->image_url) {
+                $imageUrl = $motif->image_url;
+                // Pastikan URL absolute
+                if (!str_starts_with($imageUrl, 'http')) {
+                    $imageUrl = url($imageUrl);
+                }
+                $xml .= '<image:image>';
+                $xml .= '<image:loc>' . htmlspecialchars($imageUrl, ENT_XML1, 'UTF-8') . '</image:loc>';
+                $xml .= '<image:title>' . htmlspecialchars("Motif Batik {$motif->title}", ENT_XML1, 'UTF-8') . '</image:title>';
+                if ($motif->origin) {
+                    $xml .= '<image:caption>' . htmlspecialchars("Motif batik {$motif->title} dari {$motif->origin} — Larasena", ENT_XML1, 'UTF-8') . '</image:caption>';
+                }
+                $xml .= '</image:image>';
+            }
+
+            $xml .= '</url>';
         }
 
         $xml .= '</urlset>';

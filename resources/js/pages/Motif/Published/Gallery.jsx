@@ -97,19 +97,11 @@ export default function Gallery({ motifs, user }) {
     return (
         <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #FBF8F1 0%, #F5F0E8 40%, #FBF8F1 100%)' }}>
             <Head>
-                <title>Batikpedia — Galeri Motif Batik Nusantara</title>
-                <meta name="description" content="Jelajahi keindahan dan filosofi ribuan motif batik dari seluruh Nusantara di Galeri Larasena. Temukan inspirasi warisan budaya Indonesia." />
-                
-                {/* Open Graph */}
-                <meta property="og:type" content="website" />
-                <meta property="og:title" content="Batikpedia — Galeri Motif Batik Nusantara" />
-                <meta property="og:description" content="Jelajahi keindahan dan filosofi ribuan motif batik dari seluruh Nusantara di Galeri Larasena. Temukan inspirasi warisan budaya Indonesia." />
-                
-                {/* Twitter */}
-                <meta name="twitter:card" content="summary" />
-                <meta name="twitter:title" content="Batikpedia — Galeri Motif Batik Nusantara" />
-                <meta name="twitter:description" content="Jelajahi keindahan dan filosofi ribuan motif batik dari seluruh Nusantara di Galeri Larasena." />
-                
+                {/* Title & primary meta di-handle server-side oleh app.blade.php */}
+                {/* agar social media crawler membaca OG tags yang benar */}
+                <title>Galeri Motif Batik Nusantara | Temukan Inspirasi Batik Indonesia — Larasena</title>
+                <meta name="description" content="Jelajahi ratusan motif batik nusantara lengkap dengan filosofi, asal daerah, dan makna budayanya. Temukan inspirasi desain batik kawung, parang, mega mendung & lainnya." />
+                <meta name="keywords" content="galeri motif batik, motif batik Indonesia, batik kawung, batik parang, mega mendung, desain batik online, filosofi batik" />
                 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
             </Head>
 

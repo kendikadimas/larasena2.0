@@ -8,15 +8,15 @@
         @if(isset($pageMeta))
             {{-- Dynamic Meta Tags for Individual Pages (SEO-friendly for social media crawlers) --}}
             <title inertia>{{ $pageMeta['title'] }}</title>
-            
+
             <meta name="title" content="{{ $pageMeta['title'] }}">
             <meta name="description" content="{{ $pageMeta['description'] }}">
-            <meta name="keywords" content="batik, {{ $pageMeta['title'] ?? '' }}, motif batik, desain batik">
+            <meta name="keywords" content="{{ $pageMeta['keywords'] ?? 'batik, motif batik, desain batik, batik Indonesia, Larasena' }}">
             <meta name="author" content="Larasena">
             <meta name="robots" content="index, follow">
             <meta name="language" content="Indonesian">
-            
-            <!-- Open Graph / Facebook -->
+
+            <!-- Open Graph / Facebook / WhatsApp -->
             <meta property="og:type" content="{{ $pageMeta['type'] ?? 'website' }}">
             <meta property="og:url" content="{{ $pageMeta['url'] }}">
             <meta property="og:title" content="{{ $pageMeta['title'] }}">
@@ -25,6 +25,8 @@
             <meta property="og:image:width" content="1200">
             <meta property="og:image:height" content="630">
             <meta property="og:image:type" content="image/jpeg">
+            <meta property="og:site_name" content="Larasena">
+            <meta property="og:locale" content="id_ID">
 
             <!-- Twitter / X -->
             <meta name="twitter:card" content="summary_large_image">
@@ -33,9 +35,15 @@
             <meta name="twitter:description" content="{{ $pageMeta['description'] }}">
             <meta name="twitter:image" content="{{ $pageMeta['image'] }}">
             <meta name="twitter:creator" content="@larasena_id">
+            <meta name="twitter:site" content="@larasena_id">
 
             <!-- Canonical URL -->
             <link rel="canonical" href="{{ $pageMeta['url'] }}">
+
+            <!-- JSON-LD Structured Data (Schema.org) -->
+            @if(!empty($pageMeta['jsonLd']))
+            <script type="application/ld+json">{!! $pageMeta['jsonLd'] !!}</script>
+            @endif
         @else
             {{-- Default Meta Tags (Homepage & Other Pages) --}}
             <title inertia>{{ config('app.name', 'Laravel') }}</title>

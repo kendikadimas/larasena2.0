@@ -4,7 +4,7 @@ import { Heart, Eye, Share2, Facebook, Twitter, Copy, Check, Calendar, ArrowLeft
 import LarasenaNavbar from '@/components/LarasenaNavbar';
 import LarasenaFooter from '@/components/LarasenaFooter';
 
-export default function Show({ motif, relatedMotifs, user, meta }) {
+export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
     const [copied, setCopied] = useState(false);
     const shareUrl = meta?.url || window.location.href;
     const shareText = meta?.description || `Lihat motif batik "${motif.title}" - ${motif.philosophy.substring(0, 100)}...`;
@@ -62,26 +62,33 @@ export default function Show({ motif, relatedMotifs, user, meta }) {
     return (
         <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #FBF8F1 0%, #F5F0E8 100%)' }}>
             <Head>
-                <title>{meta?.title || `${motif.title} - Larasena`}</title>
+                <title>{meta?.title || `Motif Batik ${motif.title}: Filosofi & Sejarah | Larasena`}</title>
                 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
                 {/* Primary Meta Tags */}
-                <meta name="title" content={meta?.title || `${motif.title} — Larasena`} />
-                <meta name="description" content={meta?.description || shareText} />
+                <meta name="title" content={meta?.title || `Motif Batik ${motif.title}: Filosofi, Sejarah & Desain Modern | Larasena`} />
+                <meta name="description" content={meta?.description || `Pelajari motif batik ${motif.title} dari ${motif.origin || 'Indonesia'}: filosofi, sejarah, dan inspirasi desain modern.`} />
+                <meta name="keywords" content={meta?.keywords || `motif batik ${motif.title}, batik ${motif.origin}, filosofi batik`} />
 
                 {/* Open Graph / Facebook / WhatsApp */}
-                <meta property="og:type" content={meta?.type || "article"} />
+                <meta property="og:type" content={meta?.type || 'article'} />
                 <meta property="og:url" content={meta?.url || shareUrl} />
-                <meta property="og:title" content={meta?.title || `${motif.title} — Larasena`} />
+                <meta property="og:title" content={meta?.title || `Motif Batik ${motif.title} | Larasena`} />
                 <meta property="og:description" content={meta?.description || motif.philosophy} />
                 <meta property="og:image" content={meta?.image || motif.image_url} />
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
+                <meta property="og:site_name" content="Larasena" />
 
                 {/* Twitter / X */}
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:url" content={meta?.url || shareUrl} />
-                <meta name="twitter:title" content={meta?.title || `${motif.title} — Larasena`} />
+                <meta name="twitter:title" content={meta?.title || `Motif Batik ${motif.title} | Larasena`} />
                 <meta name="twitter:description" content={meta?.description || motif.philosophy} />
                 <meta name="twitter:image" content={meta?.image || motif.image_url} />
+
+                {/* JSON-LD Structured Data (client-side fallback) */}
+                {jsonLd && <script type="application/ld+json">{jsonLd}</script>}
             </Head>
 
             <style>{`
@@ -209,7 +216,79 @@ export default function Show({ motif, relatedMotifs, user, meta }) {
                     </div>
                 </div>
 
-                {/* Philosophy */}
+                {/* SEO Rich Content Sections — penting untuk ranking long-tail keyword */}
+                <div className="w-full mx-auto mb-12 space-y-8">
+
+                    {/* Apa itu motif ini */}
+                    <section
+                        aria-label={`Penjelasan motif batik ${motif.title}`}
+                        className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-[#D9CCBF]/60"
+                    >
+                        <h2 className="serif text-xl font-bold mb-3" style={{ color: '#1A332F' }}>
+                            Apa itu Motif Batik {motif.title}?
+                        </h2>
+                        <p className="text-sm leading-relaxed" style={{ color: '#5A4F3E', lineHeight: 1.8 }}>
+                            Motif batik <strong>{motif.title}</strong> adalah salah satu kekayaan
+                            warisan budaya batik {motif.origin ? `dari ${motif.origin}` : 'Indonesia'}
+                            {motif.category ? ` dalam kategori batik ${motif.category}` : ''}.
+                            Setiap goresan dan motifnya menyimpan makna filosofis yang dalam,
+                            mencerminkan nilai-nilai budaya dan kearifan lokal yang telah
+                            diwariskan turun-temurun. Larasena menghadirkan koleksi motif{' '}
+                            <strong>{motif.title}</strong> dalam platform desain batik digital
+                            sehingga Anda bisa mengeksplorasi dan menciptakan karya batik
+                            modern dengan inspirasi tradisional.
+                        </p>
+                    </section>
+
+                    {/* Asal Daerah */}
+                    {motif.origin && (
+                        <section
+                            aria-label={`Asal daerah motif ${motif.title}`}
+                            className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-[#D9CCBF]/60"
+                        >
+                            <h2 className="serif text-xl font-bold mb-3" style={{ color: '#1A332F' }}>
+                                Asal Daerah Motif Batik {motif.title}
+                            </h2>
+                            <p className="text-sm leading-relaxed" style={{ color: '#5A4F3E', lineHeight: 1.8 }}>
+                                Motif batik <strong>{motif.title}</strong> berasal dari{' '}
+                                <strong>{motif.origin}</strong>, salah satu daerah penghasil
+                                batik terkemuka di Indonesia. Batik {motif.origin} dikenal
+                                dengan ciri khas motif yang memiliki makna simbolis kuat dan
+                                teknik pembuatan yang kaya tradisi. Pelajari lebih lanjut
+                                filosofi motif {motif.title} melalui karya-karya kreator
+                                Indonesia di Galeri Larasena.
+                            </p>
+                        </section>
+                    )}
+
+                    {/* CTA — Desain Sendiri */}
+                    <section
+                        aria-label="Ajakan membuat desain batik"
+                        className="rounded-2xl p-6 sm:p-8 text-center"
+                        style={{ background: 'linear-gradient(135deg, #1A332F 0%, #2C5E54 100%)' }}
+                    >
+                        <h2 className="serif text-xl font-bold mb-2 text-white">
+                            Buat Desain Motif Batik {motif.title} Sendiri
+                        </h2>
+                        <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>
+                            Ingin membuat variasi motif <strong>{motif.title}</strong> dengan sentuhan modern?
+                            Gunakan platform desain batik AI Larasena untuk bereksperimen
+                            dengan motif batik digital secara online — gratis.
+                        </p>
+                        <a
+                            href={user ? '/dashboard' : '/register'}
+                            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl font-semibold text-sm transition-all duration-300 hover:scale-105"
+                            style={{ background: '#C9A84C', color: '#1A332F' }}
+                        >
+                            {user ? 'Mulai Desain Sekarang' : 'Daftar Gratis & Desain'}
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                    </section>
+                </div>
+
+                {/* Filosofi Motif */}
                 <div className="w-full mx-auto mb-12 px-0 sm:px-2 lg:px-0">
                     <h2 className="serif text-2xl font-bold mb-6 text-center" style={{ color: '#1A332F' }}>
                         Filosofi Motif
@@ -226,6 +305,7 @@ export default function Show({ motif, relatedMotifs, user, meta }) {
                 </div>
 
                 {/* Share Section */}
+
                 <div className="mb-16 pb-16 border-b" style={{ borderColor: '#D9CCBF' }}>
                     <h3 className="text-sm font-semibold uppercase tracking-[0.15em] mb-4" style={{ color: '#8B6F47' }}>
                         Bagikan Motif
