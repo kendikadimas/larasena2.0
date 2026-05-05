@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Konveksi;
+use App\Models\Subscription;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -56,16 +57,25 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
         Auth::login($user);
 
-        // ✅ Redirect ke route yang benar
+        // ── Buat free trial 15 hari untuk user baru ──
+        Subscription::create([
+            'user_id'          => $user->id,
+            'status'           => 'trial',
+            'trial_started_at' => now(),
+            'trial_ends_at'    => now()->addDays(15),
+            'monthly_amount'   => (int) config('services.xendit.default_amount', 30000),
+        ]);
+
+        // ── Redirect ke route yang benar ──
         if ($user->role === 'Convection') {
             Konveksi::firstOrCreate(
                 ['user_id' => $user->id],
                 [
-                    'name' => $user->name,
+                    'name'        => $user->name,
                     'description' => 'Belum ada deskripsi.',
-                    'location' => 'Belum diatur',
-                    'no_telp' => '-',
-                    'rating' => 0,
+                    'location'    => 'Belum diatur',
+                    'no_telp'     => '-',
+                    'rating'      => 0,
                     'is_verified' => false,
                 ]
             );

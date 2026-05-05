@@ -45,6 +45,15 @@ export default function UserLayout({ children, title }) {
   const user = auth.user;
   const isBlockedByPayment = Boolean(subscription?.payment_required);
 
+  // Hitung sisa hari trial (jika masih trial)
+  const trialDaysLeft = (() => {
+    if (!subscription?.is_trial || !subscription?.trial_ends_at) return null;
+    const diff = Math.ceil(
+      (new Date(subscription.trial_ends_at) - new Date()) / (1000 * 60 * 60 * 24)
+    );
+    return diff > 0 ? diff : 0;
+  })();
+
   return (
     <>
       <Head title={title} />
@@ -58,6 +67,19 @@ export default function UserLayout({ children, title }) {
           >
             <div>
               <h1 className="text-2xl font-bold text-[#BA682A] mb-1">{title}</h1>
+
+              {/* Badge sisa trial */}
+              {trialDaysLeft !== null && (
+                <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full mt-1 ${
+                  trialDaysLeft <= 3
+                    ? 'bg-red-100 text-red-700'
+                    : trialDaysLeft <= 7
+                    ? 'bg-yellow-100 text-yellow-700'
+                    : 'bg-emerald-100 text-emerald-700'
+                }`}>
+                  ⏳ Trial: {trialDaysLeft} hari lagi
+                </span>
+              )}
 
              
               {url !== '/dashboard' && (
@@ -158,17 +180,35 @@ export default function UserLayout({ children, title }) {
       {isBlockedByPayment && (
         <div className="fixed inset-0 z-[120] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl p-6 md:p-8 text-center">
-            <p className="text-xs font-semibold tracking-wider text-red-600 uppercase">Akses Ditangguhkan</p>
-            <h2 className="mt-2 text-2xl font-bold text-gray-900">Langganan Kamu Sudah Berakhir</h2>
-            <p className="mt-3 text-sm text-gray-600">
-              Untuk melanjutkan penggunaan fitur Larasena, selesaikan pembayaran langganan bulanan Rp30.000.
+
+            {/* Icon */}
+            <div className="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-7 h-7 text-amber-600" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+
+            <p className="text-xs font-semibold tracking-wider text-amber-600 uppercase">
+              {subscription?.is_trial === false && subscription?.plan_status === 'payment_required'
+                ? 'Free Trial Berakhir'
+                : 'Akses Ditangguhkan'}
+            </p>
+            <h2 className="mt-2 text-2xl font-bold text-gray-900">
+              {subscription?.plan_status === 'payment_required' && !subscription?.is_trial
+                ? 'Free Trial 15 Hari Kamu Sudah Habis'
+                : 'Langganan Kamu Sudah Berakhir'}
+            </h2>
+            <p className="mt-3 text-sm text-gray-600 leading-relaxed">
+              Daftarkan langganan bulanan untuk melanjutkan akses penuh ke semua fitur Larasena —
+              desain batik AI, galeri motif, dan koneksi ke konveksi terpercaya.
+              Hanya <span className="font-semibold text-gray-800">Rp30.000/bulan</span>.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href={route('billing.pay-now')}
-                className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
+                className="inline-flex items-center justify-center px-5 py-3 rounded-xl bg-[#BA682A] text-white font-semibold hover:bg-[#9a5522] transition"
               >
-                Metode Pembayaran
+                Berlangganan Sekarang
               </Link>
 
               <button
