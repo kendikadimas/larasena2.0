@@ -25,7 +25,7 @@ export default function LarasenaFooter() {
                         <span className="ml-3 font-serif text-sm font-semibold text-[#1C3A35] tracking-tight lowercase">larasena</span>
                     </Link>
                     <p className="text-sm leading-relaxed max-w-xs" style={{ color: '#7A6E62' }}>
-                        Platform digital terdepan untuk mendesain dan memproduksi batik dengan teknologi modern, melestarikan warisan budaya Indonesia.
+                        Larasena adalah platform digital untuk desain batik, upload karya batik, dan komunitas kreator batik Indonesia.
                     </p>
                 </div>
 

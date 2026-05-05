@@ -45,15 +45,6 @@ export default function UserLayout({ children, title }) {
   const user = auth.user;
   const isBlockedByPayment = Boolean(subscription?.payment_required);
 
-  // Hitung sisa hari trial (jika masih trial)
-  const trialDaysLeft = (() => {
-    if (!subscription?.is_trial || !subscription?.trial_ends_at) return null;
-    const diff = Math.ceil(
-      (new Date(subscription.trial_ends_at) - new Date()) / (1000 * 60 * 60 * 24)
-    );
-    return diff > 0 ? diff : 0;
-  })();
-
   return (
     <>
       <Head title={title} />
@@ -67,19 +58,6 @@ export default function UserLayout({ children, title }) {
           >
             <div>
               <h1 className="text-2xl font-bold text-[#BA682A] mb-1">{title}</h1>
-
-              {/* Badge sisa trial */}
-              {trialDaysLeft !== null && (
-                <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full mt-1 ${
-                  trialDaysLeft <= 3
-                    ? 'bg-red-100 text-red-700'
-                    : trialDaysLeft <= 7
-                    ? 'bg-yellow-100 text-yellow-700'
-                    : 'bg-emerald-100 text-emerald-700'
-                }`}>
-                  ⏳ Trial: {trialDaysLeft} hari lagi
-                </span>
-              )}
 
              
               {url !== '/dashboard' && (

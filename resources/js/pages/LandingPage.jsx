@@ -130,7 +130,7 @@ export default function LandingPage() {
   return (
 
     <div className="min-h-screen flex flex-col bg-white overflow-x-hidden relative">
-      <Head title="larasena - Desain Batik Online & Kolaborasi Kreatif" />
+      <Head title="Larasena — Desain Batik & Galeri Motif Batik Indonesia" />
       {/* Custom CSS untuk animasi */}
       <style jsx>{`
         @keyframes float {
@@ -890,7 +890,7 @@ export default function LandingPage() {
               <span className="ml-3 font-serif text-sm font-semibold text-[#1C3A35] tracking-tight lowercase">larasena</span>
             </a>
             <p className="text-sm leading-relaxed max-w-xs" style={{ color: '#7A6E62' }}>
-              Platform digital terdepan untuk mendesain dan memproduksi batik dengan teknologi modern, melestarikan warisan budaya Indonesia.
+              Larasena adalah platform digital untuk desain batik, upload karya batik, dan komunitas kreator batik Indonesia.
             </p>
           </div>
 

@@ -49,8 +49,8 @@
             <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
             <!-- SEO Meta Tags -->
-            <meta name="description" content="Larasena - Platform desain dan produksi batik berbasis AI. Buat motif batik unik dengan teknologi AI dan produksi bersama konveksi terpercaya.">
-            <meta name="keywords" content="batik, desain batik, AI batik generator, motif batik, konveksi batik, produksi batik, batik Indonesia">
+            <meta name="description" content="Larasena adalah platform digital untuk desain batik, upload karya batik, dan komunitas kreator batik Indonesia. Buat motif batik unikmu dengan AI dan bagikan ke ribuan pengguna.">
+            <meta name="keywords" content="desain batik, upload batik, komunitas batik, kreator batik Indonesia, motif batik, batik AI, galeri motif batik, batik online, Larasena">
             <meta name="author" content="Larasena">
             <meta name="robots" content="index, follow">
             <meta name="language" content="Indonesian">
@@ -58,14 +58,14 @@
             <!-- Open Graph / Facebook -->
             <meta property="og:type" content="website">
             <meta property="og:url" content="{{ url()->current() }}">
-            <meta property="og:title" content="Larasena - Platform Desain Batik AI">
-            <meta property="og:description" content="Buat motif batik unik dengan teknologi AI dan produksi bersama konveksi terpercaya.">
+            <meta property="og:title" content="Larasena — Desain Batik & Galeri Motif Batik Indonesia">
+            <meta property="og:description" content="Larasena adalah platform digital untuk desain batik, upload karya batik, dan komunitas kreator batik Indonesia.">
             <meta property="og:image" content="{{ asset('images/larasena-icon.svg') }}">
 
             <!-- Twitter -->
             <meta property="twitter:card" content="summary_large_image">
             <meta property="twitter:url" content="{{ url()->current() }}">
-            <meta property="twitter:title" content="Larasena - Platform Desain Batik AI">
+            <meta property="twitter:title" content="Larasena — Desain Batik & Galeri Motif Batik Indonesia">
             <meta property="twitter:description" content="Buat motif batik unik dengan teknologi AI dan produksi bersama konveksi terpercaya.">
             <meta property="twitter:image" content="{{ asset('images/larasena-icon.svg') }}">
 
