@@ -3,42 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\Design;
+use App\Models\PublishedMotif;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class DesignController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Dashboard
+    |--------------------------------------------------------------------------
+    */
+
     public function index()
     {
-        $designs = Auth::user()->designs()
-            ->orderBy('updated_at', 'desc')
+        $designs = Design::where('user_id', Auth::id())
+            ->latest('updated_at')
             ->get()
             ->map(function ($design) {
-                if (is_string($design->canvas_data)) {
-                    $design->canvas_data = json_decode($design->canvas_data, true);
-                }
-                // Check if design is published (before transforming URL)
-                // Match by full path or just filename
-                $publishedMotif = \App\Models\PublishedMotif::where('user_id', $design->user_id)
-                    ->where(function($query) use ($design) {
-                        if ($design->image_url) {
-                            $filename = basename($design->image_url);
-                            $query->where('image_path', 'LIKE', '%' . $filename)
-                                  ->orWhere('image_path', $design->image_url);
-                        }
-                        // Also try to match by design_data if stored
-                        $query->orWhereRaw("JSON_UNQUOTE(JSON_EXTRACT(design_data, '$.design_id')) = ?", [(string)$design->id]);
-                    })
-                    ->first();
-                
-                $design->published_status = $publishedMotif ? $publishedMotif->status : null;
-                $design->published_motif_id = $publishedMotif ? $publishedMotif->id : null;
 
-                $design->image_url = $design->image_url
-                    ? Storage::url($design->image_url)
-                    : null;
+                $design->canvas_data = $this->decodeCanvas($design->canvas_data);
+
+                $design->published_status = $this->getPublishStatus($design);
+
+                $design->image_url = $this->normalizeImageUrl($design->image_url);
 
                 return $design;
             });
@@ -48,222 +39,268 @@ class DesignController extends Controller
         ]);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Create Manual Design
+    |--------------------------------------------------------------------------
+    */
+
     public function store(Request $request)
     {
-        \Log::info('=== STORING DESIGN ===');
-        \Log::info('Request data:', $request->all());
-
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            // 'description' => 'nullable|string',
-            'canvas_data' => 'required|array',
-            'canvas_width' => 'required|integer|min:200',
-            'canvas_height' => 'required|integer|min:200',
-            'thumbnail' => 'nullable|string'
+            'title'         => 'required|string|max:255',
+            'canvas_data'   => 'required|array',
+            'canvas_width'  => 'required|integer|min:200|max:5000',
+            'canvas_height' => 'required|integer|min:200|max:5000',
+            'thumbnail'     => 'nullable|string',
         ]);
 
-        \Log::info('Validated data:', $validated);
+        $thumbnailPath = $this->saveBase64Image(
+            $request->thumbnail,
+            'designs/thumbnails'
+        );
 
-        $thumbnailPath = null;
-
-        if ($request->thumbnail) {
-            $thumbnailData = substr($request->thumbnail, strpos($request->thumbnail, ',') + 1);
-            $thumbnailData = base64_decode($thumbnailData);
-            $filename = 'designs/thumbnails/' . Auth::id() . '_' . time() . '.jpg';
-
-            Storage::disk('public')->put($filename, $thumbnailData);
-            $thumbnailPath = $filename;
-        }
-
-        $design = Design::create([
-            'title' => $validated['title'],
-            // 'description' => $validated['description'],
-            'canvas_data' => json_encode($validated['canvas_data']),
-            'canvas_width' => (int) $validated['canvas_width'],
-            'canvas_height' => (int) $validated['canvas_height'],
-            'image_url' => $thumbnailPath,
-            'user_id' => Auth::id()
+        Design::create([
+            'title'         => $validated['title'],
+            'canvas_data'   => json_encode($validated['canvas_data']),
+            'canvas_width'  => $validated['canvas_width'],
+            'canvas_height' => $validated['canvas_height'],
+            'image_url'     => $thumbnailPath,
+            'user_id'       => Auth::id(),
         ]);
 
-        \Log::info('Design created:', [
-            'id' => $design->id,
-            'canvas_width' => $design->canvas_width,
-            'canvas_height' => $design->canvas_height,
-        ]);
-
-        return redirect()->route('dashboard');
+        return redirect()
+            ->route('dashboard')
+            ->with('success', 'Desain berhasil dibuat');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Show Editor
+    |--------------------------------------------------------------------------
+    */
 
     public function show($id)
     {
         $design = Design::where('user_id', Auth::id())
             ->findOrFail($id);
 
-        // Decode canvas_data jika string
-        if (is_string($design->canvas_data)) {
-            $design->canvas_data = json_decode($design->canvas_data, true);
-        }
-
-        // ✅ FIX: Normalisasi path gambar di canvas_data
-        if (is_array($design->canvas_data)) {
-            $design->canvas_data = array_map(function ($obj) {
-                if (isset($obj['imageUrl'])) {
-                    // Jika path sudah lengkap (dimulai dengan /storage/), biarkan
-                    if (strpos($obj['imageUrl'], '/storage/') === 0) {
-                        // Sudah benar, tidak perlu diubah
-                    } 
-                    // Jika path relatif (designs/...), tambahkan /storage/
-                    elseif (strpos($obj['imageUrl'], 'designs/') === 0) {
-                        $obj['imageUrl'] = '/storage/' . $obj['imageUrl'];
-                    }
-                    // Jika full URL (http://...), biarkan
-                    elseif (strpos($obj['imageUrl'], 'http') === 0) {
-                        // Sudah benar
-                    }
-                }
-                
-                // ✅ Support backward compatibility dengan 'src'
-                if (isset($obj['src']) && !isset($obj['imageUrl'])) {
-                    $obj['imageUrl'] = $obj['src'];
-                }
-                
-                return $obj;
-            }, $design->canvas_data);
-        }
-
-        // Pastikan canvas_width dan canvas_height ada
-        if (!$design->canvas_width) {
-            $design->canvas_width = 800;
-        }
-        if (!$design->canvas_height) {
-            $design->canvas_height = 600;
-        }
-
-        \Log::info('🔍 Loading design for edit:', [
-            'design_id' => $design->id,
-            'canvas_data_count' => count($design->canvas_data ?? []),
-            'first_object' => $design->canvas_data[0] ?? null,
-        ]);
+        $canvas = $this->decodeCanvas($design->canvas_data);
+        $canvas = $this->normalizeCanvasImages($canvas);
 
         return Inertia::render('Editor/DesignEditor', [
             'initialDesign' => [
-                'id' => $design->id,
-                'title' => $design->title,
-                'canvas_data' => $design->canvas_data,
-                'canvas_width' => (int) $design->canvas_width,
-                'canvas_height' => (int) $design->canvas_height,
-                'image_url' => $design->image_url ? Storage::url($design->image_url) : null,
-                'created_at' => $design->created_at,
-                'updated_at' => $design->updated_at,
+                'id'            => $design->id,
+                'title'         => $design->title,
+                'canvas_data'   => $canvas,
+                'canvas_width'  => (int) ($design->canvas_width ?: 800),
+                'canvas_height' => (int) ($design->canvas_height ?: 600),
+                'image_url'     => $this->normalizeImageUrl($design->image_url),
+                'created_at'    => $design->created_at,
+                'updated_at'    => $design->updated_at,
             ]
         ]);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Update
+    |--------------------------------------------------------------------------
+    */
+
     public function update(Request $request, $id)
     {
-        $design = Design::where('user_id', Auth::id())->findOrFail($id);
+        $design = Design::where('user_id', Auth::id())
+            ->findOrFail($id);
 
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            // 'description' => 'nullable|string',
-            'canvas_data' => 'required|array',
-            'canvas_width' => 'required|integer|min:200',
-            'canvas_height' => 'required|integer|min:200',
-            'thumbnail' => 'nullable|string'
-        ]);
-
-        \Log::info('Updating design', [
-            'design_id' => $id,
-            'canvas_width' => $validated['canvas_width'],
-            'canvas_height' => $validated['canvas_height'],
+            'title'         => 'required|string|max:255',
+            'canvas_data'   => 'required|array',
+            'canvas_width'  => 'required|integer|min:200|max:5000',
+            'canvas_height' => 'required|integer|min:200|max:5000',
+            'thumbnail'     => 'nullable|string',
         ]);
 
         $thumbnailPath = $design->image_url;
 
-        if ($request->has('thumbnail') && $request->thumbnail) {
-            if ($design->image_url) {
-                Storage::disk('public')->delete($design->image_url);
-            }
+        if ($request->thumbnail) {
 
-            $thumbnailData = substr($request->thumbnail, strpos($request->thumbnail, ',') + 1);
-            $thumbnailData = base64_decode($thumbnailData);
-            $filename = 'designs/thumbnails/' . Auth::id() . '_' . time() . '.jpg';
-            
-            Storage::disk('public')->put($filename, $thumbnailData);
-            $thumbnailPath = $filename;
+            $this->deleteImageIfExists($design->image_url);
+
+            $thumbnailPath = $this->saveBase64Image(
+                $request->thumbnail,
+                'designs/thumbnails'
+            );
         }
 
         $design->update([
-            'title' => $validated['title'],
-            // 'description' => $validated['description'],
-            'canvas_data' => json_encode($validated['canvas_data']),
-            'canvas_width' => (int) $validated['canvas_width'],
-            'canvas_height' => (int) $validated['canvas_height'],
-            'image_url' => $thumbnailPath
+            'title'         => $validated['title'],
+            'canvas_data'   => json_encode($validated['canvas_data']),
+            'canvas_width'  => $validated['canvas_width'],
+            'canvas_height' => $validated['canvas_height'],
+            'image_url'     => $thumbnailPath,
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Design berhasil diupdate!');
+        return redirect()
+            ->route('dashboard')
+            ->with('success', 'Desain berhasil diupdate');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Delete
+    |--------------------------------------------------------------------------
+    */
 
     public function destroy($id)
     {
         $design = Design::where('user_id', Auth::id())
             ->findOrFail($id);
 
-        // Hapus file thumbnail jika ada
-        if ($design->image_url) {
-            Storage::disk('public')->delete($design->image_url);
-        }
+        $this->deleteImageIfExists($design->image_url);
 
         $design->delete();
 
-        return Inertia::render('User/Dashboard', [
-            'success' => true,
-            'message' => 'Desain berhasil dihapus'
-        ]);
+        return redirect()
+            ->route('dashboard')
+            ->with('success', 'Desain berhasil dihapus');
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Save AI Generated Design
+    |--------------------------------------------------------------------------
+    */
 
     public function storeFromAi(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'image_data' => 'required|string', // Base64
+            'title'      => 'required|string|max:255',
+            'image_data' => 'required|string',
         ]);
 
-        // Simpan gambar AI sebagai file
-        $imageData = substr($request->image_data, strpos($request->image_data, ',') + 1);
-        $imageData = base64_decode($imageData);
-        $filename = 'designs/generated/' . Auth::id() . '_' . time() . '.jpg';
-        Storage::disk('public')->put($filename, $imageData);
+        $filename = $this->saveBase64Image(
+            $request->image_data,
+            'designs/generated'
+        );
 
-        // ✅ FIX: Simpan path RELATIF di canvas_data (seperti motif biasa)
         $canvasData = [
             [
-                'id' => 'obj' . time(),
-                'type' => 'image',
-                'x' => 100,
-                'y' => 100,
-                'width' => 600,
-                'height' => 600,
+                'id'       => 'obj_' . time(),
+                'type'     => 'image',
+                'x'        => 100,
+                'y'        => 50,
+                'width'    => 600,
+                'height'   => 600,
                 'rotation' => 0,
-                'imageUrl' => $filename, // ✅ UBAH: Path relatif saja (tanpa /storage/)
+                'imageUrl' => $filename,
             ]
         ];
 
-        $design = Design::create([
-            'title' => $request->title,
-            'canvas_data' => json_encode($canvasData),
-            'canvas_width' => 800,
+        Design::create([
+            'title'         => $request->title,
+            'canvas_data'   => json_encode($canvasData),
+            'canvas_width'  => 800,
             'canvas_height' => 600,
-            'image_url' => $filename,
-            'user_id' => Auth::id(),
-        ]);
- 
-        \Log::info('✅ AI Design saved:', [
-            'design_id' => $design->id,
-            'imageUrl_in_canvas' => $canvasData[0]['imageUrl'],
+            'image_url'     => $filename,
+            'user_id'       => Auth::id(),
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Desain berhasil disimpan!');
+        return redirect()
+            ->route('dashboard')
+            ->with('success', 'Design AI berhasil disimpan');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PRIVATE HELPERS
+    |--------------------------------------------------------------------------
+    */
+
+    private function decodeCanvas($data)
+    {
+        if (is_array($data)) return $data;
+
+        return json_decode($data, true) ?? [];
+    }
+
+    private function normalizeCanvasImages(array $items)
+    {
+        return collect($items)->map(function ($item) {
+
+            if (isset($item['imageUrl'])) {
+                $item['imageUrl'] = $this->normalizeImageUrl($item['imageUrl']);
+            }
+
+            if (isset($item['src']) && !isset($item['imageUrl'])) {
+                $item['imageUrl'] = $this->normalizeImageUrl($item['src']);
+            }
+
+            return $item;
+        })->toArray();
+    }
+
+    private function normalizeImageUrl($path)
+    {
+        if (!$path) return null;
+
+        if (
+            Str::startsWith($path, 'http://') ||
+            Str::startsWith($path, 'https://')
+        ) {
+            return $path;
+        }
+
+        if (Str::startsWith($path, '/storage/')) {
+            return $path;
+        }
+
+        return Storage::url($path);
+    }
+
+    private function saveBase64Image($base64, $folder)
+    {
+        if (!$base64) return null;
+
+        $data = substr($base64, strpos($base64, ',') + 1);
+        $decoded = base64_decode($data);
+
+        $filename = $folder . '/' . Auth::id() . '_' . time() . '.jpg';
+
+        Storage::disk('public')->put($filename, $decoded);
+
+        return $filename;
+    }
+
+    private function deleteImageIfExists($path)
+    {
+        if (!$path) return;
+
+        if (
+            Str::startsWith($path, 'http://') ||
+            Str::startsWith($path, 'https://')
+        ) {
+            return;
+        }
+
+        Storage::disk('public')->delete($path);
+    }
+
+    private function getPublishStatus($design)
+    {
+        $filename = basename($design->image_url);
+
+        $motif = PublishedMotif::where('user_id', $design->user_id)
+            ->where(function ($query) use ($filename, $design) {
+
+                $query->where('image_path', 'LIKE', '%' . $filename)
+                    ->orWhereRaw(
+                        "JSON_UNQUOTE(JSON_EXTRACT(design_data, '$.design_id')) = ?",
+                        [(string) $design->id]
+                    );
+            })
+            ->first();
+
+        return $motif?->status;
     }
 }
