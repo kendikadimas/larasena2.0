@@ -158,19 +158,11 @@ export default function Dashboard({ designs = [] }) {
         <div className="hidden md:flex gap-4">
           <button
             onClick={() => setShowCanvasModal(true)}
-            className="relative overflow-hidden rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 cursor-pointer group h-16 w-48 border-2"
+            className="relative overflow-hidden rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 cursor-pointer group h-16 w-48 border-2 hover:bg-[#3F6D5F] hover:text-white hover:border-[#3F6D5F]"
             style={{
               background: '#EBF2EF',
               color: '#4E8070',
               borderColor: '#4E8070'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.background = '#3F6D5F';
-              e.target.style.color = '#FFFFFF';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.background = '#EBF2EF';
-              e.target.style.color = '#4E8070';
             }}
           >
             <div className="relative z-10 h-full flex items-center justify-between">
@@ -428,21 +420,11 @@ export default function Dashboard({ designs = [] }) {
                   setFabOpen(false);
                   setShowCanvasModal(true);
                 }}
-                className="pointer-events-auto flex items-center gap-2 px-3 py-2 rounded-lg transition border-2"
+                className="pointer-events-auto flex items-center gap-2 px-3 py-2 rounded-lg transition-all border-2 hover:bg-[#3F6D5F] hover:text-white hover:border-[#3F6D5F]"
                 style={{
                   background: '#EBF2EF',
                   color: '#4E8070',
                   borderColor: '#4E8070'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.background = '#3F6D5F';
-                  e.target.style.color = '#FFFFFF';
-                  e.target.querySelector('svg').style.color = '#FFFFFF';
-                }}
-                onMouseLeave={(e) => {
-                  e.target.style.background = '#EBF2EF';
-                  e.target.style.color = '#4E8070';
-                  e.target.querySelector('svg').style.color = '#4E8070';
                 }}
               >
                 <span className="text-sm font-medium">Buat Batik</span>

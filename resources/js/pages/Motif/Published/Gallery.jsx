@@ -95,7 +95,7 @@ export default function Gallery({ motifs, user }) {
     });
 
     return (
-        <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #FBF8F1 0%, #F5F0E8 40%, #FBF8F1 100%)' }}>
+        <div className="min-h-screen pt-16" style={{ background: 'linear-gradient(180deg, #FBF8F1 0%, #F5F0E8 40%, #FBF8F1 100%)' }}>
             <Head>
                 {/* Title & primary meta di-handle server-side oleh app.blade.php */}
                 {/* agar social media crawler membaca OG tags yang benar */}

@@ -67,9 +67,9 @@ const CantingIcon = () => (
   </svg>
 );
 
-export default function LandingPage() {
+export default function LandingPage({ user: pageUser }) {
   // --- STATE LAMA KAMU ---
-  const [user] = useState(null);
+  const [user] = useState(pageUser || null);
   const [isVisible, setIsVisible] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState(null);  // --- BARU: STATE & DATA UNTUK GALERI INTERAKTIF ---
@@ -332,7 +332,7 @@ export default function LandingPage() {
 
      <header
   id="hero"
-  className="relative flex items-center overflow-hidden"
+  className="relative flex items-center overflow-hidden pt-16"
   style={{
     background: 'linear-gradient(135deg, #FBF8F1 0%, #F5F0E8 100%)',
     minHeight: '560px'

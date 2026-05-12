@@ -39,18 +39,14 @@ use App\Http\Controllers\Konveksi\DashboardController as KonveksiDashboardContro
 use App\Http\Controllers\Konveksi\ProfileController as KonveksiProfileController;
 
 // ============================================================================
-// 🏠 LANDING PAGE (Publik)
+// 🏠 LANDING PAGE (Publik & Authenticated)
 // ============================================================================
 Route::get('/', function () {
-    if (Auth::check()) {
-        return match (Auth::user()->role) {
-            'Admin' => redirect()->route('admin.dashboard'),
-            'Convection' => redirect()->route('konveksi.dashboard'),
-            default => redirect()->route('dashboard'),
-        };
-    }
-    // Jika belum login → tampilkan landing page publik
-    return Inertia::render('LandingPage');
+    // Render LandingPage untuk semua user, baik login maupun tidak
+    // NavBar akan menampilkan Dashboard button jika sudah login
+    return Inertia::render('LandingPage', [
+        'user' => Auth::user()
+    ]);
 })->name('landing');
 
 // Public Motif Gallery

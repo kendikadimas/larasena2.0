@@ -122,7 +122,7 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
 
             <LarasenaNavbar user={user} />
 
-            <div className="px-8 md:px-16 lg:px-24 py-8">
+            <div className="px-8 md:px-16 lg:px-24 py-8 pt-16">
                 {/* Back Button */}
                 <Link
                     href="/galeri-motif"
