@@ -45,11 +45,18 @@ export default function AdminDashboard({ stats, recent_users, recent_transaction
             trend: `${stats.general_users} General, ${stats.convection_users} Convection`
         },
         { 
-            title: 'Total Motifs', 
-            value: stats.total_motifs, 
+            title: 'Canvas Elements', 
+            value: stats.total_canvas_elements ?? stats.total_motifs, 
             icon: Package, 
             color: 'bg-purple-500',
-            trend: `${stats.total_designs} Designs created`
+            trend: `${stats.total_gallery_published ?? 0} published gallery items`
+        },
+        { 
+            title: 'Gallery Published', 
+            value: stats.total_gallery_published ?? 0, 
+            icon: CheckCircle, 
+            color: 'bg-pink-500',
+            trend: `${stats.pending_moderation ?? 0} pending moderation`
         },
         { 
             title: 'Total Transactions', 
@@ -63,7 +70,7 @@ export default function AdminDashboard({ stats, recent_users, recent_transaction
             value: formatRupiah(stats.total_revenue), 
             icon: DollarSign, 
             color: 'bg-yellow-500',
-            trend: 'All time'
+            trend: `Production ${formatRupiah(stats.production_revenue ?? stats.total_revenue)} | MRR ${formatRupiah(stats.mrr ?? 0)}`
         },
     ];
 

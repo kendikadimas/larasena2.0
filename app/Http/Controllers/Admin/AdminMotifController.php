@@ -32,15 +32,6 @@ class AdminMotifController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        // ✅ FIX: Transform image URLs for display
-        $motifs->getCollection()->transform(function ($motif) {
-            if ($motif->file_path && !str_starts_with($motif->file_path, 'http')) {
-                $motif->image_url = Storage::url($motif->file_path);
-                $motif->preview_image_path = Storage::url($motif->file_path);
-            }
-            return $motif;
-        });
-
         $categories = Motif::distinct()->pluck('category')->filter();
         
         $stats = [
@@ -75,17 +66,14 @@ class AdminMotifController extends Controller
         $file = $request->file('file');
         $fileName = time() . '_' . $file->getClientOriginalName();
         $path = $file->storeAs('motifs/admin', $fileName, 'public');
-        
-        // ✅ FIX: Store consistent URLs
-        $publicUrl = Storage::url($path);
 
         Motif::create([
             'name' => $validated['name'],
             'description' => $validated['description'],
             'category' => $validated['category'],
-            'file_path' => $path, // Store relative path in DB
-            'image_url' => $publicUrl, // Full URL for display
-            'preview_image_path' => $publicUrl, // Full URL for display
+            'file_path' => $path,
+            'image_url' => $path,
+            'preview_image_path' => $path,
             'is_active' => $validated['is_active'] ?? true,
             'user_id' => null, // Admin uploaded
         ]);
@@ -112,11 +100,10 @@ class AdminMotifController extends Controller
             $file = $request->file('file');
             $fileName = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('motifs/admin', $fileName, 'public');
-            $publicUrl = Storage::url($path);
 
             $validated['file_path'] = $path;
-            $validated['image_url'] = $publicUrl;
-            $validated['preview_image_path'] = $publicUrl;
+            $validated['image_url'] = $path;
+            $validated['preview_image_path'] = $path;
         }
 
         $motif->update($validated);

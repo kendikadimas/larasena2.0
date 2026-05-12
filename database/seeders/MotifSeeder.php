@@ -10,7 +10,7 @@ class MotifSeeder extends Seeder
 {
     public function run(): void
     {
-        $motifs = []
+        $motifs = [
             // [
             //     'name' => 'Batik Parang Barong',
             //     'description' => 'Motif klasik dengan makna kekuatan dan keteguhan, biasa digunakan dalam upacara adat.',

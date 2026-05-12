@@ -82,7 +82,6 @@ class UploadMotifController extends Controller
         $motif = PublishedMotif::create([
             'user_id' => Auth::id(),
             'title' => $validated['title'],
-            'slug' => Str::slug($validated['title']) . '-' . Str::random(6),
             'origin' => $validated['origin'],
             'category' => $validated['category'],
             'philosophy' => $validated['philosophy'],

@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\NormalizesStorageUrl;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class PublishedMotif extends Model
 {
-    use HasFactory;
+    use HasFactory, NormalizesStorageUrl;
 
     protected $fillable = [
         'user_id',
@@ -94,81 +96,19 @@ class PublishedMotif extends Model
     // Accessors
     public function getImageUrlAttribute($value)
     {
-        // If image_url is already stored in database, use it
         if (!empty($value)) {
-            
-            // TAMBAHAN BARU: Handle aset statis di folder public/images
-            if (str_starts_with($value, '/images/') || str_starts_with($value, 'images/')) {
-                return asset('/' . ltrim($value, '/'));
-            }
-
-            // Clean up malformed URLs - various patterns from the error log
-            // Pattern: storage/http://localhost:8000/storage/...
-            if (str_starts_with($value, 'storage/http://') || str_starts_with($value, 'storage/https://')) {
-                $cleanedUrl = str_replace('storage/', '', $value);
-                // If it doesn't contain /storage/ after cleaning, it means we removed the wrong storage/
-                if (!str_contains($cleanedUrl, '/storage/')) {
-                    // Extract the path after the domain and add /storage/ back
-                    $parsedUrl = parse_url($cleanedUrl);
-                    $pathParts = explode('/', ltrim($parsedUrl['path'], '/'));
-                    if (!empty($pathParts) && $pathParts[0] !== 'storage') {
-                        array_unshift($pathParts, 'storage');
-                    }
-                    $newPath = '/' . implode('/', $pathParts);
-                    return $parsedUrl['scheme'] . '://' . $parsedUrl['host'] . (isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '') . $newPath;
-                }
-                return $cleanedUrl;
-            }
-            
-            // Pattern: storage//storage/...
-            if (str_contains($value, 'storage//storage/')) {
-                $cleaned = str_replace('storage//storage/', '', $value);
-                return asset('/storage/' . $cleaned);
-            }
-            
-            // Pattern: storage/designs/... (missing leading slash)
-            if (str_starts_with($value, 'storage/') && !str_starts_with($value, 'storage/http')) {
-                return asset('/' . $value);
-            }
-            
-            // Already proper full URLs
-            if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
-                return $value;
-            }
-            
-            // Already proper relative paths with /storage/
-            if (str_starts_with($value, '/storage/')) {
-                return asset($value);
-            }
-            
-            // Direct filenames without path
-            if (!str_contains($value, '/') && (str_ends_with($value, '.jpg') || str_ends_with($value, '.png') || str_ends_with($value, '.jpeg'))) {
-                return asset('/storage/published-motifs/' . $value);
-            }
-            
-            // Default: assume it's a path that needs /storage/ prefix
-            return asset('/storage/' . ltrim($value, '/'));
+            $normalized = $this->normalizeStorageUrl($value);
+            if ($normalized) return $normalized;
         }
 
-        // Fall back to image_path if image_url is empty
         if (!empty($this->attributes['image_path'])) {
             $imagePath = $this->attributes['image_path'];
-            
-            // If image_path already starts with published-motifs/, use it directly
-            if (str_starts_with($imagePath, 'published-motifs/')) {
-                return asset('/storage/' . $imagePath);
-            }
-            
-            // Clean up double storage paths
-            $imagePath = str_replace(['storage/storage/', 'storage/', '/storage/'], '', $imagePath);
-            $imagePath = ltrim($imagePath, '/');
-            
-            // If it's just a filename, assume it's in published-motifs folder
+
             if (!str_contains($imagePath, '/')) {
-                return asset('/storage/published-motifs/' . $imagePath);
+                $imagePath = 'published-motifs/' . $imagePath;
             }
-            
-            return asset('/storage/' . $imagePath);
+
+            return $this->normalizeStorageUrl($imagePath);
         }
 
         return null;
@@ -194,6 +134,8 @@ class PublishedMotif extends Model
             'rejection_reason' => null
         ]);
 
+        Cache::forget('public_sitemap_xml');
+
         // Award badge to user
         $this->user->awardBadge('first-publish', 'First Published Motif', '🎨');
     }
@@ -205,5 +147,7 @@ class PublishedMotif extends Model
             'rejection_reason' => $reason,
             'published_at' => null
         ]);
+
+        Cache::forget('public_sitemap_xml');
     }
 }

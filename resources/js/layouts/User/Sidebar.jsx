@@ -1,6 +1,7 @@
 import { Link, usePage, router } from '@inertiajs/react';
 import { useState } from 'react';
 import { Menu, X, ChevronLeft, ChevronRight, ChevronDown, Home, ImagePlus, Landmark, Store, Package, GraduationCap, Award, HelpCircle, MoreHorizontal, LogOut, User } from 'lucide-react';
+import PaymentPopupModal from '@/components/PaymentPopupModal';
 
 // Wrapper untuk Lucide React icons yang menerima props isActive/isMobile tanpa meneruskannya ke DOM
 const IconWrapper = ({ icon: IconComponent, isActive, isMobile, className, ...props }) => {
@@ -75,6 +76,7 @@ export default function Sidebar() {
     SHOW_TRAINING_FEATURE ? ['batik', 'pelatihan', 'produksi'] : ['batik', 'produksi']
   ); // All expanded by default
   const [showMoreMenu, setShowMoreMenu] = useState(false); // For "Lainnya" bottom sheet
+  const [showPaymentModal, setShowPaymentModal] = useState(false); // For payment popup
 
   const toggleGroup = (groupName) => {
     if (isCollapsed) return; // Don't toggle when sidebar collapsed
@@ -83,6 +85,22 @@ export default function Sidebar() {
         ? prev.filter(g => g !== groupName)
         : [...prev, groupName]
     );
+  };
+
+  // Check if user can access production features
+  const isUserActive = () => {
+    if (!subscription) return false;
+    return !subscription.payment_required && !subscription.trial_expired;
+  };
+
+  // Handle production menu click with access control
+  const handleProduksiClick = (e, href) => {
+    if (!isUserActive()) {
+      e.preventDefault();
+      setShowPaymentModal(true);
+      return;
+    }
+    // Navigate normally if user is active
   };
 
   const menuGroups = [
@@ -138,29 +156,29 @@ export default function Sidebar() {
     {
       name: 'produksi',
       label: 'Produksi & Layanan',
-      color: 'text-[#3B82F6]',
-      hoverColor: 'hover:text-[#3B82F6]',
+      color: 'text-[#4E8070]',
+      hoverColor: 'hover:text-[#4E8070]',
       items: [
         {
           name: 'Pengrajin',
           href: '/konveksi',
           icon: Store,
-          activeColor: 'bg-blue-50 border border-blue-200 text-blue-900',
-          hoverColor: 'hover:bg-blue-50'
+          activeColor: 'bg-[#EBF2EF] border border-[#D9D5CC] text-[#3F6D5F]',
+          hoverColor: 'hover:bg-[#EBF2EF]'
         },
         {
           name: 'Produksi',
           href: '/produksi',
           icon: Package,
-          activeColor: 'bg-blue-50 border border-blue-200 text-blue-900',
-          hoverColor: 'hover:bg-blue-50'
+          activeColor: 'bg-[#EBF2EF] border border-[#D9D5CC] text-[#3F6D5F]',
+          hoverColor: 'hover:bg-[#EBF2EF]'
         },
         {
           name: 'Bantuan',
           href: '/bantuan',
           icon: HelpCircle,
-          activeColor: 'bg-blue-50 border border-blue-200 text-blue-900',
-          hoverColor: 'hover:bg-blue-50'
+          activeColor: 'bg-[#EBF2EF] border border-[#D9D5CC] text-[#3F6D5F]',
+          hoverColor: 'hover:bg-[#EBF2EF]'
         }
       ]
     }
@@ -293,6 +311,33 @@ export default function Sidebar() {
                     {group.items.map((item) => {
                       const isActive = url.startsWith(item.href) && item.href !== '#';
                       const Icon = item.icon;
+                      const isProduksiItem = group.name === 'produksi' && (item.name === 'Produksi' || item.name === 'Pengrajin');
+                      const isDisabled = isProduksiItem && !isUserActive();
+                      
+                      // Use button instead of Link for disabled production items
+                      if (isDisabled) {
+                        return (
+                          <button
+                            key={item.name}
+                            onClick={() => setShowPaymentModal(true)}
+                            className={`w-full flex items-center gap-3 rounded-xl transition-all duration-200 group relative opacity-50 cursor-not-allowed
+                              ${isCollapsed ? 'justify-center px-3 py-3' : 'px-4 py-3'}
+                              ${isActive
+                                ? `${item.activeColor} shadow-sm scale-105 font-bold`
+                                : `border border-transparent text-gray-600 ${item.hoverColor} hover:text-gray-900 font-medium`
+                              }`}
+                            title={isCollapsed ? item.name : ''}
+                          >
+                            <IconWrapper icon={Icon} isActive={isActive} className={`w-5 h-5 flex-shrink-0`} />
+                            
+                            <span className={`text-sm font-medium transition-all duration-300 ${
+                              isCollapsed ? 'md:hidden' : 'md:inline'
+                            }`}>
+                              {item.name}
+                            </span>
+                          </button>
+                        );
+                      }
                       
                       return (
                         <Link
@@ -364,7 +409,7 @@ export default function Sidebar() {
             {subscription.payment_required && (
               <Link
                 href={route('billing.required')}
-                className="mt-2 inline-flex text-[11px] font-semibold text-[#BA682A] hover:underline"
+                className="mt-2 inline-flex text-[11px] font-semibold text-[#4E8070] hover:underline"
               >
                 Bayar Sekarang
               </Link>
@@ -388,6 +433,23 @@ export default function Sidebar() {
           {mainBottomNavItems.map((item) => {
             const isActive = url.startsWith(item.href);
             const Icon = item.icon;
+            const isProduksi = item.name === 'Produksi';
+            const isDisabled = isProduksi && !isUserActive();
+            
+            if (isDisabled) {
+              return (
+                <button
+                  key={item.name}
+                  onClick={() => setShowPaymentModal(true)}
+                  className={`flex flex-col items-center justify-center px-3 py-2 rounded-xl transition-all duration-200 min-w-[60px] opacity-50 cursor-not-allowed text-gray-600`}
+                >
+                  <IconWrapper icon={Icon} isActive={isActive} isMobile={true} className={`w-6 h-6 mb-1 ${isActive ? 'scale-110' : ''}`} />
+                  <span className="text-[10px] font-medium text-center leading-tight">
+                    {item.name}
+                  </span>
+                </button>
+              );
+            }
             
             return (
               <Link
@@ -395,7 +457,7 @@ export default function Sidebar() {
                 href={item.href}
                 className={`flex flex-col items-center justify-center px-3 py-2 rounded-xl transition-all duration-200 min-w-[60px] ${
                   isActive 
-                    ? 'text-[#D2691E]' 
+                    ? 'text-[#4E8070]' 
                     : 'text-gray-600'
                 }`}
               >
@@ -411,7 +473,7 @@ export default function Sidebar() {
           <button
             onClick={() => setShowMoreMenu(true)}
             className={`flex flex-col items-center justify-center px-3 py-2 rounded-xl transition-all duration-200 min-w-[60px] ${
-              showMoreMenu ? 'text-[#D2691E]' : 'text-gray-600'
+              showMoreMenu ? 'text-[#4E8070]' : 'text-gray-600'
             }`}
           >
             <MoreHorizontal className={`w-6 h-6 mb-1 ${showMoreMenu ? 'scale-110' : ''}`} />
@@ -505,6 +567,15 @@ export default function Sidebar() {
           </div>
         </>
       )}
+
+      {/* Payment Popup Modal */}
+      <PaymentPopupModal 
+        isOpen={showPaymentModal} 
+        onClose={() => setShowPaymentModal(false)}
+        title="Upgrade Diperlukan"
+        message="Fitur Produksi & Layanan memerlukan langganan aktif. Upgrade sekarang untuk mengakses semua fitur premium."
+        ctaText="Lihat Paket Berlangganan"
+      />
     </>
   );
 }

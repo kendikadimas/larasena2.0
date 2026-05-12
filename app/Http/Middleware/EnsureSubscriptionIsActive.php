@@ -63,6 +63,8 @@ class EnsureSubscriptionIsActive
             $subscription->update(['status' => 'payment_required']);
         }
 
-        return $next($request);
+        return redirect()
+            ->route('billing.required')
+            ->with('error', 'Langganan kamu sudah berakhir. Silakan lanjutkan pembayaran untuk mengakses fitur ini.');
     }
 }

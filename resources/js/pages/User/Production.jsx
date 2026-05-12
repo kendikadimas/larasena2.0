@@ -32,7 +32,7 @@ const StatCard = ({ icon, title, value, link }) => (
         <p className="text-gray-500">{title}</p>
         <p className="text-2xl font-bold">{value}</p>
       </div>
-      <Link href={link || '#'} className="text-gray-400 hover:text-[#BA682A]"><ArrowRight className="w-5 h-5" /></Link>
+      <Link href={link || '#'} className="text-gray-400 hover:text-[#4E8070]"><ArrowRight className="w-5 h-5" /></Link>
     </div>
 );
 
@@ -42,7 +42,7 @@ const Pagination = ({ links = [] }) => {
         <div className="flex items-center justify-end mt-6">
             {links.map((link, index) => {
                 if (!link || !link.url) return <div key={index} className="px-4 py-2 mx-1 text-sm rounded-md text-gray-400" dangerouslySetInnerHTML={{ __html: link?.label ?? '' }} />;
-                return <Link key={index} href={link.url} className={`px-4 py-2 mx-1 text-sm rounded-md transition-colors ${link.active ? 'bg-[#BA682A] text-white' : 'bg-white hover:bg-gray-100'}`} dangerouslySetInnerHTML={{ __html: link.label }} />;
+                return <Link key={index} href={link.url} className={`px-4 py-2 mx-1 text-sm rounded-md transition-colors ${link.active ? 'bg-[#4E8070] text-white' : 'bg-white hover:bg-gray-100'}`} dangerouslySetInnerHTML={{ __html: link.label }} />;
             })}
         </div>
     );
@@ -68,7 +68,7 @@ const DashboardView = ({ productions = { data: [], links: [] }, onCreateNew }) =
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Riwayat Produksi Anda</h1>
-        <button onClick={onCreateNew} className="px-6 py-3 bg-[#BA682A] text-white rounded-xl hover:bg-[#9d5a24] transition-colors flex items-center gap-2"><Plus className="w-5 h-5" />Buat Pesanan Baru</button>
+        <button onClick={onCreateNew} className="px-6 py-3 bg-[#4E8070] text-white rounded-xl hover:bg-[#3F6D5F] transition-colors flex items-center gap-2"><Plus className="w-5 h-5" />Buat Pesanan Baru</button>
       </div>
       {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <StatCard icon={<Package className="w-6 h-6 text-gray-600" />} title="Total Pesanan" value={productions.total} />
@@ -113,7 +113,7 @@ const CreateOrderView = ({ designs, setCurrentStep, setData, setSelectedMotif })
       <div className="flex items-center gap-4 mb-8">
         <button onClick={() => setCurrentStep('dashboard')} className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><ArrowRight className="w-5 h-5 text-gray-600 rotate-180" /></button>
         <div>
-          <h1 className="text-3xl font-bold" style={{ color: '#BA682A' }}>Pilih Desain Batikmu</h1>
+          <h1 className="text-3xl font-bold" style={{ color: '#4E8070' }}>Pilih Desain Batikmu</h1>
           <p className="text-gray-600 mt-1">Pilih desain yang ingin diproduksi untuk pesanan baru</p>
         </div>
       </div>
@@ -140,7 +140,7 @@ const OrderFormView = ({ data, setData, errors, processing, handleSubmitOrder, s
       <div className="flex items-center gap-4 mb-8">
         <button onClick={() => setCurrentStep('create')} className="p-2 hover:bg-gray-100 rounded-lg transition-colors"><ArrowRight className="w-5 h-5 text-gray-600 rotate-180" /></button>
         <div>
-          <h1 className="text-3xl font-bold" style={{ color: '#BA682A' }}>Detail Pesanan</h1>
+          <h1 className="text-3xl font-bold" style={{ color: '#4E8070' }}>Detail Pesanan</h1>
           <p className="text-gray-600 mt-1">Lengkapi informasi pesanan untuk desain {selectedMotif?.title}</p>
         </div>
       </div>
@@ -150,7 +150,7 @@ const OrderFormView = ({ data, setData, errors, processing, handleSubmitOrder, s
             <form onSubmit={handleSubmitOrder} className="space-y-8">
               {/* Customer Information */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><User className="w-5 h-5 text-[#BA682A]" />Informasi Customer</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><User className="w-5 h-5 text-[#4E8070]" />Informasi Customer</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Nama Lengkap */}
                   <div>
@@ -182,7 +182,7 @@ const OrderFormView = ({ data, setData, errors, processing, handleSubmitOrder, s
 
               {/* Product Details */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><Palette className="w-5 h-5 text-[#BA682A]" />Detail Produk</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><Palette className="w-5 h-5 text-[#4E8070]" />Detail Produk</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Jenis Batik *</label>

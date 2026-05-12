@@ -22,12 +22,18 @@ class DesignController extends Controller
     {
         $designs = Design::where('user_id', Auth::id())
             ->latest('updated_at')
-            ->get()
-            ->map(function ($design) {
+            ->get();
+
+        $publishedMotifs = PublishedMotif::where('user_id', Auth::id())
+            ->select('status', 'image_path', 'design_data', 'updated_at')
+            ->latest('updated_at')
+            ->get();
+
+        $designs = $designs->map(function ($design) use ($publishedMotifs) {
 
                 $design->canvas_data = $this->decodeCanvas($design->canvas_data);
 
-                $design->published_status = $this->getPublishStatus($design);
+                $design->published_status = $this->getPublishStatus($design, $publishedMotifs);
 
                 $design->image_url = $this->normalizeImageUrl($design->image_url);
 
@@ -59,6 +65,10 @@ class DesignController extends Controller
             $request->thumbnail,
             'designs/thumbnails'
         );
+
+        if ($request->filled('thumbnail') && !$thumbnailPath) {
+            return back()->with('error', 'Thumbnail tidak valid atau melebihi batas ukuran 5MB.');
+        }
 
         Design::create([
             'title'         => $validated['title'],
@@ -131,6 +141,10 @@ class DesignController extends Controller
                 $request->thumbnail,
                 'designs/thumbnails'
             );
+
+            if (!$thumbnailPath) {
+                return back()->with('error', 'Thumbnail tidak valid atau melebihi batas ukuran 5MB.');
+            }
         }
 
         $design->update([
@@ -183,6 +197,10 @@ class DesignController extends Controller
             $request->image_data,
             'designs/generated'
         );
+
+        if (!$filename) {
+            return back()->with('error', 'Gambar AI tidak valid atau melebihi batas ukuran 5MB.');
+        }
 
         $canvasData = [
             [
@@ -262,8 +280,20 @@ class DesignController extends Controller
     {
         if (!$base64) return null;
 
+        if (!preg_match('/^data:image\/(jpeg|jpg|png|gif|webp);base64,/', $base64)) {
+            return null;
+        }
+
         $data = substr($base64, strpos($base64, ',') + 1);
-        $decoded = base64_decode($data);
+        $decoded = base64_decode($data, true);
+
+        if ($decoded === false) {
+            return null;
+        }
+
+        if (strlen($decoded) > 5 * 1024 * 1024) {
+            return null;
+        }
 
         $filename = $folder . '/' . Auth::id() . '_' . time() . '.jpg';
 
@@ -286,21 +316,20 @@ class DesignController extends Controller
         Storage::disk('public')->delete($path);
     }
 
-    private function getPublishStatus($design)
+    private function getPublishStatus($design, $publishedMotifs)
     {
         $filename = basename($design->image_url);
 
-        $motif = PublishedMotif::where('user_id', $design->user_id)
-            ->where(function ($query) use ($filename, $design) {
+        foreach ($publishedMotifs as $motif) {
+            $designData = is_array($motif->design_data) ? $motif->design_data : (json_decode($motif->design_data, true) ?: []);
+            $publishedDesignId = (string) data_get($designData, 'design_id');
+            $publishedFilename  = $motif->image_path ? basename($motif->image_path) : basename((string) $motif->image_url);
 
-                $query->where('image_path', 'LIKE', '%' . $filename)
-                    ->orWhereRaw(
-                        "JSON_UNQUOTE(JSON_EXTRACT(design_data, '$.design_id')) = ?",
-                        [(string) $design->id]
-                    );
-            })
-            ->first();
+            if ($publishedDesignId === (string) $design->id || $publishedFilename === $filename) {
+                return $motif->status;
+            }
+        }
 
-        return $motif?->status;
+        return null;
     }
 }

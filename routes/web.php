@@ -32,6 +32,7 @@ use App\Http\Controllers\Admin\AdminKonveksiController;
 use App\Http\Controllers\Admin\AdminTrainingController;
 use App\Http\Controllers\Admin\AdminTrainingLessonController;
 use App\Http\Controllers\Admin\AdminBillingController;
+use App\Http\Controllers\Admin\AdminMotifBulkController;
 
 // Konveksi Controllers
 use App\Http\Controllers\Konveksi\DashboardController as KonveksiDashboardController;
@@ -187,6 +188,13 @@ Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
     Route::put('/admin-motifs/{motif}', [AdminMotifController::class, 'update'])->name('admin.motifs.update');
     Route::put('/admin-motifs/{motif}/toggle-status', [AdminMotifController::class, 'toggleStatus'])->name('admin.motifs.toggleStatus');
     Route::delete('/admin-motifs/{motif}', [AdminMotifController::class, 'destroy'])->name('admin.motifs.destroy');
+
+    // Motif Bulk Import
+    Route::get('/admin-motifs/bulk', [AdminMotifBulkController::class, 'index'])->name('admin.motifs.bulk.index');
+    Route::post('/admin-motifs/bulk/multifile', [AdminMotifBulkController::class, 'importMultifile'])->name('admin.motifs.bulk.multifile');
+    Route::post('/admin-motifs/bulk/zip', [AdminMotifBulkController::class, 'importZip'])->name('admin.motifs.bulk.zip');
+    Route::post('/admin-motifs/bulk/json', [AdminMotifBulkController::class, 'importJson'])->name('admin.motifs.bulk.json');
+    Route::post('/admin-motifs/bulk/action', [AdminMotifBulkController::class, 'bulkAction'])->name('admin.motifs.bulk.action');
 
     // Transaction Management
     Route::get('/admin-transactions', [AdminTransactionController::class, 'index'])->name('admin.transactions.index');

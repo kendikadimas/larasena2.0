@@ -158,19 +158,28 @@ export default function Dashboard({ designs = [] }) {
         <div className="hidden md:flex gap-4">
           <button
             onClick={() => setShowCanvasModal(true)}
-            className="relative overflow-hidden rounded-2xl p-4 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer group h-16 w-48"
+            className="relative overflow-hidden rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 cursor-pointer group h-16 w-48 border-2"
             style={{
-              background: 'linear-gradient(135deg, #D2691E 0%, #A0522D 100%)',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
+              background: '#EBF2EF',
+              color: '#4E8070',
+              borderColor: '#4E8070'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = '#3F6D5F';
+              e.target.style.color = '#FFFFFF';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = '#EBF2EF';
+              e.target.style.color = '#4E8070';
             }}
           >
             <div className="relative z-10 h-full flex items-center justify-between">
               <h3 className="font-semibold text-md">Buat Batik</h3>
               <div
                 className="w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-sm transition-transform group-hover:scale-110"
-                style={{ background: 'rgba(255, 255, 255, 0.25)' }}
+                style={{ background: 'rgba(78, 128, 112, 0.15)' }}
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-4 h-4" style={{ color: '#4E8070' }} />
               </div>
             </div>
           </button>
@@ -204,7 +213,7 @@ export default function Dashboard({ designs = [] }) {
               onClick={() => setActiveFilter(index)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 index === activeFilter
-                  ? 'bg-[#D2691E] text-white shadow-md'
+                  ? 'bg-[#4E8070] text-white shadow-md'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -221,12 +230,12 @@ export default function Dashboard({ designs = [] }) {
               placeholder="Cari desain..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#D2691E] focus:border-transparent w-64"
+              className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#4E8070] focus:border-transparent w-64"
             />
           </div>
 
           <div className="flex bg-white border border-gray-200 rounded-lg p-1">
-            <button className="p-2 rounded-md bg-[#D2691E] text-white">
+            <button className="p-2 rounded-md bg-[#4E8070] text-white">
               <Grid3X3 className="w-4 h-4" />
             </button>
             <button className="p-2 rounded-md text-gray-600 hover:bg-gray-100">
@@ -245,7 +254,7 @@ export default function Dashboard({ designs = [] }) {
               onClick={() => setActiveFilter(index)}
               className={`whitespace-nowrap px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 index === activeFilter
-                  ? 'bg-[#D2691E] text-white shadow-md'
+                  ? 'bg-[#4E8070] text-white shadow-md'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -261,7 +270,7 @@ export default function Dashboard({ designs = [] }) {
             placeholder="Cari desain..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#D2691E] focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#4E8070] focus:border-transparent"
           />
         </div>
       </div>
@@ -328,7 +337,7 @@ export default function Dashboard({ designs = [] }) {
 
                     <button
                       onClick={() => handleDownload(design)}
-                      className="p-2 bg-white/90 backdrop-blur-sm rounded-lg text-gray-700 hover:bg-[#D2691E] hover:text-white transition-colors"
+                      className="p-2 bg-white/90 backdrop-blur-sm rounded-lg text-gray-700 hover:bg-[#4E8070] hover:text-white transition-colors"
                       title="Download"
                     >
                       <Download className="w-4 h-4" />
@@ -347,7 +356,7 @@ export default function Dashboard({ designs = [] }) {
 
               <div className="p-4">
                 <div className="flex items-start justify-between gap-2 mb-2">
-                  <h3 className="font-semibold text-gray-800 text-sm flex-1 group-hover:text-[#D2691E] transition-colors">
+                  <h3 className="font-semibold text-gray-800 text-sm flex-1 group-hover:text-[#4E8070] transition-colors">
                     {design.title}
                   </h3>
                   {design.published_status && (
@@ -381,7 +390,7 @@ export default function Dashboard({ designs = [] }) {
             </p>
             <button
               onClick={() => setShowCanvasModal(true)}
-              className="inline-flex items-center px-4 py-2 bg-[#D2691E] hover:bg-[#A0522D] text-white rounded-lg transition-colors"
+              className="inline-flex items-center px-4 py-2 bg-[#4E8070] hover:bg-[#3F6D5F] text-white rounded-lg transition-colors"
             >
               <Plus className="w-4 h-4 mr-2" />
               Buat Desain Baru
@@ -408,10 +417,10 @@ export default function Dashboard({ designs = [] }) {
                   setFabOpen(false);
                   router.visit('/batik-generator');
                 }}
-                className="pointer-events-auto flex items-center gap-2 px-3 py-2 rounded-lg shadow-lg bg-white text-gray-800 hover:bg-gray-50 transition"
+                className="pointer-events-auto flex items-center gap-2 px-3 py-2 rounded-lg shadow-lg bg-gradient-to-r from-[#3B82F6] to-[#1E40AF] text-white hover:from-[#1E40AF] hover:to-[#1E3A8A] transition"
               >
                 <span className="text-sm font-medium">Generate AI</span>
-                <Wand2 className="w-4 h-4 text-indigo-600" />
+                <Wand2 className="w-4 h-4" />
               </button>
 
               <button
@@ -419,10 +428,25 @@ export default function Dashboard({ designs = [] }) {
                   setFabOpen(false);
                   setShowCanvasModal(true);
                 }}
-                className="pointer-events-auto flex items-center gap-2 px-3 py-2 rounded-lg shadow-lg bg-white text-gray-800 hover:bg-gray-50 transition"
+                className="pointer-events-auto flex items-center gap-2 px-3 py-2 rounded-lg transition border-2"
+                style={{
+                  background: '#EBF2EF',
+                  color: '#4E8070',
+                  borderColor: '#4E8070'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = '#3F6D5F';
+                  e.target.style.color = '#FFFFFF';
+                  e.target.querySelector('svg').style.color = '#FFFFFF';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = '#EBF2EF';
+                  e.target.style.color = '#4E8070';
+                  e.target.querySelector('svg').style.color = '#4E8070';
+                }}
               >
                 <span className="text-sm font-medium">Buat Batik</span>
-                <Paintbrush className="w-4 h-4 text-amber-600" />
+                <Paintbrush className="w-4 h-4" style={{ color: '#4E8070' }} />
               </button>
             </>
           )}
@@ -435,7 +459,7 @@ export default function Dashboard({ designs = [] }) {
           style={{
             background: fabOpen
               ? 'linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)'
-              : 'linear-gradient(135deg, #D2691E 0%, #A0522D 100%)',
+              : 'linear-gradient(135deg, #4E8070 0%, #3F6D5F 100%)',
           }}
         >
           {fabOpen ? <X className="w-6 h-6" /> : <Plus className="w-6 h-6" />}
@@ -454,9 +478,9 @@ export default function Dashboard({ designs = [] }) {
                 <button
                   key={preset.label}
                   onClick={() => openEditor(preset.width, preset.height)}
-                  className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 hover:border-[#D2691E] hover:bg-[#FFF7ED] transition-all text-left group"
+                  className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 hover:border-[#4E8070] hover:bg-[#F0F5F3] transition-all text-left group"
                 >
-                  <span className="font-medium text-gray-800 group-hover:text-[#D2691E]">
+                  <span className="font-medium text-gray-800 group-hover:text-[#4E8070]">
                     {preset.label}
                   </span>
                 </button>
@@ -474,7 +498,7 @@ export default function Dashboard({ designs = [] }) {
                   onChange={(e) =>
                     setCustomSize((prev) => ({ ...prev, width: Number(e.target.value) }))
                   }
-                  className="border-2 border-gray-200 rounded-lg px-3 py-2 focus:border-[#D2691E] focus:outline-none"
+                  className="border-2 border-gray-200 rounded-lg px-3 py-2 focus:border-[#4E8070] focus:outline-none"
                   placeholder="Lebar"
                 />
                 <input
@@ -485,13 +509,13 @@ export default function Dashboard({ designs = [] }) {
                   onChange={(e) =>
                     setCustomSize((prev) => ({ ...prev, height: Number(e.target.value) }))
                   }
-                  className="border-2 border-gray-200 rounded-lg px-3 py-2 focus:border-[#D2691E] focus:outline-none"
+                  className="border-2 border-gray-200 rounded-lg px-3 py-2 focus:border-[#4E8070] focus:outline-none"
                   placeholder="Tinggi"
                 />
               </div>
               <button
                 onClick={() => openEditor(customSize.width, customSize.height)}
-                className="mt-3 w-full px-4 py-2 bg-[#D2691E] text-white rounded-lg hover:bg-[#A0522D] transition font-medium"
+                className="mt-3 w-full px-4 py-2 bg-[#4E8070] text-white rounded-lg hover:bg-[#3F6D5F] transition font-medium"
               >
                 Gunakan ukuran custom
               </button>

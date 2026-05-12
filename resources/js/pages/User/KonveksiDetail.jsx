@@ -75,7 +75,7 @@ export default function KonveksiDetail({ konveksi, userReview, auth }) {
                     <div className="flex flex-col md:flex-row items-start gap-6">
                         {/* Icon */}
                         <img 
-                            src={konveksi.icon_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(konveksi.name)}&size=128&background=BA682A&color=fff`} 
+                            src={konveksi.icon_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(konveksi.name)}&size=128&background=4E8070&color=fff`} 
                             alt={konveksi.name}
                             className="w-24 h-24 sm:w-32 sm:h-32 rounded-full shadow-lg border-4 border-gray-100 object-cover"
                         />
@@ -109,14 +109,14 @@ export default function KonveksiDetail({ konveksi, userReview, auth }) {
                             <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-gray-600">
                                 {konveksi.location && (
                                     <span className="flex items-center gap-2">
-                                        <MapPin className="w-4 h-4 text-[#BA682A]"/> 
+                                        <MapPin className="w-4 h-4 text-[#4E8070]"/> 
                                         {konveksi.location}
                                     </span>
                                 )}
                                 {konveksi.no_telp && (
                                     <a 
                                         href={`tel:${konveksi.no_telp}`}
-                                        className="flex items-center gap-2 hover:text-[#BA682A] transition-colors"
+                                        className="flex items-center gap-2 hover:text-[#4E8070] transition-colors"
                                     >
                                         <Phone className="w-4 h-4"/> 
                                         {konveksi.no_telp}
@@ -132,7 +132,7 @@ export default function KonveksiDetail({ konveksi, userReview, auth }) {
                     {/* Deskripsi */}
                     <div className="lg:col-span-1 space-y-6">
                         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                            <h2 className="text-xl font-bold text-[#BA682A] mb-4 flex items-center gap-2">
+                            <h2 className="text-xl font-bold text-[#4E8070] mb-4 flex items-center gap-2">
                                 <MessageSquare className="w-5 h-5" />
                                 Tentang Kami
                             </h2>
@@ -143,7 +143,7 @@ export default function KonveksiDetail({ konveksi, userReview, auth }) {
 
                         <Link 
                             href={route('production.create', { konveksi_id: konveksi.id })}
-                            className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-gradient-to-r from-[#BA682A] to-[#A0522D] text-white font-bold rounded-xl hover:shadow-lg transition-all"
+                            className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-gradient-to-r from-[#4E8070] to-[#3F6D5F] text-white font-bold rounded-xl hover:shadow-lg transition-all"
                         >
                             <ShoppingBag className="w-5 h-5" />
                             Pesan Produksi Sekarang
@@ -152,7 +152,7 @@ export default function KonveksiDetail({ konveksi, userReview, auth }) {
 
                     {/* Galeri Foto */}
                     <div className="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                        <h2 className="text-xl font-bold text-[#BA682A] mb-4 flex items-center gap-2">
+                        <h2 className="text-xl font-bold text-[#4E8070] mb-4 flex items-center gap-2">
                             <ImageIcon className="w-5 h-5" />
                             Galeri Portfolio
                         </h2>
@@ -190,7 +190,7 @@ export default function KonveksiDetail({ konveksi, userReview, auth }) {
                         {auth.user && !userReview && !showReviewForm && (
                             <button
                                 onClick={() => setShowReviewForm(true)}
-                                className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-[#BA682A] text-white font-semibold rounded-xl hover:bg-[#A0522D] transition-colors text-sm sm:text-base"
+                                className="flex items-center justify-center gap-2 px-4 sm:px-6 py-2 sm:py-3 bg-[#4E8070] text-white font-semibold rounded-xl hover:bg-[#3F6D5F] transition-colors text-sm sm:text-base"
                             >
                                 <Edit2 className="w-4 h-4" />
                                 Tulis Review
@@ -255,7 +255,7 @@ export default function KonveksiDetail({ konveksi, userReview, auth }) {
                                         value={data.comment}
                                         onChange={(e) => setData('comment', e.target.value)}
                                         rows="4"
-                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#BA682A] focus:border-transparent text-sm"
+                                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4E8070] focus:border-transparent text-sm"
                                         placeholder="Ceritakan pengalaman Anda dengan konveksi ini..."
                                     />
                                     {errors.comment && <p className="text-red-500 text-xs mt-1">{errors.comment}</p>}
@@ -265,7 +265,7 @@ export default function KonveksiDetail({ konveksi, userReview, auth }) {
                                     <button
                                         type="submit"
                                         disabled={processing}
-                                        className="flex-1 px-6 py-3 bg-[#BA682A] text-white font-semibold rounded-xl hover:bg-[#A0522D] disabled:opacity-50 transition-colors"
+                                        className="flex-1 px-6 py-3 bg-[#4E8070] text-white font-semibold rounded-xl hover:bg-[#3F6D5F] disabled:opacity-50 transition-colors"
                                     >
                                         {processing ? 'Menyimpan...' : (editMode ? 'Update Review' : 'Kirim Review')}
                                     </button>

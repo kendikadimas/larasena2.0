@@ -91,7 +91,7 @@ export default function TrainingIndex({ courses, stats, filters }) {
                             onClick={() => handleLevelFilter('all')}
                             className={`px-6 py-2.5 rounded-xl font-medium transition-all ${
                                 selectedLevel === 'all'
-                                    ? 'bg-gradient-to-r from-[#BA682A] to-[#D2691E] text-white shadow-lg scale-105'
+                                    ? 'bg-gradient-to-r from-[#4E8070] to-[#3F6D5F] text-white shadow-lg scale-105'
                                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
                         >
@@ -179,7 +179,7 @@ export default function TrainingIndex({ courses, stats, filters }) {
 
                                 {/* Content */}
                                 <div className="p-6">
-                                    <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2 group-hover:text-[#BA682A] transition-colors">
+                                    <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2 group-hover:text-[#4E8070] transition-colors">
                                         {course.title}
                                     </h3>
                                     <p className="text-sm text-gray-600 mb-4 line-clamp-2">

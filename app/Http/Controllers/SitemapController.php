@@ -4,87 +4,58 @@ namespace App\Http\Controllers;
 
 use App\Models\PublishedMotif;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 
 class SitemapController extends Controller
 {
     public function index()
     {
-        // Hanya ambil halaman publik yang layak diindex
-        $motifs = PublishedMotif::approved()
-            ->orderBy('updated_at', 'desc')
-            ->get();
+        $xml = Cache::remember('public_sitemap_xml', now()->addHours(6), function () {
+            // Hanya ambil halaman publik yang layak diindex
+            $motifs = PublishedMotif::approved()
+                ->select('slug', 'updated_at', 'image_url', 'title', 'origin')
+                ->orderBy('updated_at', 'desc')
+                ->get();
 
-        $today = now()->toDateString();
+            $today = now()->toDateString();
 
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
-        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-                 xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">';
+            $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+            $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+                     xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">';
 
-        /*
-        |--------------------------------------------------------------------------
-        | PUBLIC CORE PAGES
-        |--------------------------------------------------------------------------
-        | Hanya halaman publik dan SEO value tinggi
-        */
+            $xml .= $this->addUrl(url('/'), 'daily', '1.0', $today);
+            $xml .= $this->addUrl(route('published-motifs.gallery'), 'daily', '0.95', $today);
+            $xml .= $this->addUrl(route('layanan'), 'weekly', '0.90', $today);
 
-        // Homepage
-        $xml .= $this->addUrl(
-            url('/'),
-            'daily',
-            '1.0',
-            $today
-        );
+            foreach ($motifs as $motif) {
+                $motifUrl = route('published-motifs.show', $motif->slug);
+                $xml .= '<url>';
+                $xml .= '<loc>' . htmlspecialchars($motifUrl, ENT_XML1, 'UTF-8') . '</loc>';
+                $xml .= '<lastmod>' . $motif->updated_at->toDateString() . '</lastmod>';
+                $xml .= '<changefreq>weekly</changefreq>';
+                $xml .= '<priority>0.85</priority>';
 
-        // Galeri motif utama
-        $xml .= $this->addUrl(
-            route('published-motifs.gallery'),
-            'daily',
-            '0.95',
-            $today
-        );
-
-        // Halaman layanan (commercial page)
-        $xml .= $this->addUrl(
-            route('layanan'),
-            'weekly',
-            '0.90',
-            $today
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | DETAIL MOTIF
-        |--------------------------------------------------------------------------
-        */
-
-        foreach ($motifs as $motif) {
-            $motifUrl = route('published-motifs.show', $motif->slug);
-            $xml .= '<url>';
-            $xml .= '<loc>' . htmlspecialchars($motifUrl, ENT_XML1, 'UTF-8') . '</loc>';
-            $xml .= '<lastmod>' . $motif->updated_at->toDateString() . '</lastmod>';
-            $xml .= '<changefreq>weekly</changefreq>';
-            $xml .= '<priority>0.85</priority>';
-
-            // Image sitemap — bantu Google index gambar motif
-            if ($motif->image_url) {
-                $imageUrl = $motif->image_url;
-                // Pastikan URL absolute
-                if (!str_starts_with($imageUrl, 'http')) {
-                    $imageUrl = url($imageUrl);
+                if ($motif->image_url) {
+                    $imageUrl = $motif->image_url;
+                    if (!str_starts_with($imageUrl, 'http')) {
+                        $imageUrl = url($imageUrl);
+                    }
+                    $xml .= '<image:image>';
+                    $xml .= '<image:loc>' . htmlspecialchars($imageUrl, ENT_XML1, 'UTF-8') . '</image:loc>';
+                    $xml .= '<image:title>' . htmlspecialchars("Motif Batik {$motif->title}", ENT_XML1, 'UTF-8') . '</image:title>';
+                    if ($motif->origin) {
+                        $xml .= '<image:caption>' . htmlspecialchars("Motif batik {$motif->title} dari {$motif->origin} — Larasena", ENT_XML1, 'UTF-8') . '</image:caption>';
+                    }
+                    $xml .= '</image:image>';
                 }
-                $xml .= '<image:image>';
-                $xml .= '<image:loc>' . htmlspecialchars($imageUrl, ENT_XML1, 'UTF-8') . '</image:loc>';
-                $xml .= '<image:title>' . htmlspecialchars("Motif Batik {$motif->title}", ENT_XML1, 'UTF-8') . '</image:title>';
-                if ($motif->origin) {
-                    $xml .= '<image:caption>' . htmlspecialchars("Motif batik {$motif->title} dari {$motif->origin} — Larasena", ENT_XML1, 'UTF-8') . '</image:caption>';
-                }
-                $xml .= '</image:image>';
+
+                $xml .= '</url>';
             }
 
-            $xml .= '</url>';
-        }
+            $xml .= '</urlset>';
 
-        $xml .= '</urlset>';
+            return $xml;
+        });
 
         return response($xml, 200)
             ->header('Content-Type', 'application/xml; charset=UTF-8')

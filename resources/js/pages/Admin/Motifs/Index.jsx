@@ -169,13 +169,21 @@ export default function AdminMotifs({ motifs, categories, stats, filters }) {
                         <h1 className="text-3xl font-bold text-gray-800">Motif Management</h1>
                         <p className="text-gray-600 mt-1">Manage batik motifs library</p>
                     </div>
-                    <button
-                        onClick={openCreateModal}
-                        className="flex items-center gap-2 bg-[#BA682A] text-white px-4 py-2 rounded-lg hover:bg-[#A0522D] transition"
-                    >
-                        <Plus className="w-5 h-5" />
-                        Add Motif
-                    </button>
+                    <div className="flex items-center gap-3">
+                        <Link
+                            href="/admin-motifs/bulk"
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#BA682A]/20 bg-white text-[#BA682A] hover:bg-[#BA682A]/5 transition"
+                        >
+                            Bulk Import
+                        </Link>
+                        <button
+                            onClick={openCreateModal}
+                            className="flex items-center gap-2 bg-[#BA682A] text-white px-4 py-2 rounded-lg hover:bg-[#A0522D] transition"
+                        >
+                            <Plus className="w-5 h-5" />
+                            Add Motif
+                        </button>
+                    </div>
                 </div>
 
                 

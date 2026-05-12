@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PublishedMotif;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class AdminPublishedMotifController extends Controller
@@ -104,6 +105,7 @@ class AdminPublishedMotifController extends Controller
         }
 
         $motif->delete();
+        Cache::forget('public_sitemap_xml');
 
         return redirect()->back()->with('success', 'Motif berhasil dihapus');
     }
