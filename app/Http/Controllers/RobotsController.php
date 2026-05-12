@@ -74,6 +74,30 @@ class RobotsController extends Controller
         $content .= "Allow: /storage/generated_batik/\n";
         $content .= "Allow: /images/\n";
 
+        // Social Media Crawlers — WAJIB untuk OG tags / link preview
+        $content .= "\nUser-agent: facebookexternalhit\n";
+        $content .= "Allow: /\n";
+        $content .= "Allow: /galeri-motif/\n";
+        $content .= "Allow: /storage/published-motifs/\n";
+
+        $content .= "\nUser-agent: Twitterbot\n";
+        $content .= "Allow: /\n";
+        $content .= "Allow: /galeri-motif/\n";
+        $content .= "Allow: /storage/published-motifs/\n";
+
+        $content .= "\nUser-agent: WhatsApp\n";
+        $content .= "Allow: /\n";
+        $content .= "Allow: /galeri-motif/\n";
+        $content .= "Allow: /storage/published-motifs/\n";
+
+        $content .= "\nUser-agent: LinkedInBot\n";
+        $content .= "Allow: /\n";
+        $content .= "Allow: /galeri-motif/\n";
+
+        $content .= "\nUser-agent: TelegramBot\n";
+        $content .= "Allow: /\n";
+        $content .= "Allow: /galeri-motif/\n";
+
         // Sitemap location
         $content .= "\nSitemap: " . url('/sitemap.xml') . "\n";
 
