@@ -7,7 +7,7 @@ import LarasenaFooter from '@/components/LarasenaFooter';
 export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
     const [copied, setCopied] = useState(false);
     const shareUrl = meta?.url || window.location.href;
-    const shareText = `Yuk lihat keindahan motif batik "${motif.title}" di Larasena!`;
+    const shareText = `Lihat motif batik "${motif.title}" koleksi karya "${motif.user?.name}" di Larasena!`;
 
     const handleLike = () => {
         if (!user) {
@@ -57,6 +57,28 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
         navigator.clipboard.writeText(shareUrl);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
+    };
+
+    const renderPhilosophyWithLinks = (text) => {
+        if (!text) return null;
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const parts = text.split(urlRegex);
+        return parts.map((part, index) => {
+            if (part.match(urlRegex)) {
+                return (
+                    <a 
+                        key={index} 
+                        href={part} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-[#BA682A] hover:text-[#9d5a24] font-semibold underline underline-offset-2 transition-colors not-italic"
+                    >
+                        {part}
+                    </a>
+                );
+            }
+            return part;
+        });
     };
 
     return (
@@ -298,8 +320,8 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
                         <svg className="absolute top-1 left-3 sm:top-1 sm:left-3 w-7 h-7 sm:w-8 sm:h-8 opacity-10" viewBox="0 0 32 32" fill="#1A332F">
                             <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.648-7.104 6.624-9.024L25.864 4z" />
                         </svg>
-                        <p className="w-full text-sm sm:text-base md:text-lg leading-relaxed text-justify italic px-2 sm:px-4" style={{ color: '#5A4F3E', lineHeight: 1.9 }}>
-                            {motif.philosophy}
+                        <p className="w-full text-sm sm:text-base md:text-lg leading-relaxed text-justify italic px-2 sm:px-4 whitespace-pre-wrap" style={{ color: '#5A4F3E', lineHeight: 1.9 }}>
+                            {renderPhilosophyWithLinks(motif.philosophy)}
                         </p>
                     </div>
                 </div>
