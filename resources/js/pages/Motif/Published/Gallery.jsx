@@ -327,9 +327,9 @@ export default function Gallery({ motifs, user }) {
                                             {/* Hover Overlay - User Info */}
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 z-20">
                                                 <div className="flex items-center gap-2.5 transform translate-y-3 group-hover:translate-y-0 transition-transform duration-300">
-                                                    {motif.user?.avatar ? (
+                                                    {motif.user?.profile_photo_url ? (
                                                         <img
-                                                            src={motif.user.avatar}
+                                                            src={motif.user.profile_photo_url}
                                                             alt={motif.user.name}
                                                             className="w-8 h-8 rounded-full border-[1.5px] border-white/90 object-cover shadow-sm"
                                                         />
