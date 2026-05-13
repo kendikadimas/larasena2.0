@@ -7,7 +7,7 @@ import LarasenaFooter from '@/components/LarasenaFooter';
 export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
     const [copied, setCopied] = useState(false);
     const shareUrl = meta?.url || window.location.href;
-    const shareText = `Lihat motif batik "${motif.title}" koleksi karya "${motif.user?.name}" di Larasena!`;
+    const shareText = meta?.description || `Lihat motif batik "${motif.title}" - ${motif.philosophy.substring(0, 100)}...`;
 
     const handleLike = () => {
         if (!user) {
@@ -62,22 +62,35 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
     const renderPhilosophyWithLinks = (text) => {
         if (!text) return null;
         const urlRegex = /(https?:\/\/[^\s]+)/g;
-        const parts = text.split(urlRegex);
-        return parts.map((part, index) => {
-            if (part.match(urlRegex)) {
-                return (
-                    <a 
-                        key={index} 
-                        href={part} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-[#1A332F] hover:text-[#2C5E54] font-semibold underline underline-offset-2 transition-colors not-italic"
-                    >
-                        {part}
-                    </a>
-                );
+
+        return text.split('\n').map((line, pIndex) => {
+            if (!line.trim()) {
+                return <div key={pIndex} className="h-4 sm:h-6" />;
             }
-            return part;
+
+            const parts = line.split(urlRegex);
+            const renderedLine = parts.map((part, index) => {
+                if (part.match(urlRegex)) {
+                    return (
+                        <a
+                            key={index}
+                            href={part}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#1A332F] hover:text-[#2C5E54] font-semibold underline underline-offset-2 transition-colors not-italic"
+                        >
+                            {part}
+                        </a>
+                    );
+                }
+                return part;
+            });
+
+            return (
+                <p key={pIndex} className="mb-2 last:mb-0">
+                    {renderedLine}
+                </p>
+            );
         });
     };
 
@@ -96,6 +109,7 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
                 <meta property="og:type" content={meta?.type || 'article'} />
                 <meta property="og:url" content={meta?.url || shareUrl} />
                 <meta property="og:title" content={meta?.title || `Motif Batik ${motif.title} | Larasena`} />
+                <meta property="og:description" content={meta?.description || motif.philosophy} />
                 <meta property="og:image" content={meta?.image || motif.image_url} />
                 <meta property="og:image:width" content="1200" />
                 <meta property="og:image:height" content="630" />
@@ -105,6 +119,7 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:url" content={meta?.url || shareUrl} />
                 <meta name="twitter:title" content={meta?.title || `Motif Batik ${motif.title} | Larasena`} />
+                <meta name="twitter:description" content={meta?.description || motif.philosophy} />
                 <meta name="twitter:image" content={meta?.image || motif.image_url} />
 
                 {/* JSON-LD Structured Data (client-side fallback) */}
@@ -142,7 +157,7 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
 
             <LarasenaNavbar user={user} />
 
-            <div className="px-8 md:px-16 lg:px-24 py-8 pt-16">
+            <div className="px-8 md:px-16 lg:px-24 py-8 pt-24 overflow-x-hidden">
                 {/* Back Button */}
                 <Link
                     href="/galeri-motif"
@@ -227,7 +242,7 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
 
                 {/* Main Image */}
                 <div className="mb-10">
-                    <div className="aspect-[16/9] rounded-3xl overflow-hidden border border-[#D9CCBF]/50 hover-glow">
+                    <div className="aspect-[16/9] rounded-3xl overflow-hidden border border-[#D9CCBF]/50">
                         <img
                             src={motif.image_url}
                             alt={motif.title}
@@ -236,91 +251,20 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
                     </div>
                 </div>
 
-                {/* SEO Rich Content Sections — penting untuk ranking long-tail keyword */}
-                <div className="w-full mx-auto mb-12 space-y-8">
-
-                    {/* Apa itu motif ini */}
-                    <section
-                        aria-label={`Penjelasan motif batik ${motif.title}`}
-                        className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-[#D9CCBF]/60"
-                    >
-                        <h2 className="serif text-xl font-bold mb-3" style={{ color: '#1A332F' }}>
-                            Apa itu Motif Batik {motif.title}?
-                        </h2>
-                        <p className="text-sm leading-relaxed" style={{ color: '#5A4F3E', lineHeight: 1.8 }}>
-                            Motif batik <strong>{motif.title}</strong> adalah salah satu kekayaan
-                            warisan budaya batik {motif.origin ? `dari ${motif.origin}` : 'Indonesia'}
-                            {motif.category ? ` dalam kategori batik ${motif.category}` : ''}.
-                            Setiap goresan dan motifnya menyimpan makna filosofis yang dalam,
-                            mencerminkan nilai-nilai budaya dan kearifan lokal yang telah
-                            diwariskan turun-temurun. Larasena menghadirkan koleksi motif{' '}
-                            <strong>{motif.title}</strong> dalam platform desain batik digital
-                            sehingga Anda bisa mengeksplorasi dan menciptakan karya batik
-                            modern dengan inspirasi tradisional.
-                        </p>
-                    </section>
-
-                    {/* Asal Daerah */}
-                    {motif.origin && (
-                        <section
-                            aria-label={`Asal daerah motif ${motif.title}`}
-                            className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-[#D9CCBF]/60"
-                        >
-                            <h2 className="serif text-xl font-bold mb-3" style={{ color: '#1A332F' }}>
-                                Asal Daerah Motif Batik {motif.title}
-                            </h2>
-                            <p className="text-sm leading-relaxed" style={{ color: '#5A4F3E', lineHeight: 1.8 }}>
-                                Motif batik <strong>{motif.title}</strong> berasal dari{' '}
-                                <strong>{motif.origin}</strong>, salah satu daerah penghasil
-                                batik terkemuka di Indonesia. Batik {motif.origin} dikenal
-                                dengan ciri khas motif yang memiliki makna simbolis kuat dan
-                                teknik pembuatan yang kaya tradisi. Pelajari lebih lanjut
-                                filosofi motif {motif.title} melalui karya-karya kreator
-                                Indonesia di Galeri Larasena.
-                            </p>
-                        </section>
-                    )}
-
-                    {/* CTA — Desain Sendiri */}
-                    <section
-                        aria-label="Ajakan membuat desain batik"
-                        className="rounded-2xl p-6 sm:p-8 text-center"
-                        style={{ background: 'linear-gradient(135deg, #1A332F 0%, #2C5E54 100%)' }}
-                    >
-                        <h2 className="serif text-xl font-bold mb-2 text-white">
-                            Buat Desain Motif Batik {motif.title} Sendiri
-                        </h2>
-                        <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.7 }}>
-                            Ingin membuat variasi motif <strong>{motif.title}</strong> dengan sentuhan modern?
-                            Gunakan platform desain batik AI Larasena untuk bereksperimen
-                            dengan motif batik digital secara online — gratis.
-                        </p>
-                        <a
-                            href={user ? '/dashboard' : '/register'}
-                            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-2xl font-semibold text-sm transition-all duration-300 hover:scale-105"
-                            style={{ background: '#C9A84C', color: '#1A332F' }}
-                        >
-                            {user ? 'Mulai Desain Sekarang' : 'Daftar Gratis & Desain'}
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </a>
-                    </section>
-                </div>
 
                 {/* Filosofi Motif */}
                 <div className="w-full mx-auto mb-12 px-0 sm:px-2 lg:px-0">
                     <h2 className="serif text-2xl font-bold mb-6 text-center" style={{ color: '#1A332F' }}>
                         Filosofi Motif
                     </h2>
-                    <div className="relative w-full bg-white/75 backdrop-blur-sm rounded-md p-5 sm:p-6 md:p-8 border border-[#D9CCBF]/60 shadow-sm">
+                    <div className="relative w-screen sm:w-full bg-white/75 backdrop-blur-sm rounded-none sm:rounded-md p-5 sm:p-6 md:p-8 border-y sm:border border-[#D9CCBF]/60 shadow-sm -mx-8 sm:mx-0">
                         {/* decorative quote mark */}
-                        <svg className="absolute top-1 left-3 sm:top-1 sm:left-3 w-7 h-7 sm:w-8 sm:h-8 opacity-10" viewBox="0 0 32 32" fill="#1A332F">
+                        <svg className="absolute top-0 left-3 sm:top-0 sm:left-4 w-8 h-8 sm:w-10 sm:h-10 opacity-10" viewBox="0 0 32 32" fill="#1A332F">
                             <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.648-7.104 6.624-9.024L25.864 4z" />
                         </svg>
-                        <p className="w-full text-sm sm:text-base md:text-lg leading-relaxed text-justify italic px-2 sm:px-4 whitespace-pre-wrap" style={{ color: '#5A4F3E', lineHeight: 1.9 }}>
+                        <div className="w-full text-sm sm:text-base md:text-lg leading-relaxed text-justify italic px-2 sm:px-4 relative z-10" style={{ color: '#5A4F3E', lineHeight: 1.9 }}>
                             {renderPhilosophyWithLinks(motif.philosophy)}
-                        </p>
+                        </div>
                     </div>
                 </div>
 
@@ -423,29 +367,13 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
                                             <img
                                                 src={related.image_url}
                                                 alt={related.title}
-                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                className="w-full h-full object-cover"
                                             />
                                             <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full">
                                                 <MapPin className="w-3.5 h-3.5 text-[#BA682A]" />
                                                 <span className="text-xs font-semibold text-gray-700">
                                                     {related.origin || 'Indonesia'}
                                                 </span>
-                                            </div>
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                <div className="absolute bottom-0 left-0 right-0 p-4">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="w-6 h-6 rounded-full overflow-hidden bg-white/20 border border-white/50 flex items-center justify-center flex-shrink-0">
-                                                            {related.user?.profile_photo_url ? (
-                                                                <img src={related.user.profile_photo_url} alt={related.user?.name} className="w-full h-full object-cover" />
-                                                            ) : (
-                                                                <span className="text-[10px] text-white font-bold">{related.user?.name?.charAt(0).toUpperCase()}</span>
-                                                            )}
-                                                        </div>
-                                                        <p className="text-white text-sm font-medium flex-1 truncate shadow-sm">
-                                                            {related.user?.name}
-                                                        </p>
-                                                    </div>
-                                                </div>
                                             </div>
                                         </div>
                                         <div className="flex items-center justify-between gap-3 p-1">

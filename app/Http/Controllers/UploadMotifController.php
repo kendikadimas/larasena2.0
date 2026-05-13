@@ -83,8 +83,8 @@ class UploadMotifController extends Controller
             'user_id' => Auth::id(),
             'title' => $validated['title'],
             'origin' => $validated['origin'],
-            'category' => $validated['category'],
-            'philosophy' => $validated['philosophy'],
+            'category' => $validated['category'] ?? 'Umum',
+            'philosophy' => $validated['philosophy'] ?? '',
             'image_path' => $validated['image_path'] ?? null,
             'image_url' => $validated['image_url'] ?? null,
             'status' => 'pending', // Waiting for admin approval

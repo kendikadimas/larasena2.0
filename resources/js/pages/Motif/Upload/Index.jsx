@@ -57,7 +57,7 @@ export default function UploadMotifIndex({ motifs }) {
 
     return (
         <UserLayout title="Sanggar">
-            <div className="max-w-6xl mx-auto p-6">
+            <div className="">
                 {/* Header */}
                 <div className="mb-8 flex justify-between items-start">
                     <div className="max-w-full">
@@ -82,19 +82,19 @@ export default function UploadMotifIndex({ motifs }) {
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-8">
-                    <button onClick={() => setFilter('all')} className={`p-3 rounded-lg border transition-colors text-left ${ filter === 'all' ? 'border-[#4E8070] bg-[#EBF2EF]' : 'border-gray-200 bg-white hover:border-gray-300' }`}>
+                    <button onClick={() => setFilter('all')} className={`p-3 rounded-lg border transition-colors text-left ${filter === 'all' ? 'border-[#4E8070] bg-[#EBF2EF]' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
                         <div className="text-lg font-semibold text-gray-900">{stats.all}</div>
                         <div className="text-xs text-gray-600">Total</div>
                     </button>
-                    <button onClick={() => setFilter('pending')} className={`p-3 rounded-lg border transition-colors text-left ${ filter === 'pending' ? 'border-[#4E8070] bg-[#EBF2EF]' : 'border-gray-200 bg-white hover:border-gray-300' }`}>
+                    <button onClick={() => setFilter('pending')} className={`p-3 rounded-lg border transition-colors text-left ${filter === 'pending' ? 'border-[#4E8070] bg-[#EBF2EF]' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
                         <div className="text-lg font-semibold text-gray-900">{stats.pending}</div>
                         <div className="text-xs text-gray-600">Pending</div>
                     </button>
-                    <button onClick={() => setFilter('approved')} className={`p-3 rounded-lg border transition-colors text-left ${ filter === 'approved' ? 'border-[#4E8070] bg-[#EBF2EF]' : 'border-gray-200 bg-white hover:border-gray-300' }`}>
+                    <button onClick={() => setFilter('approved')} className={`p-3 rounded-lg border transition-colors text-left ${filter === 'approved' ? 'border-[#4E8070] bg-[#EBF2EF]' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
                         <div className="text-lg font-semibold text-gray-900">{stats.approved}</div>
                         <div className="text-xs text-gray-600">Disetujui</div>
                     </button>
-                    <button onClick={() => setFilter('rejected')} className={`p-3 rounded-lg border transition-colors text-left ${ filter === 'rejected' ? 'border-[#4E8070] bg-[#EBF2EF]' : 'border-gray-200 bg-white hover:border-gray-300' }`}>
+                    <button onClick={() => setFilter('rejected')} className={`p-3 rounded-lg border transition-colors text-left ${filter === 'rejected' ? 'border-[#4E8070] bg-[#EBF2EF]' : 'border-gray-200 bg-white hover:border-gray-300'}`}>
                         <div className="text-lg font-semibold text-gray-900">{stats.rejected}</div>
                         <div className="text-xs text-gray-600">Ditolak</div>
                     </button>
@@ -111,7 +111,7 @@ export default function UploadMotifIndex({ motifs }) {
                             {filter === 'all' ? 'Mulai upload motif pertama Anda' : 'Coba ubah filter'}
                         </p>
                     </div>
-                                ) : (
+                ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         {filteredMotifs.map((motif) => (
                             <div key={motif.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">

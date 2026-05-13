@@ -313,7 +313,7 @@ export default function Gallery({ motifs, user }) {
                                             <img
                                                 src={motif.image_url}
                                                 alt={motif.title}
-                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                className="w-full h-full object-cover"
                                             />
 
                                             {/* Origin Badge - Top Left */}
@@ -324,23 +324,7 @@ export default function Gallery({ motifs, user }) {
                                                 </span>
                                             </div>
 
-                                            {/* Hover Overlay with Creator Name & Badge */}
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                <div className="absolute bottom-0 left-0 right-0 p-4">
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="w-6 h-6 rounded-full overflow-hidden bg-white/20 border border-white/50 flex items-center justify-center flex-shrink-0">
-                                                            {motif.user.profile_photo_url ? (
-                                                                <img src={motif.user.profile_photo_url} alt={motif.user.name} className="w-full h-full object-cover" />
-                                                            ) : (
-                                                                <span className="text-[10px] text-white font-bold">{motif.user.name.charAt(0).toUpperCase()}</span>
-                                                            )}
-                                                        </div>
-                                                        <p className="text-white text-sm font-medium flex-1 truncate shadow-sm">
-                                                            {motif.user.name}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
+
                                         </div>
 
                                         {/* Card Footer — Title + Stats */}
