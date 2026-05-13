@@ -73,7 +73,7 @@ export default function UploadMotifIndex({ motifs }) {
 
                     <Link
                         href="/upload/create"
-                        className="hidden md:flex items-center gap-2 px-4 py-2 bg-[#4E8070] text-white rounded-lg font-medium text-sm hover:bg-[#3F6D5F] transition-colors flex-shrink-0"
+                        className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-[#1A332F] text-white rounded-full font-semibold text-sm hover:scale-105 shadow-md hover:shadow-lg transition-all duration-300 flex-shrink-0"
                     >
                         <Plus className="w-4 h-4" />
                         Upload Baru
@@ -175,7 +175,7 @@ export default function UploadMotifIndex({ motifs }) {
                 <div className="md:hidden fixed bottom-24 right-4 z-40">
                     <Link
                         href="/upload/create"
-                        className="flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-[#4E8070] to-[#3F6D5F] text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95"
+                        className="flex items-center justify-center w-14 h-14 rounded-full bg-[#1A332F] text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95"
                         title="Upload Motif Baru"
                     >
                         <Plus className="w-6 h-6" />

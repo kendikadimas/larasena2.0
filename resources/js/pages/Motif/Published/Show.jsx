@@ -71,7 +71,7 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
                         href={part} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="text-[#BA682A] hover:text-[#9d5a24] font-semibold underline underline-offset-2 transition-colors not-italic"
+                        className="text-[#1A332F] hover:text-[#2C5E54] font-semibold underline underline-offset-2 transition-colors not-italic"
                     >
                         {part}
                     </a>
@@ -96,7 +96,6 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
                 <meta property="og:type" content={meta?.type || 'article'} />
                 <meta property="og:url" content={meta?.url || shareUrl} />
                 <meta property="og:title" content={meta?.title || `Motif Batik ${motif.title} | Larasena`} />
-                <meta property="og:description" content={`Yuk lihat keindahan motif batik "${motif.title}" di Larasena!`} />
                 <meta property="og:image" content={meta?.image || motif.image_url} />
                 <meta property="og:image:width" content="1200" />
                 <meta property="og:image:height" content="630" />
@@ -106,7 +105,6 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:url" content={meta?.url || shareUrl} />
                 <meta name="twitter:title" content={meta?.title || `Motif Batik ${motif.title} | Larasena`} />
-                <meta name="twitter:description" content={`Yuk lihat keindahan motif batik "${motif.title}" di Larasena!`} />
                 <meta name="twitter:image" content={meta?.image || motif.image_url} />
 
                 {/* JSON-LD Structured Data (client-side fallback) */}

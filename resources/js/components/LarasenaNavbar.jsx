@@ -55,7 +55,7 @@ export default function LarasenaNavbar({ user }) {
             {user ? (
               <Link
                 href="/dashboard"
-                className="px-4 py-2 text-sm font-medium text-white bg-[#4E8070] rounded-lg hover:bg-[#3F6D5F] transition-colors duration-200"
+                className="px-5 py-2 text-sm font-semibold text-white bg-[#1A332F] rounded-full hover:scale-105 shadow-md hover:shadow-lg transition-all duration-300"
               >
                 Dashboard
               </Link>
@@ -63,13 +63,13 @@ export default function LarasenaNavbar({ user }) {
               <>
                 <Link
                   href="/login"
-                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors duration-200"
+                  className="px-4 py-2 text-sm font-semibold text-[#1A332F] hover:text-[#2C5E54] transition-colors duration-200"
                 >
                   Masuk
                 </Link>
                 <Link
                   href="/register"
-                  className="px-4 py-2 text-sm font-medium text-white bg-[#4E8070] rounded-lg hover:bg-[#3F6D5F] transition-colors duration-200"
+                  className="px-5 py-2 text-sm font-semibold text-white bg-[#1A332F] rounded-full hover:scale-105 shadow-md hover:shadow-lg transition-all duration-300"
                 >
                   Daftar
                 </Link>
