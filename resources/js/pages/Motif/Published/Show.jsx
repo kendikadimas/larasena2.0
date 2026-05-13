@@ -7,7 +7,7 @@ import LarasenaFooter from '@/components/LarasenaFooter';
 export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
     const [copied, setCopied] = useState(false);
     const shareUrl = meta?.url || window.location.href;
-    const shareText = meta?.description || `Lihat motif batik "${motif.title}" - ${motif.philosophy.substring(0, 100)}...`;
+    const shareText = `Yuk lihat keindahan motif batik "${motif.title}" di Larasena!`;
 
     const handleLike = () => {
         if (!user) {
@@ -74,7 +74,7 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
                 <meta property="og:type" content={meta?.type || 'article'} />
                 <meta property="og:url" content={meta?.url || shareUrl} />
                 <meta property="og:title" content={meta?.title || `Motif Batik ${motif.title} | Larasena`} />
-                <meta property="og:description" content={meta?.description || motif.philosophy} />
+                <meta property="og:description" content={`Yuk lihat keindahan motif batik "${motif.title}" di Larasena!`} />
                 <meta property="og:image" content={meta?.image || motif.image_url} />
                 <meta property="og:image:width" content="1200" />
                 <meta property="og:image:height" content="630" />
@@ -84,7 +84,7 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:url" content={meta?.url || shareUrl} />
                 <meta name="twitter:title" content={meta?.title || `Motif Batik ${motif.title} | Larasena`} />
-                <meta name="twitter:description" content={meta?.description || motif.philosophy} />
+                <meta name="twitter:description" content={`Yuk lihat keindahan motif batik "${motif.title}" di Larasena!`} />
                 <meta name="twitter:image" content={meta?.image || motif.image_url} />
 
                 {/* JSON-LD Structured Data (client-side fallback) */}

@@ -12,9 +12,11 @@ export default function AdminPublishedMotifsIndex({ motifs, stats, currentFilter
     const [showRejectModal, setShowRejectModal] = useState(false);
     const [selectedMotif, setSelectedMotif] = useState(null);
     const [rejectReason, setRejectReason] = useState('');
+    const [selectedMotifs, setSelectedMotifs] = useState([]);
 
     const handleFilterChange = (newFilter) => {
         setFilter(newFilter);
+        setSelectedMotifs([]); // Reset selections on filter change
         router.get(route('admin.published-motifs.index'), { filter: newFilter }, {
             preserveState: true,
             preserveScroll: true
@@ -25,6 +27,36 @@ export default function AdminPublishedMotifsIndex({ motifs, stats, currentFilter
         if (confirm(`Setujui motif "${motif.title}" untuk dipublikasikan?`)) {
             router.put(route('admin.published-motifs.approve', motif.id));
         }
+    };
+
+    const handleBulkApprove = () => {
+        if (selectedMotifs.length === 0) return;
+        if (confirm(`Setujui ${selectedMotifs.length} motif terpilih untuk dipublikasikan?`)) {
+            router.put(route('admin.published-motifs.bulk-approve'), {
+                motif_ids: selectedMotifs
+            }, {
+                onSuccess: () => {
+                    setSelectedMotifs([]);
+                }
+            });
+        }
+    };
+
+    const handleSelectAll = (e) => {
+        if (e.target.checked) {
+            const pendingMotifs = filteredMotifs.filter(m => m.status === 'pending');
+            setSelectedMotifs(pendingMotifs.map(m => m.id));
+        } else {
+            setSelectedMotifs([]);
+        }
+    };
+
+    const handleSelectMotif = (motifId) => {
+        setSelectedMotifs(prev => 
+            prev.includes(motifId) 
+                ? prev.filter(id => id !== motifId)
+                : [...prev, motifId]
+        );
     };
 
     const handleReject = (motif) => {
@@ -79,56 +111,78 @@ export default function AdminPublishedMotifsIndex({ motifs, stats, currentFilter
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <button
                         onClick={() => handleFilterChange('pending')}
-                        className={`p-6 rounded-xl border-2 transition-all ${
+                        className={`p-6 rounded-xl border transition-all text-left ${
                             filter === 'pending'
-                                ? 'bg-yellow-500 border-yellow-500 text-white shadow-lg'
-                                : 'bg-white border-gray-200 hover:border-yellow-500'
+                                ? 'bg-amber-50 border-amber-200 ring-1 ring-amber-200 shadow-sm'
+                                : 'bg-white border-gray-100 hover:bg-amber-50/50 hover:border-amber-200'
                         }`}
                     >
-                        <Clock className={`w-8 h-8 mb-2 ${filter === 'pending' ? 'text-white' : 'text-yellow-500'}`} />
-                        <div className="text-3xl font-bold mb-1">{stats.pending}</div>
-                        <div className={`text-sm ${filter === 'pending' ? 'text-white' : 'text-gray-600'}`}>
-                            Pending Review
+                        <div className="flex items-center justify-between mb-4">
+                            <div className={`p-2.5 rounded-lg ${filter === 'pending' ? 'bg-amber-200' : 'bg-amber-100'}`}>
+                                <Clock className={`w-5 h-5 ${filter === 'pending' ? 'text-amber-800' : 'text-amber-600'}`} />
+                            </div>
+                            <span className={`text-xs font-semibold ${filter === 'pending' ? 'text-amber-600' : 'text-gray-500'}`}>
+                                Pending Review
+                            </span>
+                        </div>
+                        <div className={`text-3xl font-bold ${filter === 'pending' ? 'text-amber-700' : 'text-gray-800'}`}>
+                            {stats.pending}
                         </div>
                     </button>
 
                     <button
                         onClick={() => handleFilterChange('approved')}
-                        className={`p-6 rounded-xl border-2 transition-all ${
+                        className={`p-6 rounded-xl border transition-all text-left ${
                             filter === 'approved'
-                                ? 'bg-green-500 border-green-500 text-white shadow-lg'
-                                : 'bg-white border-gray-200 hover:border-green-500'
+                                ? 'bg-green-50 border-green-200 ring-1 ring-green-200 shadow-sm'
+                                : 'bg-white border-gray-100 hover:bg-green-50/50 hover:border-green-200'
                         }`}
                     >
-                        <CheckCircle className={`w-8 h-8 mb-2 ${filter === 'approved' ? 'text-white' : 'text-green-500'}`} />
-                        <div className="text-3xl font-bold mb-1">{stats.approved}</div>
-                        <div className={`text-sm ${filter === 'approved' ? 'text-white' : 'text-gray-600'}`}>
-                            Approved
+                        <div className="flex items-center justify-between mb-4">
+                            <div className={`p-2.5 rounded-lg ${filter === 'approved' ? 'bg-green-200' : 'bg-green-100'}`}>
+                                <CheckCircle className={`w-5 h-5 ${filter === 'approved' ? 'text-green-800' : 'text-green-600'}`} />
+                            </div>
+                            <span className={`text-xs font-semibold ${filter === 'approved' ? 'text-green-600' : 'text-gray-500'}`}>
+                                Approved
+                            </span>
+                        </div>
+                        <div className={`text-3xl font-bold ${filter === 'approved' ? 'text-green-700' : 'text-gray-800'}`}>
+                            {stats.approved}
                         </div>
                     </button>
 
                     <button
                         onClick={() => handleFilterChange('rejected')}
-                        className={`p-6 rounded-xl border-2 transition-all ${
+                        className={`p-6 rounded-xl border transition-all text-left ${
                             filter === 'rejected'
-                                ? 'bg-red-500 border-red-500 text-white shadow-lg'
-                                : 'bg-white border-gray-200 hover:border-red-500'
+                                ? 'bg-red-50 border-red-200 ring-1 ring-red-200 shadow-sm'
+                                : 'bg-white border-gray-100 hover:bg-red-50/50 hover:border-red-200'
                         }`}
                     >
-                        <XCircle className={`w-8 h-8 mb-2 ${filter === 'rejected' ? 'text-white' : 'text-red-500'}`} />
-                        <div className="text-3xl font-bold mb-1">{stats.rejected}</div>
-                        <div className={`text-sm ${filter === 'rejected' ? 'text-white' : 'text-gray-600'}`}>
-                            Rejected
+                        <div className="flex items-center justify-between mb-4">
+                            <div className={`p-2.5 rounded-lg ${filter === 'rejected' ? 'bg-red-200' : 'bg-red-100'}`}>
+                                <XCircle className={`w-5 h-5 ${filter === 'rejected' ? 'text-red-800' : 'text-red-600'}`} />
+                            </div>
+                            <span className={`text-xs font-semibold ${filter === 'rejected' ? 'text-red-600' : 'text-gray-500'}`}>
+                                Rejected
+                            </span>
+                        </div>
+                        <div className={`text-3xl font-bold ${filter === 'rejected' ? 'text-red-700' : 'text-gray-800'}`}>
+                            {stats.rejected}
                         </div>
                     </button>
 
-                    <div className="p-6 rounded-xl border-2 bg-gradient-to-br from-[#BA682A] to-[#D2691E] text-white shadow-lg">
-                        <Star className="w-8 h-8 mb-2 text-white" />
-                        <div className="text-3xl font-bold mb-1">
-                            {motifs.filter(m => m.is_featured).length}
+                    <div className="p-6 rounded-xl border border-[#BA682A]/20 bg-[#BA682A]/5 text-left">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="bg-[#BA682A]/20 p-2.5 rounded-lg">
+                                <Star className="w-5 h-5 text-[#BA682A]" />
+                            </div>
+                            <span className="text-xs font-semibold text-[#BA682A]">
+                                Featured
+                            </span>
                         </div>
-                        <div className="text-sm text-white">
-                            Featured
+                        <div className="text-3xl font-bold text-[#BA682A]">
+                            {motifs.filter(m => m.is_featured).length}
                         </div>
                     </div>
                 </div>
@@ -147,6 +201,25 @@ export default function AdminPublishedMotifsIndex({ motifs, stats, currentFilter
                     </div>
                 </div>
 
+                {/* Bulk Actions Banner */}
+                {selectedMotifs.length > 0 && filter === 'pending' && (
+                    <div className="bg-white rounded-xl shadow-sm border border-[#BA682A] p-4 flex items-center justify-between animate-fade-in-up">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-[#BA682A]/10 text-[#BA682A] px-3 py-1 rounded-lg font-semibold">
+                                {selectedMotifs.length} terpilih
+                            </div>
+                            <span className="text-gray-600">Pilih tindakan untuk motif yang ditandai:</span>
+                        </div>
+                        <button
+                            onClick={handleBulkApprove}
+                            className="px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors font-semibold flex items-center gap-2"
+                        >
+                            <CheckCircle className="w-5 h-5" />
+                            Setujui Terpilih
+                        </button>
+                    </div>
+                )}
+
                 {/* Motifs Table */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                     {filteredMotifs.length === 0 ? (
@@ -159,6 +232,16 @@ export default function AdminPublishedMotifsIndex({ motifs, stats, currentFilter
                             <table className="w-full">
                                 <thead className="bg-gray-50 border-b border-gray-200">
                                     <tr>
+                                        {filter === 'pending' && (
+                                            <th className="px-6 py-4 text-left">
+                                                <input 
+                                                    type="checkbox" 
+                                                    className="rounded border-gray-300 text-[#BA682A] focus:ring-[#BA682A]"
+                                                    onChange={handleSelectAll}
+                                                    checked={filteredMotifs.length > 0 && filteredMotifs.filter(m => m.status === 'pending').every(m => selectedMotifs.includes(m.id))}
+                                                />
+                                            </th>
+                                        )}
                                         <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Preview</th>
                                         <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Motif & User</th>
                                         <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Filosofi</th>
@@ -169,7 +252,17 @@ export default function AdminPublishedMotifsIndex({ motifs, stats, currentFilter
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
                                     {filteredMotifs.map((motif) => (
-                                        <tr key={motif.id} className="hover:bg-gray-50 transition-colors">
+                                        <tr key={motif.id} className={`hover:bg-gray-50 transition-colors ${selectedMotifs.includes(motif.id) ? 'bg-[#BA682A]/5' : ''}`}>
+                                            {filter === 'pending' && (
+                                                <td className="px-6 py-4">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        className="rounded border-gray-300 text-[#BA682A] focus:ring-[#BA682A]"
+                                                        checked={selectedMotifs.includes(motif.id)}
+                                                        onChange={() => handleSelectMotif(motif.id)}
+                                                    />
+                                                </td>
+                                            )}
                                             <td className="px-6 py-4">
                                                 <div className="relative w-20 h-20 rounded-lg overflow-hidden">
                                                     <img

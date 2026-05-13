@@ -65,13 +65,13 @@ export default function LarasenaNavbar({ user }) {
                   href="/login"
                   className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors duration-200"
                 >
-                  Sign In
+                  Masuk
                 </Link>
                 <Link
                   href="/register"
                   className="px-4 py-2 text-sm font-medium text-white bg-[#4E8070] rounded-lg hover:bg-[#3F6D5F] transition-colors duration-200"
                 >
-                  Get Started
+                  Daftar
                 </Link>
               </>
             )}

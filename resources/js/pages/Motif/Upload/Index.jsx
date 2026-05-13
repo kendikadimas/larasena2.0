@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import UserLayout from '@/layouts/User/Layout';
-import { Link } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import { Plus, Eye, Heart, Clock, CheckCircle, XCircle, AlertCircle, Trash2, Image as ImageIcon } from 'lucide-react';
-import { router } from '@inertiajs/react';
 
 export default function UploadMotifIndex({ motifs }) {
+    const { auth } = usePage().props;
     const [filter, setFilter] = useState('all');
 
     const filteredMotifs = motifs.filter(motif => {
@@ -56,17 +56,24 @@ export default function UploadMotifIndex({ motifs }) {
     };
 
     return (
-        <UserLayout>
-            <div className="max-w-6xl mx-auto">
+        <UserLayout title="Sanggar">
+            <div className="max-w-6xl mx-auto p-6">
                 {/* Header */}
-                <div className="mb-10 flex justify-between items-start">
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-1">Motif Saya</h1>
-                        <p className="text-gray-600 text-sm">Kelola karya yang telah diunggah</p>
+                <div className="mb-8 flex justify-between items-start">
+                    <div className="max-w-full">
+                        <p className="text-gray-600 text-base sm:text-lg font-regular mb-2 leading-relaxed">
+                            Hi, <span className="text-[#4E8070] font-semibold">{auth.user.name}</span>! Selamat datang.
+                            <br className="hidden sm:block" />
+                            Kamu sudah mengunggah:{' '}
+                            <span className="text-[#4E8070] font-semibold">
+                                {motifs.length} motif
+                            </span>
+                        </p>
                     </div>
+
                     <Link
                         href="/upload/create"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-[#4E8070] text-white rounded-lg font-medium text-sm hover:bg-[#3F6D5F] transition-colors"
+                        className="hidden md:flex items-center gap-2 px-4 py-2 bg-[#4E8070] text-white rounded-lg font-medium text-sm hover:bg-[#3F6D5F] transition-colors flex-shrink-0"
                     >
                         <Plus className="w-4 h-4" />
                         Upload Baru

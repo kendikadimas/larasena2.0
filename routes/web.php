@@ -226,6 +226,7 @@ Route::middleware(['auth', 'verified', 'role:Admin'])->group(function () {
     // Published Motifs Management (Admin Moderation)
     Route::prefix('admin-published-motifs')->name('admin.published-motifs.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\AdminPublishedMotifController::class, 'index'])->name('index');
+        Route::put('/bulk-approve', [\App\Http\Controllers\Admin\AdminPublishedMotifController::class, 'bulkApprove'])->name('bulk-approve');
         Route::put('/{motif}/approve', [\App\Http\Controllers\Admin\AdminPublishedMotifController::class, 'approve'])->name('approve');
         Route::put('/{motif}/reject', [\App\Http\Controllers\Admin\AdminPublishedMotifController::class, 'reject'])->name('reject');
         Route::put('/{motif}/toggle-featured', [\App\Http\Controllers\Admin\AdminPublishedMotifController::class, 'toggleFeatured'])->name('toggle-featured');

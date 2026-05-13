@@ -75,6 +75,23 @@ class AdminPublishedMotifController extends Controller
         return redirect()->back()->with('success', 'Motif berhasil disetujui dan dipublikasikan!');
     }
 
+    // Bulk approve motifs
+    public function bulkApprove(Request $request)
+    {
+        $validated = $request->validate([
+            'motif_ids' => 'required|array',
+            'motif_ids.*' => 'exists:published_motifs,id'
+        ]);
+
+        $motifs = PublishedMotif::whereIn('id', $validated['motif_ids'])->pending()->get();
+        
+        foreach ($motifs as $motif) {
+            $motif->approve();
+        }
+
+        return redirect()->back()->with('success', count($motifs) . ' motif berhasil disetujui!');
+    }
+
     // Reject motif
     public function reject(Request $request, PublishedMotif $motif)
     {

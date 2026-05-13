@@ -35,42 +35,57 @@ const formatRupiah = (amount) => {
     }).format(numAmount);
 };
 
+const formatRupiahCompact = (amount) => {
+    const numAmount = parseFloat(amount) || 0;
+    return new Intl.NumberFormat('id-ID', { 
+        style: 'currency', 
+        currency: 'IDR',
+        notation: 'compact',
+        maximumFractionDigits: 1
+    }).format(numAmount);
+};
+
 export default function AdminDashboard({ stats, recent_users, recent_transactions, revenueTrend }) {
     const statCards = [
         { 
             title: 'Total Users', 
             value: stats.total_users, 
             icon: Users, 
-            color: 'bg-blue-500',
+            color: 'text-blue-600',
+            bg: 'bg-blue-50',
             trend: `${stats.general_users} General, ${stats.convection_users} Convection`
         },
         { 
             title: 'Canvas Elements', 
             value: stats.total_canvas_elements ?? stats.total_motifs, 
             icon: Package, 
-            color: 'bg-purple-500',
-            trend: `${stats.total_gallery_published ?? 0} published gallery items`
+            color: 'text-purple-600',
+            bg: 'bg-purple-50',
+            trend: `${stats.total_gallery_published ?? 0} published items`
         },
         { 
-            title: 'Gallery Published', 
-            value: stats.total_gallery_published ?? 0, 
-            icon: CheckCircle, 
-            color: 'bg-pink-500',
-            trend: `${stats.pending_moderation ?? 0} pending moderation`
+            title: 'Motif Moderation', 
+            value: stats.pending_moderation ?? 0, 
+            icon: Clock, 
+            color: 'text-[#BA682A]',
+            bg: 'bg-[#BA682A]/10',
+            trend: `${stats.total_gallery_published ?? 0} published`
         },
         { 
-            title: 'Total Transactions', 
+            title: 'Transactions', 
             value: stats.total_transactions, 
             icon: ShoppingCart, 
-            color: 'bg-green-500',
+            color: 'text-emerald-600',
+            bg: 'bg-emerald-50',
             trend: `${stats.pending_transactions} Pending`
         },
         { 
             title: 'Total Revenue', 
-            value: formatRupiah(stats.total_revenue), 
+            value: formatRupiahCompact(stats.total_revenue), 
             icon: DollarSign, 
-            color: 'bg-yellow-500',
-            trend: `Production ${formatRupiah(stats.production_revenue ?? stats.total_revenue)} | MRR ${formatRupiah(stats.mrr ?? 0)}`
+            color: 'text-rose-600',
+            bg: 'bg-rose-50',
+            trend: `Prod ${formatRupiahCompact(stats.production_revenue ?? stats.total_revenue)} | MRR ${formatRupiahCompact(stats.mrr ?? 0)}`
         },
     ];
 
@@ -143,8 +158,8 @@ export default function AdminDashboard({ stats, recent_users, recent_transaction
                     {statCards.map((stat, index) => (
                         <div key={index} className="bg-white rounded-lg shadow-sm p-6 border border-gray-100">
                             <div className="flex items-center justify-between mb-4">
-                                <div className={`${stat.color} p-3 rounded-lg`}>
-                                    <stat.icon className="w-6 h-6 text-white" />
+                                <div className={`${stat.bg} p-3 rounded-xl`}>
+                                    <stat.icon className={`w-6 h-6 ${stat.color}`} />
                                 </div>
                             </div>
                             <h3 className="text-gray-600 text-sm font-medium">{stat.title}</h3>
