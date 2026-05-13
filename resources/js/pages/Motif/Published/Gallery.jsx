@@ -328,28 +328,16 @@ export default function Gallery({ motifs, user }) {
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                                 <div className="absolute bottom-0 left-0 right-0 p-4">
                                                     <div className="flex items-center gap-2">
-                                                        <p className="text-white text-sm font-medium flex-1 truncate">
+                                                        <div className="w-6 h-6 rounded-full overflow-hidden bg-white/20 border border-white/50 flex items-center justify-center flex-shrink-0">
+                                                            {motif.user.profile_photo_url ? (
+                                                                <img src={motif.user.profile_photo_url} alt={motif.user.name} className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <span className="text-[10px] text-white font-bold">{motif.user.name.charAt(0).toUpperCase()}</span>
+                                                            )}
+                                                        </div>
+                                                        <p className="text-white text-sm font-medium flex-1 truncate shadow-sm">
                                                             {motif.user.name}
                                                         </p>
-                                                        {motif.user.badge && (
-                                                            <div className="flex-shrink-0">
-                                                                {motif.user.badge === 'boutique' && (
-                                                                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-                                                                        <Store className="w-3 h-3 text-white" />
-                                                                    </div>
-                                                                )}
-                                                                {motif.user.badge === 'community' && (
-                                                                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
-                                                                        <Users className="w-3 h-3 text-white" />
-                                                                    </div>
-                                                                )}
-                                                                {motif.user.badge === 'artisan' && (
-                                                                    <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
-                                                                        <Award className="w-3 h-3 text-white" />
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
