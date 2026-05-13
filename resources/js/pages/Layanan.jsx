@@ -237,10 +237,9 @@ export default function Layanan({ user }) {
                     </div>
                 </div>
 
-                <div className="mt-20">
-                    <LarasenaCTA user={user} dashboardRoute={route('dashboard')} />
-                </div>
             </div>
+
+            <LarasenaCTA user={user} dashboardRoute={route('dashboard')} />
 
             <LarasenaFooter />
         </div>

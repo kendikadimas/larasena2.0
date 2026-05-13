@@ -313,18 +313,38 @@ export default function Gallery({ motifs, user }) {
                                             <img
                                                 src={motif.image_url}
                                                 alt={motif.title}
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                             />
 
                                             {/* Origin Badge - Top Left */}
-                                            <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full">
+                                            <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full z-10">
                                                 <MapPin className="w-3.5 h-3.5 text-[#BA682A]" />
                                                 <span className="text-xs font-semibold text-gray-700">
                                                     {motif.origin || 'Indonesia'}
                                                 </span>
                                             </div>
 
-
+                                            {/* Hover Overlay - User Info */}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 z-20">
+                                                <div className="flex items-center gap-2.5 transform translate-y-3 group-hover:translate-y-0 transition-transform duration-300">
+                                                    {motif.user?.avatar ? (
+                                                        <img
+                                                            src={motif.user.avatar}
+                                                            alt={motif.user.name}
+                                                            className="w-8 h-8 rounded-full border-[1.5px] border-white/90 object-cover shadow-sm"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-8 h-8 rounded-full bg-[#1A332F] border-[1.5px] border-white/90 flex items-center justify-center shadow-sm">
+                                                            <span className="text-white text-xs font-bold">
+                                                                {motif.user?.name?.charAt(0).toUpperCase()}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                    <span className="text-white text-sm font-medium tracking-wide drop-shadow-md">
+                                                        {motif.user?.name}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         {/* Card Footer — Title + Stats */}
@@ -351,11 +371,10 @@ export default function Gallery({ motifs, user }) {
                     </div>
                 )}
 
-                {/* CTA Section */}
-                <div className="mt-16">
-                    <LarasenaCTA user={user} dashboardRoute={route('dashboard')} />
-                </div>
             </div>
+
+            {/* CTA Section */}
+            <LarasenaCTA user={user} dashboardRoute={route('dashboard')} />
 
             <LarasenaFooter />
         </div>
