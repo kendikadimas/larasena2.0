@@ -186,10 +186,15 @@ export default function BulkImport({ stats }) {
             const existingNames = new Set(prev.map(file => file.name.toLowerCase()));
             const accepted = [];
             const skipped = [];
+            const oversize = [];
 
             allowed.forEach((file) => {
-                const normalizedName = file.name.toLowerCase();
+                if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                    oversize.push(file.name);
+                    return;
+                }
 
+                const normalizedName = file.name.toLowerCase();
                 if (existingNames.has(normalizedName) || accepted.some(item => item.name.toLowerCase() === normalizedName)) {
                     skipped.push(file.name);
                     return;
@@ -203,6 +208,13 @@ export default function BulkImport({ stats }) {
                     type: 'error',
                     message: `${skipped.length} file duplikat dilewati: ${skipped.slice(0, 3).join(', ')}${skipped.length > 3 ? '...' : ''}`,
                 });
+            }
+
+            if (oversize.length > 0) {
+                setTimeout(() => setFlash({
+                    type: 'error',
+                    message: `${oversize.length} file ditolak karena melebihi 5MB: ${oversize.slice(0, 3).join(', ')}${oversize.length > 3 ? '...' : ''}`,
+                }), skipped.length > 0 ? 3000 : 0);
             }
 
             return [...prev, ...accepted];
@@ -253,6 +265,12 @@ export default function BulkImport({ stats }) {
         e.preventDefault();
         if (files.length === 0) return;
         if (!defaultCategory.trim()) { setFlash({ type: 'error', message: 'Kategori default harus diisi.' }); return; }
+        
+        // Cek total ukuran (max 40MB) untuk menghindari 419 error di server (post_max_size)
+        if (selectedBatchSize > 40 * 1024 * 1024) {
+            setFlash({ type: 'error', message: 'Total ukuran file melebihi 40MB. Silakan kurangi file (upload secara bertahap) agar tidak gagal.' });
+            return;
+        }
 
         setIsSubmitting(true);
 
@@ -283,6 +301,11 @@ export default function BulkImport({ stats }) {
         e.preventDefault();
         if (!zipFile) return;
         if (!defaultCategory.trim()) { setFlash({ type: 'error', message: 'Kategori default harus diisi.' }); return; }
+
+        if (zipFile.size > 50 * 1024 * 1024) {
+            setFlash({ type: 'error', message: 'Ukuran file ZIP melebihi 50MB. Harap perkecil file agar tidak gagal.' });
+            return;
+        }
 
         setIsSubmitting(true);
 

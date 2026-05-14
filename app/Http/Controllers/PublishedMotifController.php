@@ -123,7 +123,7 @@ class PublishedMotifController extends Controller
             });
 
         // ── SEO Meta Data ──────────────────────────────────────────
-        $metaTitle       = "Motif Batik {$motif->title}: Filosofi, Sejarah & Desain Modern | Larasena";
+        $metaTitle       = "{$motif->title} | Larasena";
         $metaDescription = $this->buildMetaDescription($motif);
         $metaKeywords    = $this->buildKeywords($motif);
         $metaImage       = $motif->image_url;
@@ -298,11 +298,11 @@ class PublishedMotifController extends Controller
         // Share SEO meta data for gallery page
         view()->share('pageMeta', [
             'title'       => 'Galeri Motif Batik Nusantara | Temukan Inspirasi Batik Indonesia — Larasena',
-            'description' => 'Jelajahi ratusan motif batik nusantara lengkap dengan filosofi, asal daerah, dan makna budayanya. Temukan inspirasi desain batik kawung, parang, mega mendung & lainnya.',
+            'description' => 'Jelajahi ratusan motif batik nusantara lengkap dengan filosofi, asal daerah, dan kreatornya. Temukan motif batik perpaduan tradisional dan modern.',
             'image'       => asset('images/og-gallery.jpg'),
             'url'         => route('published-motifs.gallery'),
             'type'        => 'website',
-            'keywords'    => 'galeri motif batik, motif batik Indonesia, batik kawung, batik parang, mega mendung, desain batik online, filosofi batik',
+            'keywords'    => 'galeri motif batik, motif batik Indonesia, batik kawung, batik parang, mega mendung, desain batik online, filosofi batik, koleksi batik',
             'jsonLd'      => $galleryJsonLd,
         ]);
 
@@ -324,10 +324,10 @@ class PublishedMotifController extends Controller
      */
     private function buildMetaDescription(PublishedMotif $motif): string
     {
-        $origin  = $motif->origin  ? "dari {$motif->origin}"  : 'Indonesia';
-        $excerpt = Str::limit(strip_tags($motif->philosophy ?? ''), 80);
-        $base    = "Pelajari motif batik {$motif->title} {$origin}: filosofi, sejarah, dan inspirasi desain modern. ";
-        return Str::limit($base . $excerpt, 160);
+        $origin  = $motif->origin ? " asal {$motif->origin}" : '';
+        $author  = $motif->user ? " karya koleksi {$motif->user->name}" : '';
+        $excerpt = Str::limit(strip_tags($motif->philosophy ?? ''), 100);
+        return "{$motif->title}{$origin}{$author}";
     }
 
     /**

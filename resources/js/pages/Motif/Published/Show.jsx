@@ -97,12 +97,12 @@ export default function Show({ motif, relatedMotifs, user, meta, jsonLd }) {
     return (
         <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #FBF8F1 0%, #F5F0E8 100%)' }}>
             <Head>
-                <title>{meta?.title || `Motif Batik ${motif.title}: Filosofi & Sejarah | Larasena`}</title>
+                <title>{meta?.title || `${motif.title} | Larasena`}</title>
                 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
                 {/* Primary Meta Tags */}
-                <meta name="title" content={meta?.title || `Motif Batik ${motif.title}: Filosofi, Sejarah & Desain Modern | Larasena`} />
-                <meta name="description" content={meta?.description || `Pelajari motif batik ${motif.title} dari ${motif.origin || 'Indonesia'}: filosofi, sejarah, dan inspirasi desain modern.`} />
+                <meta name="title" content={meta?.title || `${motif.title} | Larasena`} />
+                <meta name="description" content={meta?.description || `Pelajari motif batik ${motif.title} dari ${motif.origin || 'Indonesia'}: koleksi batik desain modern.`} />
                 <meta name="keywords" content={meta?.keywords || `motif batik ${motif.title}, batik ${motif.origin}, filosofi batik`} />
 
                 {/* Open Graph / Facebook / WhatsApp */}
